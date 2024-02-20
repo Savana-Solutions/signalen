@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from django.core.cache import cache
 from rest_framework import exceptions
 
@@ -32,6 +33,7 @@ class JWTAuthBackend:
                 user = User.objects.create_user(username=user_id, email=user_id)
                 # Optionally set default roles or permissions here
                 user.user_permissions.add(Permission.objects.get(codename='sia_read'))
+                user.groups.add(Group.objects.get(codename='AEG'))
 
                 user.save()
                 cache.set(user_id, user, 5 * 60)  # Cache the new user
