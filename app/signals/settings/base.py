@@ -408,7 +408,7 @@ DEFAULT_SIGNAL_AREA_TYPE = os.getenv('DEFAULT_SIGNAL_AREA_TYPE', 'district')
 # order of preference. Note that this logo is rescaled to 100 pixels in height.
 # Note: this assumes the configured image is available through the staticfiles
 # app.
-API_PDF_LOGO_STATIC_FILE = os.getenv('API_PDF_LOGO_STATIC_FILE', 'api/logo-savana.pmg')
+API_PDF_LOGO_STATIC_FILE = os.getenv('API_PDF_LOGO_STATIC_FILE', 'api/logo-savana.svg')
 
 # Large images are resized to max dimension of `API_PDF_RESIZE_IMAGES_TO`
 # along the largest side, aspect ratio is maintained.
