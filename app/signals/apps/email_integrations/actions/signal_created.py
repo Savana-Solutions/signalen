@@ -2,15 +2,16 @@
 # Copyright (C) 2021 - 2023 Gemeente Amsterdam
 import typing
 
-from signals.apps.email_integrations.actions.abstract import AbstractAction
+from signals.apps.email_integrations.actions.abstract import AbstractSignalStatusAction
 from signals.apps.email_integrations.models import EmailTemplate
 from signals.apps.email_integrations.rules import SignalCreatedRule
+from signals.apps.email_integrations.rules.abstract import AbstractRule
 from signals.apps.services.domain.contact_details import ContactDetailsService
 from signals.apps.signals.models import Signal
 
 
-class SignalCreatedAction(AbstractAction):
-    rule: typing.Callable[[Signal], bool] = SignalCreatedRule()
+class SignalCreatedAction(AbstractSignalStatusAction):
+    rule: AbstractRule = SignalCreatedRule()
 
     key: str = EmailTemplate.SIGNAL_CREATED
     subject: str = 'Bedankt voor uw melding {formatted_signal_id}'
@@ -18,7 +19,9 @@ class SignalCreatedAction(AbstractAction):
     note: str = 'Automatische e-mail bij registratie van de melding is verzonden aan de melder.'
 
     def get_additional_context(self, signal: Signal, dry_run: bool = False) -> dict:
-        context = {'afhandelings_text': signal.category_assignment.category.handling_message, }
+        assert signal.category_assignment is not None
+
+        context: dict[str, typing.Any] = {'afhandelings_text': signal.category_assignment.category.handling_message, }
 
         if signal.reporter:
             if signal.reporter.phone:
@@ -48,7 +51,7 @@ class SignalCreatedAction(AbstractAction):
         if not extra_properties:
             return {}
 
-        context = {}
+        context: dict[str, typing.Any] = {}
         for extra_property in extra_properties:
             context[extra_property['label']] = []
             if isinstance(extra_property['answer'], (list, tuple)):
@@ -58,7 +61,7 @@ class SignalCreatedAction(AbstractAction):
                 context[extra_property['label']].append(self._get_answer_from_extra_property(extra_property['answer']))
         return context
 
-    def _get_answer_from_extra_property(self, extra_property: typing.Union[str, dict]) -> str: # noqa C901
+    def _get_answer_from_extra_property(self, extra_property: str | dict) -> str | dict[str, typing.Any]: # noqa C901
         """
         Returns the first option that is available in the extra property and not empty as the answer.
         Defaults to '-' if no option is available.

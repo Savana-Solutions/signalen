@@ -1,16 +1,17 @@
 # SPDX-License-Identifier: MPL-2.0
-# Copyright (C) 2019 - 2021 Gemeente Amsterdam
+# Copyright (C) 2019 - 2023 Gemeente Amsterdam
 from django.views import View
 from rest_framework import exceptions
 from rest_framework.permissions import BasePermission, DjangoModelPermissions
 from rest_framework.request import Request
 
+from signals.apps.api.generics.exceptions import UnsupportedViewException
 from signals.apps.services.domain.permissions.signal import SignalPermissionService
 from signals.apps.signals.models import Reporter
 
 
 class SIABasePermission(BasePermission):
-    perms_map = {
+    perms_map: dict[str, list[str]] = {
         'GET': [],
         'OPTIONS': [],
         'HEAD': [],
@@ -135,10 +136,23 @@ class SIAUserPermissions(SIABasePermission):
 class ReporterPermission(BasePermission):
     def has_permission(self, request: Request, view: View) -> bool:
         """
+        The user must have the permission to view contact details in general
+        AND at one of the following permissions:
+
         If the user has the permission to view all categories, they can view all reporters of that Signal
         OR
         If the user has the permission to view the category of the Signal, they can view all reporters of that Signal.
         """
+        from signals.apps.api.views.signals.private.signal_reporters import (
+            PrivateSignalReporterViewSet
+        )
+
+        if not isinstance(view, PrivateSignalReporterViewSet):
+            raise UnsupportedViewException('Currently only PrivateSignalReporterViewSet is supported!')
+
+        if not request.user.has_perm('signals.sia_can_view_contact_details'):
+            return False
+
         return SignalPermissionService.has_signal_permission(
             user=request.user,
             signal=view.get_signal()
@@ -149,10 +163,16 @@ class ReporterPermission(BasePermission):
 
     def has_object_permission(self, request: Request, view: View, obj: Reporter) -> bool:
         """
+        The user must have the permission to view contact details in general
+        AND at one of the following permissions:
+
         If the user has the permission to view all categories, they can view a reporter of that Signal
         OR
         If the user has the permission to view the category of the Signal, they can view a reporter of that Signal.
         """
+        if not request.user.has_perm('signals.sia_can_view_contact_details'):
+            return False
+
         return SignalPermissionService.has_signal_permission(
             user=request.user,
             signal=obj._signal
@@ -160,3 +180,43 @@ class ReporterPermission(BasePermission):
             user=request.user,
             permission='signals.sia_can_view_all_categories',
         )
+
+
+class CanCreateI18NextTranslationFile(BasePermission):
+    def has_permission(self, request: Request, view: View) -> bool:
+        """
+        Check if the user has permission to create an I18Next translation file.
+        """
+        # Allow access to root user or users with the specific permission
+        return (
+                request.user.is_superuser or
+                request.user.has_perm('signals.sia_add_i18next_translation_file')
+        )
+
+
+class SIAAttachmentPermissions(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
+        match request.method.upper():
+            case 'POST':
+                _permissions = [
+                    'signals.sia_write',
+                    'signals.sia_add_attachment',
+                ]
+                _has_permission = SignalPermissionService.has_permissions(request.user, permissions=_permissions)
+            case 'PUT' | 'PATCH':
+                _permissions = [
+                    'signals.sia_write',
+                    'signals.sia_change_attachment',
+                ]
+                _has_permission = SignalPermissionService.has_permissions(request.user, permissions=_permissions)
+            case _:
+                # Allow GET, HEAD and OPTIONS.
+                #
+                # TODO: Refactor DELETE permission checks. Currently these checks are handled in the
+                #       PrivateSignalAttachmentsViewSet.
+                _has_permission = True
+
+        return _has_permission

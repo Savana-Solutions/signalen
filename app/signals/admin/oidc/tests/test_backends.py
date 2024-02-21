@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MPL-2.0
-# Copyright (C) 2022 Delta10 B.V.
+# Copyright (C) 2022 - 2023 Delta10 B.V., Gemeente Amsterdam
 from django.test import TestCase
 
 from signals.admin.oidc.backends import AuthenticationBackend
@@ -19,16 +19,13 @@ class BackendsTest(TestCase):
 
         self.assertEqual(user, users_from_backend[0])
 
-    def test_create_user(self):
-        backend = AuthenticationBackend()
-        result = backend.create_user({})
+    def test_filter_users_by_claims_empty_claim(self):
+        for empty_value in [None, '', False, 0]:
+            claims = {
+                'email': empty_value
+            }
 
-        self.assertEqual(result, None)
+            backend = AuthenticationBackend()
+            users_from_backend = backend.filter_users_by_claims(claims)
 
-    def test_update_user(self):
-        user = UserFactory.create()
-
-        backend = AuthenticationBackend()
-        result = backend.update_user(user, {})
-
-        self.assertEqual(result, user)
+            self.assertEqual(users_from_backend.count(), 0)

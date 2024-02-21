@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements/requirements_dev.txt requirements/requirements_dev.in
 #
-amqp==5.1.1
+amqp==5.2.0
     # via
     #   -r requirements/requirements_test.txt
     #   kombu
@@ -16,37 +16,38 @@ asgiref==3.7.2
     # via
     #   -r requirements/requirements_test.txt
     #   django
-attrs==23.1.0
+    #   django-cors-headers
+attrs==23.2.0
     # via
     #   -r requirements/requirements_test.txt
     #   jsonschema
     #   pytest-subtests
     #   referencing
-autopep8==2.0.2
+autopep8==2.0.4
     # via
     #   -r requirements/requirements_test.txt
     #   django-silk
-azure-core==1.29.2
+azure-core==1.30.0
     # via
     #   -r requirements/requirements_test.txt
     #   azure-identity
     #   azure-storage-blob
     #   opencensus-ext-azure
-azure-identity==1.14.0
+azure-identity==1.15.0
     # via
     #   -r requirements/requirements_test.txt
     #   opencensus-ext-azure
-azure-storage-blob==12.17.0
+azure-storage-blob==12.19.0
     # via -r requirements/requirements_test.txt
-beautifulsoup4==4.12.2
+beautifulsoup4==4.12.3
     # via
     #   -r requirements/requirements_test.txt
     #   o365
-billiard==4.1.0
+billiard==4.2.0
     # via
     #   -r requirements/requirements_test.txt
     #   celery
-cachetools==5.3.1
+cachetools==5.3.2
     # via
     #   -r requirements/requirements_test.txt
     #   google-auth
@@ -60,19 +61,21 @@ cairosvg==2.7.1
     # via
     #   -r requirements/requirements_test.txt
     #   weasyprint
-celery==5.3.1
+celery==5.3.6
     # via
     #   -r requirements/requirements_test.txt
     #   django-celery-beat
     #   django-celery-email
     #   django-celery-results
     #   flower
-certifi==2023.7.22
+celery-types==0.22.0
+    # via -r requirements/requirements_test.txt
+certifi==2024.2.2
     # via
     #   -r requirements/requirements_test.txt
     #   elasticsearch
     #   requests
-cffi==1.15.1
+cffi==1.16.0
     # via
     #   -r requirements/requirements_test.txt
     #   cairocffi
@@ -82,18 +85,17 @@ chardet==5.2.0
     # via
     #   -r requirements/requirements_test.txt
     #   tox
-charset-normalizer==3.2.0
+charset-normalizer==3.3.2
     # via
     #   -r requirements/requirements_test.txt
     #   requests
-click==8.1.6
+click==8.1.7
     # via
     #   -r requirements/requirements_test.txt
     #   celery
     #   click-didyoumean
     #   click-plugins
     #   click-repl
-    #   flex
 click-didyoumean==0.3.0
     # via
     #   -r requirements/requirements_test.txt
@@ -110,24 +112,15 @@ colorama==0.4.6
     # via
     #   -r requirements/requirements_test.txt
     #   tox
-coreapi==2.3.3
-    # via
-    #   -r requirements/requirements_test.txt
-    #   django-rest-swagger
-    #   openapi-codec
-coreschema==0.0.4
-    # via
-    #   -r requirements/requirements_test.txt
-    #   coreapi
-coverage[toml]==7.3.0
+coverage[toml]==7.4.1
     # via
     #   -r requirements/requirements_test.txt
     #   pytest-cov
-cron-descriptor==1.4.0
+cron-descriptor==1.4.3
     # via
     #   -r requirements/requirements_test.txt
     #   django-celery-beat
-cryptography==41.0.3
+cryptography==42.0.2
     # via
     #   -r requirements/requirements_test.txt
     #   azure-identity
@@ -143,25 +136,18 @@ cssselect2==0.7.0
     #   -r requirements/requirements_test.txt
     #   cairosvg
     #   weasyprint
-datapunt-authorization-django==1.3.3
-    # via -r requirements/requirements_test.txt
 defusedxml==0.7.1
     # via
     #   -r requirements/requirements_test.txt
     #   cairosvg
     #   djangorestframework-xml
-deprecated==1.2.14
-    # via
-    #   -r requirements/requirements_test.txt
-    #   jwcrypto
-distlib==0.3.7
+distlib==0.3.8
     # via
     #   -r requirements/requirements_test.txt
     #   virtualenv
-django==3.2.20
+django==3.2.24
     # via
     #   -r requirements/requirements_test.txt
-    #   datapunt-authorization-django
     #   django-appconf
     #   django-celery-beat
     #   django-celery-email
@@ -173,13 +159,15 @@ django==3.2.20
     #   django-markdownx
     #   django-silk
     #   django-storages
+    #   django-stubs
+    #   django-stubs-ext
     #   django-timezone-field
     #   djangorestframework
     #   drf-spectacular
     #   drf-spectacular-sidecar
     #   mozilla-django-oidc
     #   opencensus-ext-django
-django-appconf==1.0.5
+django-appconf==1.0.6
     # via
     #   -r requirements/requirements_test.txt
     #   django-celery-email
@@ -189,59 +177,73 @@ django-celery-email==3.0.0
     # via -r requirements/requirements_test.txt
 django-celery-results==2.5.1
     # via -r requirements/requirements_test.txt
-django-cors-headers==4.2.0
+django-cors-headers==4.3.1
     # via -r requirements/requirements_test.txt
-django-debug-toolbar==4.2.0
+django-debug-toolbar==4.3.0
     # via -r requirements/requirements_dev.in
 django-extensions==3.2.3
     # via -r requirements/requirements_test.txt
-django-filter==23.2
+django-filter==23.5
+    # via -r requirements/requirements_test.txt
+django-filter-stubs==0.1.3
     # via -r requirements/requirements_test.txt
 django-fsm==2.8.1
     # via -r requirements/requirements_test.txt
-django-markdownx==4.0.2
+django-markdownx==4.0.7
     # via -r requirements/requirements_test.txt
 django-o365mail==1.1.0
     # via -r requirements/requirements_test.txt
-django-rest-swagger==2.2.0
+django-silk==5.1.0
     # via -r requirements/requirements_test.txt
-django-silk==5.0.3
+django-storages==1.14.2
     # via -r requirements/requirements_test.txt
-django-storages==1.13.2
-    # via -r requirements/requirements_test.txt
-django-timezone-field==5.1
+django-stubs[compatible-mypy]==4.2.7
+    # via
+    #   -r requirements/requirements_test.txt
+    #   django-filter-stubs
+    #   djangorestframework-stubs
+django-stubs-ext==4.2.7
+    # via
+    #   -r requirements/requirements_test.txt
+    #   django-stubs
+django-timezone-field==6.1.0
     # via
     #   -r requirements/requirements_test.txt
     #   django-celery-beat
 djangorestframework==3.14.0
     # via
     #   -r requirements/requirements_test.txt
-    #   django-rest-swagger
     #   djangorestframework-csv
     #   djangorestframework-gis
     #   drf-amsterdam
     #   drf-extensions
     #   drf-spectacular
-djangorestframework-csv==2.1.1
+djangorestframework-csv==3.0.2
     # via
     #   -r requirements/requirements_test.txt
     #   drf-amsterdam
 djangorestframework-gis==1.0
     # via -r requirements/requirements_test.txt
+djangorestframework-stubs[compatible-mypy]==3.14.5
+    # via
+    #   -r requirements/requirements_test.txt
+    #   django-filter-stubs
 djangorestframework-xml==2.0.0
     # via
     #   -r requirements/requirements_test.txt
     #   drf-amsterdam
-drf-amsterdam==0.4.1
+drf-amsterdam==1.0.1
     # via -r requirements/requirements_test.txt
 drf-extensions==0.7.1
     # via
     #   -r requirements/requirements_test.txt
     #   drf-amsterdam
-drf-spectacular==0.26.4
+drf-spectacular[sidecar]==0.27.1
     # via -r requirements/requirements_test.txt
-drf-spectacular-sidecar==2023.8.1
-    # via -r requirements/requirements_test.txt
+drf-spectacular-sidecar==2024.2.1
+    # via
+    #   -r requirements/requirements_test.txt
+    #   drf-spectacular
 elasticsearch==7.17.9
     # via
     #   -r requirements/requirements_test.txt
@@ -253,33 +255,33 @@ execnet==2.0.2
     #   -r requirements/requirements_test.txt
     #   pytest-xdist
 factory-boy==3.3.0
-    # via -r requirements/requirements_test.txt
-faker==19.3.0
+    # via
+    #   -r requirements/requirements_test.txt
+    #   types-factory-boy
+faker==23.1.0
     # via
     #   -r requirements/requirements_test.txt
     #   factory-boy
-filelock==3.12.2
+filelock==3.13.1
     # via
     #   -r requirements/requirements_test.txt
     #   tox
     #   virtualenv
-flake8==6.1.0
-    # via -r requirements/requirements_test.txt
-flex==6.14.1
+flake8==7.0.0
     # via -r requirements/requirements_test.txt
 flower==2.0.1
     # via -r requirements/requirements_test.txt
-freezegun==1.2.2
+freezegun==1.4.0
     # via -r requirements/requirements_test.txt
-google-api-core==2.11.1
+google-api-core==2.16.2
     # via
     #   -r requirements/requirements_test.txt
     #   opencensus
-google-auth==2.22.0
+google-auth==2.27.0
     # via
     #   -r requirements/requirements_test.txt
     #   google-api-core
-googleapis-common-protos==1.60.0
+googleapis-common-protos==1.62.0
     # via
     #   -r requirements/requirements_test.txt
     #   google-api-core
@@ -291,11 +293,11 @@ html5lib==1.1
     # via
     #   -r requirements/requirements_test.txt
     #   weasyprint
-humanize==4.7.0
+humanize==4.9.0
     # via
     #   -r requirements/requirements_test.txt
     #   flower
-idna==3.4
+idna==3.6
     # via
     #   -r requirements/requirements_test.txt
     #   requests
@@ -311,75 +313,78 @@ isodate==0.6.1
     # via
     #   -r requirements/requirements_test.txt
     #   azure-storage-blob
-isort==5.12.0
+isort==5.13.2
     # via -r requirements/requirements_test.txt
-itypes==1.2.0
-    # via
-    #   -r requirements/requirements_test.txt
-    #   coreapi
-jinja2==3.1.2
-    # via
-    #   -r requirements/requirements_test.txt
-    #   coreschema
-josepy==1.13.0
+josepy==1.14.0
     # via
     #   -r requirements/requirements_test.txt
     #   mozilla-django-oidc
-jsonpointer==2.4
-    # via
-    #   -r requirements/requirements_test.txt
-    #   flex
-jsonschema==4.19.0
+jsonschema==4.21.1
     # via
     #   -r requirements/requirements_test.txt
     #   drf-spectacular
-jsonschema-specifications==2023.7.1
+jsonschema-specifications==2023.12.1
     # via
     #   -r requirements/requirements_test.txt
     #   jsonschema
-jwcrypto==1.5.0
-    # via
-    #   -r requirements/requirements_test.txt
-    #   datapunt-authorization-django
-kombu==5.3.1
+jwcrypto==1.5.3
+    # via -r requirements/requirements_test.txt
+kombu==5.3.5
     # via
     #   -r requirements/requirements_test.txt
     #   celery
-lxml==4.9.3
+lxml==5.1.0
     # via
     #   -r requirements/requirements_test.txt
     #   xmlunittest
-mako==1.2.4
+lxml-stubs==0.5.1
+    # via -r requirements/requirements_test.txt
+mako==1.3.2
     # via
     #   -r requirements/requirements_test.txt
     #   pytest-bdd
-markdown==3.4.4
+markdown==3.5.2
     # via
     #   -r requirements/requirements_test.txt
     #   django-markdownx
-markupsafe==2.1.3
+markupsafe==2.1.5
     # via
     #   -r requirements/requirements_test.txt
-    #   jinja2
     #   mako
 mccabe==0.7.0
     # via
     #   -r requirements/requirements_test.txt
     #   flake8
-mozilla-django-oidc==3.0.0
+mozilla-django-oidc==4.0.0
     # via -r requirements/requirements_test.txt
-msal==1.23.0
+msal==1.26.0
     # via
     #   -r requirements/requirements_test.txt
     #   azure-identity
     #   msal-extensions
-msal-extensions==1.0.0
+msal-extensions==1.1.0
     # via
     #   -r requirements/requirements_test.txt
     #   azure-identity
-networkx==3.1
+mypy==1.7.1
+    # via
+    #   -r requirements/requirements_test.txt
+    #   django-filter-stubs
+    #   django-stubs
+    #   djangorestframework-stubs
+mypy-baseline==0.6.1
     # via -r requirements/requirements_test.txt
-o365==2.0.27
+mypy-extensions==1.0.0
+    # via
+    #   -r requirements/requirements_test.txt
+    #   mypy
+networkx==3.2.1
+    # via
+    #   -r requirements/requirements_test.txt
+    #   networkx-stubs
+networkx-stubs==0.0.1
+    # via -r requirements/requirements_test.txt
+o365==2.0.33
     # via
     #   -r requirements/requirements_test.txt
     #   django-o365mail
@@ -387,11 +392,7 @@ oauthlib==3.2.2
     # via
     #   -r requirements/requirements_test.txt
     #   requests-oauthlib
-openapi-codec==1.3.2
-    # via
-    #   -r requirements/requirements_test.txt
-    #   django-rest-swagger
-opencensus==0.11.2
+opencensus==0.11.4
     # via
     #   -r requirements/requirements_test.txt
     #   opencensus-ext-azure
@@ -403,7 +404,7 @@ opencensus-context==0.1.3
     # via
     #   -r requirements/requirements_test.txt
     #   opencensus
-opencensus-ext-azure==1.1.9
+opencensus-ext-azure==1.1.13
     # via -r requirements/requirements_test.txt
 opencensus-ext-django==0.8.0
     # via -r requirements/requirements_test.txt
@@ -413,13 +414,14 @@ opencensus-ext-postgresql==0.1.3
     # via -r requirements/requirements_test.txt
 opencensus-ext-requests==0.8.0
     # via -r requirements/requirements_test.txt
-packaging==23.1
+packaging==23.2
     # via
     #   -r requirements/requirements_test.txt
+    #   msal-extensions
     #   pyproject-api
     #   pytest
     #   tox
-parse==1.19.1
+parse==1.20.1
     # via
     #   -r requirements/requirements_test.txt
     #   parse-type
@@ -428,48 +430,48 @@ parse-type==0.6.2
     # via
     #   -r requirements/requirements_test.txt
     #   pytest-bdd
-pillow==10.0.0
+pillow==10.2.0
     # via
     #   -r requirements/requirements_test.txt
     #   cairosvg
     #   django-markdownx
     #   weasyprint
-platformdirs==3.10.0
+platformdirs==4.2.0
     # via
     #   -r requirements/requirements_test.txt
     #   tox
     #   virtualenv
-pluggy==1.2.0
+pluggy==1.4.0
     # via
     #   -r requirements/requirements_test.txt
     #   pytest
     #   tox
-portalocker==2.7.0
+portalocker==2.8.2
     # via
     #   -r requirements/requirements_test.txt
     #   msal-extensions
-prometheus-client==0.17.1
+prometheus-client==0.19.0
     # via
     #   -r requirements/requirements_test.txt
     #   flower
-prompt-toolkit==3.0.39
+prompt-toolkit==3.0.43
     # via
     #   -r requirements/requirements_test.txt
     #   click-repl
-protobuf==4.24.0
+protobuf==4.25.2
     # via
     #   -r requirements/requirements_test.txt
     #   google-api-core
     #   googleapis-common-protos
-psutil==5.9.5
+psutil==5.9.8
     # via
     #   -r requirements/requirements_test.txt
     #   opencensus-ext-azure
-psycopg2-binary==2.9.7
+psycopg2-binary==2.9.9
     # via
     #   -r requirements/requirements_test.txt
     #   opencensus-ext-postgresql
-pyasn1==0.5.0
+pyasn1==0.5.1
     # via
     #   -r requirements/requirements_test.txt
     #   pyasn1-modules
@@ -478,7 +480,7 @@ pyasn1-modules==0.3.0
     # via
     #   -r requirements/requirements_test.txt
     #   google-auth
-pycodestyle==2.11.0
+pycodestyle==2.11.1
     # via
     #   -r requirements/requirements_test.txt
     #   autopep8
@@ -487,7 +489,7 @@ pycparser==2.21
     # via
     #   -r requirements/requirements_test.txt
     #   cffi
-pyflakes==3.1.0
+pyflakes==3.2.0
     # via
     #   -r requirements/requirements_test.txt
     #   flake8
@@ -495,21 +497,21 @@ pyjwt[crypto]==2.8.0
     # via
     #   -r requirements/requirements_test.txt
     #   msal
-pyopenssl==23.2.0
+pyopenssl==24.0.0
     # via
     #   -r requirements/requirements_test.txt
     #   josepy
-pypdf==3.15.1
+pypdf==4.0.1
     # via -r requirements/requirements_test.txt
 pyphen==0.14.0
     # via
     #   -r requirements/requirements_test.txt
     #   weasyprint
-pyproject-api==1.5.3
+pyproject-api==1.6.1
     # via
     #   -r requirements/requirements_test.txt
     #   tox
-pytest==7.4.0
+pytest==8.0.0
     # via
     #   -r requirements/requirements_test.txt
     #   pytest-bdd
@@ -518,17 +520,17 @@ pytest==7.4.0
     #   pytest-subtests
     #   pytest-timeout
     #   pytest-xdist
-pytest-bdd==6.1.1
+pytest-bdd==7.0.1
     # via -r requirements/requirements_test.txt
 pytest-cov==4.1.0
     # via -r requirements/requirements_test.txt
-pytest-django==4.5.2
+pytest-django==4.8.0
     # via -r requirements/requirements_test.txt
 pytest-subtests==0.11.0
     # via -r requirements/requirements_test.txt
-pytest-timeout==2.1.0
+pytest-timeout==2.2.0
     # via -r requirements/requirements_test.txt
-pytest-xdist==3.3.1
+pytest-xdist==3.5.0
     # via -r requirements/requirements_test.txt
 python-crontab==3.0.0
     # via
@@ -545,35 +547,27 @@ python-dateutil==2.8.2
     #   python-crontab
 python-magic==0.4.27
     # via -r requirements/requirements_test.txt
-pytz==2023.3
+pytz==2024.1
     # via
     #   -r requirements/requirements_test.txt
     #   django
-    #   django-timezone-field
     #   djangorestframework
     #   flower
-    #   o365
-pytz-deprecation-shim==0.1.0.post0
-    # via
-    #   -r requirements/requirements_test.txt
-    #   tzlocal
 pyyaml==6.0.1
     # via
     #   -r requirements/requirements_test.txt
     #   drf-spectacular
-    #   flex
-referencing==0.30.2
+referencing==0.33.0
     # via
     #   -r requirements/requirements_test.txt
     #   jsonschema
     #   jsonschema-specifications
+    #   types-jsonschema
 requests==2.31.0
     # via
     #   -r requirements/requirements_test.txt
     #   azure-core
-    #   coreapi
-    #   datapunt-authorization-django
-    #   flex
+    #   djangorestframework-stubs
     #   google-api-core
     #   mozilla-django-oidc
     #   msal
@@ -588,11 +582,7 @@ requests-oauthlib==1.3.1
     # via
     #   -r requirements/requirements_test.txt
     #   o365
-rfc3987==1.3.8
-    # via
-    #   -r requirements/requirements_test.txt
-    #   flex
-rpds-py==0.9.2
+rpds-py==0.17.1
     # via
     #   -r requirements/requirements_test.txt
     #   jsonschema
@@ -601,24 +591,18 @@ rsa==4.9
     # via
     #   -r requirements/requirements_test.txt
     #   google-auth
-simplejson==3.19.1
-    # via
-    #   -r requirements/requirements_test.txt
-    #   django-rest-swagger
 six==1.16.0
     # via
     #   -r requirements/requirements_test.txt
     #   azure-core
-    #   djangorestframework-csv
     #   elasticsearch-dsl
-    #   flex
-    #   google-auth
     #   html5lib
     #   isodate
+    #   opencensus
     #   parse-type
     #   python-dateutil
     #   requests-mock
-soupsieve==2.4.1
+soupsieve==2.5
     # via
     #   -r requirements/requirements_test.txt
     #   beautifulsoup4
@@ -628,15 +612,11 @@ sqlparse==0.4.4
     #   django
     #   django-debug-toolbar
     #   django-silk
-strict-rfc3339==0.7
-    # via
-    #   -r requirements/requirements_test.txt
-    #   flex
 stringcase==1.2.0
     # via
     #   -r requirements/requirements_test.txt
     #   o365
-textx==3.1.1
+textx==4.0.1
     # via -r requirements/requirements_test.txt
 tinycss2==1.2.1
     # via
@@ -644,62 +624,104 @@ tinycss2==1.2.1
     #   cairosvg
     #   cssselect2
     #   weasyprint
-tornado==6.3.3
+tornado==6.4
     # via
     #   -r requirements/requirements_test.txt
     #   flower
-tox==4.8.0
+tox==4.12.1
+    # via -r requirements/requirements_test.txt
+types-beautifulsoup4==4.12.0.20240106
     # via -r requirements/requirements_test.txt
 types-cryptography==3.3.23.2
     # via -r requirements/requirements_test.txt
-typing-extensions==4.7.1
+types-docutils==0.20.0.20240201
+    # via
+    #   -r requirements/requirements_test.txt
+    #   types-pygments
+types-factory-boy==0.4.1
+    # via -r requirements/requirements_test.txt
+types-html5lib==1.1.11.20240106
+    # via
+    #   -r requirements/requirements_test.txt
+    #   types-beautifulsoup4
+types-jsonschema==4.21.0.20240118
+    # via -r requirements/requirements_test.txt
+types-markdown==3.5.0.20240129
+    # via -r requirements/requirements_test.txt
+types-pillow==10.2.0.20240206
+    # via -r requirements/requirements_test.txt
+types-psycopg2==2.9.21.20240201
+    # via -r requirements/requirements_test.txt
+types-pygments==2.17.0.20240106
+    # via -r requirements/requirements_test.txt
+types-python-dateutil==2.8.19.20240106
+    # via -r requirements/requirements_test.txt
+types-pytz==2024.1.0.20240203
+    # via
+    #   -r requirements/requirements_test.txt
+    #   django-stubs
+types-pyyaml==6.0.12.12
+    # via
+    #   -r requirements/requirements_test.txt
+    #   django-stubs
+    #   djangorestframework-stubs
+types-requests==2.31.0.6
+    # via
+    #   -r requirements/requirements_test.txt
+    #   djangorestframework-stubs
+types-setuptools==69.0.0.20240125
+    # via
+    #   -r requirements/requirements_test.txt
+    #   types-pygments
+types-urllib3==1.26.25.14
+    # via
+    #   -r requirements/requirements_test.txt
+    #   types-requests
+typing-extensions==4.9.0
     # via
     #   -r requirements/requirements_test.txt
     #   azure-core
     #   azure-storage-blob
+    #   celery-types
+    #   django-filter-stubs
+    #   django-stubs
+    #   django-stubs-ext
+    #   djangorestframework-stubs
+    #   jwcrypto
+    #   mypy
     #   pytest-bdd
-tzdata==2023.3
+    #   types-factory-boy
+tzdata==2023.4
     # via
     #   -r requirements/requirements_test.txt
     #   celery
     #   django-celery-beat
-    #   pytz-deprecation-shim
-tzlocal==4.3.1
+tzlocal==5.2
     # via
     #   -r requirements/requirements_test.txt
     #   o365
-unicodecsv==0.14.1
-    # via
-    #   -r requirements/requirements_test.txt
-    #   djangorestframework-csv
 uritemplate==4.1.1
     # via
     #   -r requirements/requirements_test.txt
-    #   coreapi
     #   drf-spectacular
-urllib3==1.26.16
+urllib3==1.26.18
     # via
     #   -r requirements/requirements_test.txt
     #   elasticsearch
-    #   google-auth
     #   requests
-uwsgi==2.0.22
+uwsgi==2.0.23
     # via -r requirements/requirements_test.txt
-validate-email==1.3
-    # via
-    #   -r requirements/requirements_test.txt
-    #   flex
-vine==5.0.0
+vine==5.1.0
     # via
     #   -r requirements/requirements_test.txt
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.24.3
+virtualenv==20.25.0
     # via
     #   -r requirements/requirements_test.txt
     #   tox
-wcwidth==0.2.6
+wcwidth==0.2.13
     # via
     #   -r requirements/requirements_test.txt
     #   prompt-toolkit
@@ -711,10 +733,9 @@ webencodings==0.5.1
     #   cssselect2
     #   html5lib
     #   tinycss2
-wrapt==1.15.0
+wrapt==1.16.0
     # via
     #   -r requirements/requirements_test.txt
-    #   deprecated
     #   opencensus-ext-requests
 xmlunittest==0.5.0
     # via -r requirements/requirements_test.txt

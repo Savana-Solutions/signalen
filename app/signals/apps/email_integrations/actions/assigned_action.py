@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (C) 2022 - 2023 Gemeente Amsterdam, Delta10 B.V.
 import logging
-from email.utils import formataddr
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -23,7 +22,7 @@ class AssignedAction(AbstractSystemAction):
     This e-mail action is triggered when a signal is assigned to a
     user or the users' department
     """
-    _required_call_kwargs: list[str] = ('recipient', 'assigned_to')
+    _required_call_kwargs: list[str] = ['recipient', 'assigned_to']
 
     key: str = EmailTemplate.SIGNAL_ASSIGNED
     subject: str = (
@@ -32,6 +31,8 @@ class AssignedAction(AbstractSystemAction):
     )
 
     def get_additional_context(self, signal: Signal, dry_run: bool = False) -> dict:
+        assert self.kwargs is not None
+
         recipient = self.kwargs['recipient']
         assigned_to = self.kwargs['assigned_to']
 
@@ -46,9 +47,9 @@ class AssignedAction(AbstractSystemAction):
         """
         Get the recipient from keyword arguments
         """
-        return [
-            formataddr((self.kwargs['recipient'].get_full_name(), self.kwargs['recipient'].email))
-        ]
+        assert self.kwargs is not None
+
+        return [self.kwargs['recipient'].email]
 
     def render_mail_data(self, context: dict) -> tuple[str, str, str]:
         """

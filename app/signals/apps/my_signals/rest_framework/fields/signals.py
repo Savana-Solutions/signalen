@@ -2,8 +2,10 @@
 # Copyright (C) 2022 - 2023 Gemeente Amsterdam
 from collections import OrderedDict
 
+from datapunt_api.serializers import LinksField
 from drf_spectacular.utils import extend_schema_field
-from rest_framework.relations import HyperlinkedIdentityField
+from rest_framework.request import Request
+from rest_framework.reverse import reverse
 
 from signals.apps.signals.models import Signal
 
@@ -33,16 +35,18 @@ from signals.apps.signals.models import Signal
         },
     }
 })
-class MySignalListLinksField(HyperlinkedIdentityField):
+class MySignalListLinksField(LinksField):
     lookup_field = 'uuid'
 
     def to_representation(self, value: Signal) -> OrderedDict:
         request = self.context.get('request')
+        assert isinstance(request, Request)
         _format = self.context.get('format')
+        assert isinstance(_format, str) or _format is None
 
         return OrderedDict([
-            ('curies', dict(name='sia', href=self.reverse('signal-namespace', request=request, format=_format))),
-            ('self', dict(href=self.get_url(value, 'my_signals:my-signals-detail', request, _format))),
+            ('curies', {'name': 'sia', 'href': reverse('signal-namespace', request=request, format=_format)}),
+            ('self', {'href': self.get_url(value, 'my_signals:my-signals-detail', request, _format)}),
         ])
 
 
@@ -109,17 +113,19 @@ class MySignalListLinksField(HyperlinkedIdentityField):
         },
     }
 })
-class MySignalDetailLinksField(HyperlinkedIdentityField):
+class MySignalDetailLinksField(LinksField):
     lookup_field = 'uuid'
 
     def to_representation(self, value: Signal) -> OrderedDict:
         request = self.context.get('request')
+        assert isinstance(request, Request)
         _format = self.context.get('format')
+        assert isinstance(_format, str) or _format is None
 
         representation = OrderedDict([
-            ('curies', dict(name='sia', href=self.reverse('signal-namespace', request=request, format=_format))),
-            ('self', dict(href=self.get_url(value, 'my_signals:my-signals-detail', request, _format))),
-            ('archives', dict(href=self.get_url(value, 'my_signals:my-signals-history', request, _format))),
+            ('curies', {'name': 'sia', 'href': reverse('signal-namespace', request=request, format=_format)}),
+            ('self', {'href': self.get_url(value, 'my_signals:my-signals-detail', request, _format)}),
+            ('archives', {'href': self.get_url(value, 'my_signals:my-signals-history', request, _format)}),
         ])
 
         attachment_qs = value.attachments.filter(public=True)

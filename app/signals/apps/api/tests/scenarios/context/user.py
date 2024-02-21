@@ -1,14 +1,13 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (C) 2023 Gemeente Amsterdam
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import AbstractUser, Permission
 from pytest_bdd import given
 
 from signals.apps.users.factories import GroupFactory, UserFactory
-from signals.apps.users.models import User
 
 
 @given('there is a read write user', target_fixture='read_write_user')
-def given_read_write_user() -> User:
+def given_read_write_user() -> AbstractUser:
     user = UserFactory.create(
         first_name='SIA-READ-WRITE',
         last_name='User',
@@ -21,7 +20,8 @@ def given_read_write_user() -> User:
         'sia_signal_create_initial',
         'sia_signal_create_note',
         'sia_signal_change_status',
-        'sia_signal_change_category'
+        'sia_signal_change_category',
+        'sia_can_view_contact_details',
     ))
     sia_test_group = GroupFactory.create(name='Test Group')
     sia_test_group.permissions.add(*permissions)

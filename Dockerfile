@@ -41,7 +41,7 @@ RUN set -eux;  \
     ; \
     rm -rf /var/lib/apt/lists/*
 
-COPY app /app
+COPY app/requirements /app/requirements
 
 RUN set -eux; \
     pip install --no-cache -r /app/requirements/requirements.txt; \
@@ -51,6 +51,8 @@ RUN set -eux; \
     mkdir -p /app/static /app/media; \
     chown signals /app/static; \
     chown signals /app/media
+
+COPY app /app
 
 USER signals
 
@@ -69,5 +71,19 @@ USER root
 RUN set -eux; \
     pip install pip-tools; \
     pip-sync requirements/requirements.txt requirements/requirements_dev.txt
+
+USER signals
+
+
+##################################################
+#                    TEST                        #
+##################################################
+FROM prod AS test
+
+USER root
+
+RUN set -eux; \
+    pip install pip-tools; \
+    pip-sync requirements/requirements.txt requirements/requirements_test.txt
 
 USER signals
