@@ -276,10 +276,10 @@ class TestPDFSummaryService(TestCase):
             PDFSummaryService._get_logo_data('https://example.com/dit/is/een.png'), 'data:image/png;base64,PNG')
 
     def test_logo_data_from_static_file_file_exists(self):
-        # Use a known static file, the Amsterdan logo, for this test.
-        svg = PDFSummaryService._get_logo_data_from_static_file('api/logo-gemeente-amsterdam.svg')
-        self.assertEqual(type(svg), str)
-        self.assertGreater(len(svg), 0)
+        # Use a known static file, the Savana logo, for this test.
+        webp = PDFSummaryService._get_logo_data_from_static_file('api/logo-savana.webp')
+        self.assertEqual(type(webp), str)
+        self.assertGreater(len(webp), 0)
 
     def test_logo_data_from_static_file_suspicious_file(self):
         # Static files can only use relative paths
