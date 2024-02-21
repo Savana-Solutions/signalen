@@ -29,7 +29,6 @@ class PDFSummaryService:
         '.svg': 'data:image/svg+xml;base64,',
         '.jpg': 'data:image/jpeg;base64',
         '.png': 'data:image/png;base64,',
-        '.webp': 'data:image/webp;base64,',
     }
 
     @staticmethod

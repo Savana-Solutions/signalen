@@ -277,7 +277,7 @@ class TestPDFSummaryService(TestCase):
 
     def test_logo_data_from_static_file_file_exists(self):
         # Use a known static file, the Savana logo, for this test.
-        webp = PDFSummaryService._get_logo_data_from_static_file('api/logo-savana.webp')
+        webp = PDFSummaryService._get_logo_data_from_static_file('api/logo-savana.png')
         self.assertEqual(type(webp), str)
         self.assertGreater(len(webp), 0)
 
