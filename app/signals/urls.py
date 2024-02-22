@@ -18,17 +18,17 @@ urlpatterns = [
     path('status/', include('signals.apps.health.urls')),
 
     # URL pattern for robots.txt
-    path('robots.txt', serve, {
-        'path': 'robots.txt',
-        'document_root': settings.STATIC_ROOT,
-    }),
+    path(
+        "robots.txt",
+        TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
+    ),
 
-    # URL pattern for security.txt within the .well-known directory
-    path('.well-known/security.txt', serve, {
-        'path': 'security.txt',
-        'document_root': os.path.join(settings.STATIC_ROOT, '.well-known'),
-    }),
-
+    # URL pattern for security.txt
+    path(
+        "security.txt",
+        TemplateView.as_view(template_name="security.txt", content_type="text/plain"),
+    ),
+    
     # The Signals application is routed behind the HAproxy with `/signals/` as path.
     path('signals/', BaseSignalsAPIRootView.as_view()),
     path('signals/', include('signals.apps.api.urls')),
