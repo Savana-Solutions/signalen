@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (C) 2018 - 2023 Gemeente Amsterdam
+import os
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.generic import TemplateView
+from django.views.static import serve
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from signals.apps.api.generics.routers import BaseSignalsAPIRootView
@@ -14,6 +16,18 @@ admin.site.site_url = None
 urlpatterns = [
     # Used to determine API health when deploying
     path('status/', include('signals.apps.health.urls')),
+
+    # URL pattern for robots.txt
+    path('robots.txt', serve, {
+        'path': 'robots.txt',
+        'document_root': settings.STATIC_ROOT,
+    }),
+
+    # URL pattern for security.txt within the .well-known directory
+    path('.well-known/security.txt', serve, {
+        'path': 'security.txt',
+        'document_root': os.path.join(settings.STATIC_ROOT, '.well-known'),
+    }),
 
     # The Signals application is routed behind the HAproxy with `/signals/` as path.
     path('signals/', BaseSignalsAPIRootView.as_view()),
