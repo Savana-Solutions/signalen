@@ -1,0 +1,3 @@
+Contact: mailto:support@mycleancity.nl
+Expires: 2025-12-31T23:00:00.000Z
+Canonical: https://api.signalen-dev.mycleancity.nl/.well-known/security.txt

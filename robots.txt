@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /
+Sitemap: https://api.signalen-dev.mycleancity.nl/.well-known/security.txt
