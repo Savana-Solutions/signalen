@@ -18,17 +18,22 @@ def security_txt_view():
     canonical_url = os.getenv('SIGNALEN_CANONICAL_URL')
     content = f"""
     Contact: mailto:support@mycleancity.nl
-    Expires: 2025-12-31T23:00:00.000Z
+    Expires: 2024-12-31T23:00:00.000Z
     Canonical: {canonical_url}
     """
     return HttpResponse(content, content_type='text/plain')
 
+def robots_txt_view():
+    lines = [
+        "User-agent: *",
+        "Disallow: /",
+        # Allow or disallow paths as needed
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
+
 urlpatterns = [
     # Used to determine API health when deploying
     path('status/', include('signals.apps.health.urls')),
-
-    # Used for security purposes
-    path('security.txt', security_txt_view),
     
     # The Signals application is routed behind the HAproxy with `/signals/` as path.
     path('signals/', BaseSignalsAPIRootView.as_view()),
@@ -40,6 +45,13 @@ urlpatterns = [
 
     # SOAP stand-in endpoints
     path('signals/sigmax/', include('signals.apps.sigmax.urls')),
+
+    # Add the path for security.txt
+    re_path(r'^.well-known/security\.txt$', security_txt_view, name='security_txt'),
+
+    # Add the path for robots.txt
+    re_path(r'^robots\.txt$', robots_txt_view, name='robots_txt'),
+
 ]
 
 if settings.DEBUG:
