@@ -47,10 +47,10 @@ urlpatterns = [
     path('signals/sigmax/', include('signals.apps.sigmax.urls')),
 
     # Add the path for security.txt
-    re_path(r'^.well-known/security\.txt$', security_txt_view, name='security_txt'),
+    re_path(r'^.well-known/security.txt$', security_txt_view, name='security_txt'),
 
     # Add the path for robots.txt
-    re_path(r'^robots\.txt$', robots_txt_view, name='robots_txt'),
+    re_path(r'^robots.txt$', robots_txt_view, name='robots_txt'),
 
 ]
 
