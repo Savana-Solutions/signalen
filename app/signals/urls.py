@@ -16,11 +16,12 @@ admin.site.site_url = None
 # Define the view at the project level
 def security_txt_view(request):
     canonical_url = os.getenv('SIGNALEN_CANONICAL_URL')
-    content = f"""
-    Contact: mailto:support@mycleancity.nl
-    Expires: 2024-12-31T23:00:00.000Z
-    Canonical: {canonical_url}
-    """
+    # Use string concatenation or formatting to control whitespace
+    content = "\n".join([
+        "Contact: mailto:support@mycleancity.nl",
+        "Expires: 2024-12-31T23:00:00.000Z",
+        f"Canonical: {canonical_url}",
+    ])
     return HttpResponse(content, content_type='text/plain')
 
 def robots_txt_view(request):
@@ -35,7 +36,7 @@ urlpatterns = [
     # Used to determine API health when deploying
     path('status/', include('signals.apps.health.urls')),
     
-    # The Signals application is routed behind the HAproxy with `/signals/` as path.
+    # The Signals application is routed with `/signals/` as path.
     path('signals/', BaseSignalsAPIRootView.as_view()),
     path('signals/', include('signals.apps.api.urls')),
 
