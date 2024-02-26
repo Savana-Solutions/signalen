@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (C) 2018 - 2023 Gemeente Amsterdam
 import os
+from django.http import HttpResponse
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path, re_path
@@ -12,20 +13,33 @@ from signals.apps.api.generics.routers import BaseSignalsAPIRootView
 # Remove "view website" button in the Django admin
 admin.site.site_url = None
 
+# Define the view at the project level
+def security_txt_view():
+    canonical_url = os.getenv('SIGNALEN_CANONICAL_URL')
+    content = f"""
+    Contact: mailto:support@mycleancity.nl
+    Expires: 2025-12-31T23:00:00.000Z
+    Canonical: {canonical_url}
+    """
+    return HttpResponse(content, content_type='text/plain')
+
 urlpatterns = [
     # Used to determine API health when deploying
     path('status/', include('signals.apps.health.urls')),
+
+    # Used for security purposes
+    path('security.txt', security_txt_view),
     
     # The Signals application is routed behind the HAproxy with `/signals/` as path.
-    path('', BaseSignalsAPIRootView.as_view()),
-    path('', include('signals.apps.api.urls')),
+    path('signals/', BaseSignalsAPIRootView.as_view()),
+    path('signals/', include('signals.apps.api.urls')),
 
     # The Django admin
-    path('admin/', admin.site.urls),
-    re_path(r'^markdownx/', include('markdownx.urls')),
+    path('signals/admin/', admin.site.urls),
+    re_path(r'^signals/markdownx/', include('markdownx.urls')),
 
     # SOAP stand-in endpoints
-    path('sigmax/', include('signals.apps.sigmax.urls')),
+    path('signals/sigmax/', include('signals.apps.sigmax.urls')),
 ]
 
 if settings.DEBUG:
@@ -36,8 +50,8 @@ if settings.DEBUG:
 
 if settings.OIDC_RP_CLIENT_ID:
     urlpatterns += [
-        path('oidc/login_failure/', TemplateView.as_view(template_name='admin/oidc/login_failure.html')),
-        path('oidc/', include('mozilla_django_oidc.urls')),
+        path('signals/oidc/login_failure/', TemplateView.as_view(template_name='admin/oidc/login_failure.html')),
+        path('signals/oidc/', include('mozilla_django_oidc.urls')),
     ]
 
 if settings.SILK_ENABLED:
@@ -45,6 +59,6 @@ if settings.SILK_ENABLED:
 
 # DRF Spectacular
 urlpatterns += [
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('signals/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('signals/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]
