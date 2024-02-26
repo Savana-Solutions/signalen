@@ -14,7 +14,7 @@ from signals.apps.api.generics.routers import BaseSignalsAPIRootView
 admin.site.site_url = None
 
 # Define the view at the project level
-def security_txt_view():
+def security_txt_view(request):
     canonical_url = os.getenv('SIGNALEN_CANONICAL_URL')
     content = f"""
     Contact: mailto:support@mycleancity.nl
@@ -23,7 +23,7 @@ def security_txt_view():
     """
     return HttpResponse(content, content_type='text/plain')
 
-def robots_txt_view():
+def robots_txt_view(request):
     lines = [
         "User-agent: *",
         "Disallow: /",
