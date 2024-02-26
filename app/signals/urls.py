@@ -17,11 +17,12 @@ admin.site.site_url = None
 def security_txt_view(request):
     canonical_url = os.getenv('SIGNALEN_CANONICAL_URL')
     # Use string concatenation or formatting to control whitespace
-    content = "\n".join([
+    content_lines = [
         "Contact: mailto:support@mycleancity.nl",
         "Expires: 2024-12-31T23:00:00.000Z",
         f"Canonical: {canonical_url}",
-    ])
+    ]
+    content = "\n".join(content_lines) + "\n"  # Ensure the file ends with a newline character
     return HttpResponse(content, content_type='text/plain')
 
 def robots_txt_view(request):
