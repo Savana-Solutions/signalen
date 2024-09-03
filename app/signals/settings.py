@@ -37,6 +37,8 @@ CORS_EXPOSE_HEADERS: list[str] = [
     'X-Total-Count',  # Added for the geography endpoints
 ]
 
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+
 ORGANIZATION_NAME: str = os.getenv('ORGANIZATION_NAME', 'Gemeente Amsterdam')
 
 # The prefix of the display value of the signal ID. Defaults to 'SIG-'. This wil generate an id like SIG-123456 when
