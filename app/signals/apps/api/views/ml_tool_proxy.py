@@ -31,26 +31,33 @@ class LegacyMlPredictCategoryView(APIView):
         return self._default_category_url
 
     def post(self, request, *args, **kwargs):
-        # Default empty response
-        data = {'hoofdrubriek': [], 'subrubriek': []}
-
         try:
             response = self.ml_tool_client.predict(text=request.data['text'])
         except DjangoCoreValidationError as e:
             raise ValidationError(e.message, e.code)
-        else:
-            if response.status_code == 200:
-                response_data = response.json()
 
-                for key in data.keys():
+        if response.status_code == 200:
+            response_data = response.json()
+            data = {'hoofdrubriek': [], 'subrubriek': []}
+
+            for key in ['hoofdrubriek', 'subrubriek']:
+                category_urls = []
+                probabilities = []
+
+                for url, probability in zip(response_data[key][0], response_data[key][1]):
                     try:
-                        category = Category.objects.get_from_url(url=response_data[key][0][0])
+                        category = Category.objects.get_from_url(url=url)
+                        category_url = category.get_absolute_url(request=request)
                     except Category.DoesNotExist:
                         category_url = self.default_category_url
-                    else:
-                        category_url = category.get_absolute_url(request=request)
 
-                    data[key].append([category_url])
-                    data[key].append([response_data[key][1][0]])
+                    category_urls.append(category_url)
+                    probabilities.append(probability)
 
-        return Response(data)
+                data[key].append(category_urls)
+                data[key].append(probabilities)
+
+            return Response(data)
+        else:
+            # Handle non-200 responses
+            return Response({'error': 'ML tool prediction failed'}, status=response.status_code)
