@@ -2,6 +2,7 @@
 # Copyright (C) 2019 - 2023 Gemeente Amsterdam
 from django.core.exceptions import ValidationError as DjangoCoreValidationError
 from drf_spectacular.utils import extend_schema
+from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,6 +10,7 @@ from rest_framework.views import APIView
 from signals.apps.api.ml_tool.client import MLToolClient
 from signals.apps.signals.models import Category
 
+import json
 
 @extend_schema(exclude=True)
 class LegacyMlPredictCategoryView(APIView):
@@ -32,17 +34,17 @@ class LegacyMlPredictCategoryView(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            # Ensure the content type is application/json
-            request.content_type = 'application/json'
-            
             # Print request data for debugging
             print(f"Request data: {request.data}")
             print(f"Request headers: {request.headers}")
 
             # Ensure text is properly formatted in JSON
-            data = json.dumps({'text': request.data.get('text', '')})
-            
-            response = self.ml_tool_client.predict(text=data)
+            text = request.data.get('text', '')
+            if not text:
+                return Response({'error': 'Text is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Use the MLToolClient to make the prediction
+            response = self.ml_tool_client.predict(text=text)
             
             # Print response data for debugging
             print(f"ML tool response status: {response.status_code}")
