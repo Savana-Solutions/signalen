@@ -61,38 +61,41 @@ categories = {
 
 def forward_categories(apps, schema_editor):
     Category = apps.get_model('signals', 'Category')
-    Signal = apps.get_model('signals', 'Signal')
-    
-    # Hard delete all existing categories and signals
-    Signal.objects.all().delete()
-    Category.objects.all().delete()
     
     for main_category, sub_categories in categories.items():
-        parent = Category.objects.create(
-            name=main_category,
+        parent, created = Category.objects.get_or_create(
             slug=slugify(main_category),
-            handling='REST',
-            is_active=True,
-            is_public=True
+            defaults={
+                'name': main_category,
+                'handling': 'REST',
+                'is_active': True,
+                'is_public': True
+            }
         )
+        if not created:
+            # If the category already exists, ensure it's public
+            parent.is_public = True
+            parent.save()
         
         for sub_category in sub_categories:
-            Category.objects.create(
-                name=sub_category,
+            sub_cat, created = Category.objects.get_or_create(
                 slug=slugify(sub_category),
                 parent=parent,
-                handling='REST',
-                is_active=True,
-                is_public=True
+                defaults={
+                    'name': sub_category,
+                    'handling': 'REST',
+                    'is_active': True,
+                    'is_public': True
+                }
             )
+            if not created:
+                # If the subcategory already exists, ensure it's public
+                sub_cat.is_public = True
+                sub_cat.save()
 
 def reverse_categories(apps, schema_editor):
-    Category = apps.get_model('signals', 'Category')
-    Signal = apps.get_model('signals', 'Signal')
-    
-    # Delete all categories and signals
-    Signal.objects.all().delete()
-    Category.objects.all().delete()
+    # This function now does nothing, as we don't want to remove categories
+    pass
 
 class Migration(migrations.Migration):
 
