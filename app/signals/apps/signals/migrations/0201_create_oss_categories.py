@@ -70,7 +70,8 @@ def forward_categories(apps, schema_editor):
             name=main_category,
             slug=slugify(main_category),
             handling='REST',
-            is_active=True
+            is_active=True,
+            is_public_accessible=True
         )
         
         for sub_category in sub_categories:
@@ -79,7 +80,8 @@ def forward_categories(apps, schema_editor):
                 slug=slugify(sub_category),
                 parent=parent,
                 handling='REST',
-                is_active=True
+                is_active=True,
+                is_public_accessible=True
             )
 
 def reverse_categories(apps, schema_editor):
