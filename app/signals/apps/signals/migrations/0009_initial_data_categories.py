@@ -147,4 +147,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(create_initial_data_departments),
+        migrations.RunPython(create_initial_data_categories),
     ]
