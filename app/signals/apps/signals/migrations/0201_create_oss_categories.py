@@ -62,13 +62,25 @@ categories = {
 def forward_categories(apps, schema_editor):
     Category = apps.get_model('signals', 'Category')
     
-    # Mark all existing categories as old and set them to inactive and not public accessible
+    # First, rename all existing categories and update their slugs
     for category in Category.objects.all():
-        category.name = f"OLD_{category.name}"
+        old_name = f"OLD_{category.name}"
+        old_slug = f"old-{category.slug}"
+        
+        # Check if the new name/slug already exists, and adjust if necessary
+        counter = 1
+        while Category.objects.filter(name=old_name).exists() or Category.objects.filter(slug=old_slug).exists():
+            old_name = f"OLD_{category.name}_{counter}"
+            old_slug = f"old-{category.slug}-{counter}"
+            counter += 1
+        
+        category.name = old_name
+        category.slug = old_slug
         category.is_active = False
         category.is_public_accessible = False
         category.save()
     
+    # Now create or update the new categories
     for main_category, sub_categories in categories.items():
         parent, created = Category.objects.get_or_create(
             slug=slugify(main_category),
@@ -88,9 +100,9 @@ def forward_categories(apps, schema_editor):
         for sub_category in sub_categories:
             sub_cat, created = Category.objects.get_or_create(
                 slug=slugify(sub_category),
-                parent=parent,
                 defaults={
                     'name': sub_category,
+                    'parent': parent,
                     'handling': 'REST',
                     'is_active': True,
                     'is_public_accessible': True
@@ -98,6 +110,7 @@ def forward_categories(apps, schema_editor):
             )
             if not created:
                 sub_cat.name = sub_category
+                sub_cat.parent = parent
                 sub_cat.is_active = True
                 sub_cat.is_public_accessible = True
                 sub_cat.save()
@@ -105,15 +118,16 @@ def forward_categories(apps, schema_editor):
 def reverse_categories(apps, schema_editor):
     Category = apps.get_model('signals', 'Category')
     
-    # Revert new categories
+    # Deactivate new categories
     for main_category, sub_categories in categories.items():
         Category.objects.filter(slug=slugify(main_category)).update(is_active=False, is_public_accessible=False)
         for sub_category in sub_categories:
             Category.objects.filter(slug=slugify(sub_category)).update(is_active=False, is_public_accessible=False)
     
-    # Reactivate old categories and remove the "OLD_" prefix
+    # Reactivate and rename old categories
     for category in Category.objects.filter(name__startswith="OLD_"):
         category.name = category.name[4:]  # Remove "OLD_" prefix
+        category.slug = category.slug[4:]  # Remove "old-" prefix
         category.is_active = True
         category.is_public_accessible = True
         category.save()
