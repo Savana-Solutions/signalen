@@ -38,7 +38,7 @@ def _SIG_2192(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0103_category_changes_sig-2456'),
+        ('signals', '0102_auto_20200323_1513'),
     ]
 
     operations = [

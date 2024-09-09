@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0105_category_changes_sig-2555'),
+        ('signals', '0104_auto_20200410_1001'),
     ]
 
     operations = [

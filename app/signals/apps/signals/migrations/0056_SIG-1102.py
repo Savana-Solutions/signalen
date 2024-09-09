@@ -29,7 +29,7 @@ def migrate_on_hold(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0055_extra_handling_messages'),
+        ('signals', '0049_auto_20190510_1453'),
     ]
 
     operations = [

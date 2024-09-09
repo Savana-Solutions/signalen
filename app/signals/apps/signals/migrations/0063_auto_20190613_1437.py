@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0062_rename_to_straatverlichting'),
+        ('signals', '0061_auto_20190607_1423'),
     ]
 
     operations = [

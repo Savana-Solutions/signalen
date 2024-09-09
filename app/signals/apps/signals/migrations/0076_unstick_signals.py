@@ -41,7 +41,7 @@ def _set_state_geannuleerd(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0075_more_category_changes'),
+        ('signals', '0072_auto_20190912_1020'),
     ]
 
     operations = [

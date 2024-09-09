@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0080_set_slo'),
+        ('signals', '0077_fix_split_signals_problem'),
     ]
 
     operations = [

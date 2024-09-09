@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0058_service_promise_for_ovl'),
+        ('signals', '0056_SIG-1102'),
     ]
 
     operations = [

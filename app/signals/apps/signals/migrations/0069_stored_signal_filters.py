@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0068_deparment_change'),
+        ('signals', '0067_unstick_signals'),
     ]
 
     operations = [

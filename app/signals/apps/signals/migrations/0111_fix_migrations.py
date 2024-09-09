@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0110_SIG-2715_category_changes'),
+        ('signals', '0109_SIG-2600_directing_departments'),
     ]
 
     operations = [
