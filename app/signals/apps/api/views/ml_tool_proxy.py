@@ -11,6 +11,9 @@ from signals.apps.api.ml_tool.client import MLToolClient
 from signals.apps.signals.models import Category
 
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 @extend_schema(exclude=True)
 class LegacyMlPredictCategoryView(APIView):
@@ -34,26 +37,22 @@ class LegacyMlPredictCategoryView(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            # Print request data for debugging
-            print(f"Request data: {request.data}")
-            print(f"Request headers: {request.headers}")
+            logger.info(f"Request data: {request.data}")
+            logger.info(f"Request headers: {request.headers}")
 
-            # Ensure text is properly formatted in JSON
             text = request.data.get('text', '')
             if not text:
                 return Response({'error': 'Text is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Use the MLToolClient to make the prediction
             response = self.ml_tool_client.predict(text=text)
             
-            # Print response data for debugging
-            print(f"ML tool response status: {response.status_code}")
-            print(f"ML tool response content: {response.content}")
+            logger.info(f"ML tool response status: {response.status_code}")
+            logger.info(f"ML tool response content: {response.content}")
 
         except DjangoCoreValidationError as e:
             raise ValidationError(e.message, e.code)
         except Exception as e:
-            print(f"Unexpected error: {str(e)}")
+            logger.error(f"Unexpected error: {str(e)}")
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if response.status_code == 200:
@@ -70,6 +69,7 @@ class LegacyMlPredictCategoryView(APIView):
                             category = Category.objects.get_from_url(url=url)
                             category_url = category.get_absolute_url(request=request)
                         except Category.DoesNotExist:
+                            logger.warning(f"Category not found for URL: {url}")
                             category_url = self.default_category_url
 
                         category_urls.append(category_url)
@@ -78,9 +78,25 @@ class LegacyMlPredictCategoryView(APIView):
                     data[key].append(category_urls)
                     data[key].append(probabilities)
 
+                # Ensure the protocol is consistent
+                data = self.normalize_urls(data, request)
+
                 return Response(data)
             except json.JSONDecodeError:
+                logger.error("Invalid JSON in ML tool response")
                 return Response({'error': 'Invalid JSON in ML tool response'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            # Handle non-200 responses
+            logger.error(f"ML tool prediction failed: {response.content}")
             return Response({'error': f'ML tool prediction failed: {response.content}'}, status=response.status_code)
+
+    def normalize_urls(self, data, request):
+        scheme = 'https' if request.is_secure() else 'http'
+        host = request.get_host()
+
+        for key in ['hoofdrubriek', 'subrubriek']:
+            data[key][0] = [
+                f"{scheme}://{host}{url[url.index('/signals'):] if '/signals' in url else url}"
+                for url in data[key][0]
+            ]
+
+        return data
