@@ -35,7 +35,7 @@ def _set_state_afgehandeld_extern(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0096_refactor_anonymize_reporter'),
+        ('signals', '0097_fix_parent_prullenbak-vol'),
     ]
 
     operations = [

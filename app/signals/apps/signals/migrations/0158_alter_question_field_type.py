@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0156_alter_attachment_options'),
+        ('signals', '0157_new_subcategories'),
     ]
 
     operations = [

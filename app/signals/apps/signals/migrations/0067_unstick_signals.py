@@ -44,7 +44,7 @@ def _set_state_send_failed(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0065_auto_20190618_0839'),
+        ('signals', '0066_fix_datamodel_extra_properties'),
     ]
 
     operations = [

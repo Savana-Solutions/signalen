@@ -10,7 +10,7 @@ from django_extensions.db.fields import AutoSlugField  # type: ignore
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0044_auto_20190418_1143'),
+        ('signals', '0045_category_changes'),
     ]
 
     operations = [

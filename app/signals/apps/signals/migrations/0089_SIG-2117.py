@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0086_unstick_signals'),
+        ('signals', '0088_SIG-2008'),
     ]
 
     operations = [

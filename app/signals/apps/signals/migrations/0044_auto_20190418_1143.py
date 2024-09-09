@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signals', '0042_auto_new_history_db_view'),
+        ('signals', '0043_merge_20190404_0927'),
     ]
 
     operations = [
