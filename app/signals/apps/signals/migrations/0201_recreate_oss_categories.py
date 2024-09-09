@@ -69,12 +69,12 @@ def forward_categories(apps, schema_editor):
                 'name': main_category,
                 'handling': 'REST',
                 'is_active': True,
-                'is_public': True
+                'is_public_accessible': True
             }
         )
         if not created:
             # If the category already exists, ensure it's public
-            parent.is_public = True
+            parent.is_public_accessible = True
             parent.save()
         
         for sub_category in sub_categories:
@@ -85,12 +85,12 @@ def forward_categories(apps, schema_editor):
                     'name': sub_category,
                     'handling': 'REST',
                     'is_active': True,
-                    'is_public': True
+                    'is_public_accessible': True
                 }
             )
             if not created:
                 # If the subcategory already exists, ensure it's public
-                sub_cat.is_public = True
+                sub_cat.is_public_accessible = True
                 sub_cat.save()
 
 def reverse_categories(apps, schema_editor):
