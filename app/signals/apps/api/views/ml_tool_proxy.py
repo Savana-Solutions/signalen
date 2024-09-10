@@ -66,6 +66,8 @@ class LegacyMlPredictCategoryView(APIView):
 
                     for url, probability in zip(response_data[key][0], response_data[key][1]):
                         try:
+                            # Remove trailing underscore if present
+                            url = url.rstrip('_')
                             category = Category.objects.get_from_url(url=url)
                             category_url = category.get_absolute_url(request=request)
                         except Category.DoesNotExist:
