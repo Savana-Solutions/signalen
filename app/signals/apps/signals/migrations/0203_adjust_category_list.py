@@ -119,9 +119,42 @@ categories = {
 def forward_func(apps, schema_editor):
     Category = apps.get_model("signals", "Category")
     Signal = apps.get_model("signals", "Signal")
+    CategoryAssignment = apps.get_model("signals", "CategoryAssignment")
+    StatusMessageTemplate = apps.get_model("signals", "StatusMessageTemplate")
 
-    # Step 1: Rename existing categories
-    for category in Category.objects.all():
+    # Step 1: Ensure "Overig -> Overig" category exists
+    overig_parent, _ = Category.objects.get_or_create(
+        slug="overig",
+        defaults={
+            "name": "Overig",
+            "handling": "REST",
+            "is_active": True,
+            "is_public_accessible": True,
+        },
+    )
+    overig_category, _ = Category.objects.get_or_create(
+        slug="overig",
+        parent=overig_parent,
+        defaults={
+            "name": "overig",
+            "handling": "REST",
+            "is_active": True,
+            "is_public_accessible": True,
+        },
+    )
+
+    # Step 2: Assign all signals to "Overig -> Overig" category
+    for signal in Signal.objects.all():
+        CategoryAssignment.objects.get_or_create(
+            signal=signal,
+            defaults={
+                "category": overig_category,
+                "created_by": "migration_script",
+            }
+        )
+
+    # Step 3: Rename existing categories (except Overig -> Overig)
+    for category in Category.objects.exclude(id__in=[overig_parent.id, overig_category.id]):
         old_name = f"OLD_{category.name}"
         old_slug = f"old-{category.slug}"
         category.name = old_name
@@ -129,35 +162,37 @@ def forward_func(apps, schema_editor):
         category.is_active = False
         category.save()
 
-    # Step 2: Create new categories
+    # Step 4: Create new categories
     for main_category, sub_categories in categories.items():
-        parent, _ = Category.objects.get_or_create(
-            slug=slugify(main_category),
-            defaults={
-                "name": main_category,
-                "handling": "REST",
-                "is_active": True,
-                "is_public_accessible": True,
-            },
-        )
-
-        for sub_category in sub_categories:
-            Category.objects.get_or_create(
-                slug=slugify(sub_category),
+        if main_category != "Overig":
+            parent, _ = Category.objects.get_or_create(
+                slug=slugify(main_category),
                 defaults={
-                    "name": sub_category,
-                    "parent": parent,
+                    "name": main_category,
                     "handling": "REST",
                     "is_active": True,
                     "is_public_accessible": True,
                 },
             )
 
-    # Step 3: Reassign signals to "Overig overig" and remove old categories
-    overig_category = Category.objects.get(slug="overig", parent__slug="overig")
-    Signal.objects.filter(category__name__startswith="OLD_").update(
-        category=overig_category
-    )
+            for sub_category in sub_categories:
+                if sub_category != "overig":
+                    Category.objects.get_or_create(
+                        slug=slugify(sub_category),
+                        defaults={
+                            "name": sub_category,
+                            "parent": parent,
+                            "handling": "REST",
+                            "is_active": True,
+                            "is_public_accessible": True,
+                        },
+                    )
+
+    # Step 5: Update StatusMessageTemplate references
+    StatusMessageTemplate.objects.filter(category__name__startswith="OLD_").update(category=overig_category)
+
+    # Step 6: Remove parent references from old categories and delete them
+    Category.objects.filter(name__startswith="OLD_").update(parent=None)
     Category.objects.filter(name__startswith="OLD_").delete()
 
 
@@ -171,7 +206,7 @@ class Migration(migrations.Migration):
     dependencies = [
         (
             "signals",
-            "0202_create_missing_categories",
+            "0202_create_missing_cats",
         ),  # Make sure this matches your previous migration
     ]
 
