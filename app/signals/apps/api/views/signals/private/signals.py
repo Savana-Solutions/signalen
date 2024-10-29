@@ -258,7 +258,7 @@ class PrivateSignalViewSet(DetailSerializerMixin, CreateModelMixin, UpdateModelM
                     properties=JSONObject(
                         id='id',
                         created_at='created_at',
-                        status='status'
+                        status='status__state',
                     ),
                 )
             ).filter_for_user(
