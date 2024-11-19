@@ -58,38 +58,42 @@ class LegacyMlPredictCategoryView(APIView):
         if response.status_code == 200:
             try:
                 response_data = response.json()
+                logger.info(f"Parsed response data: {response_data}")
+                
                 data = {'hoofdrubriek': [], 'subrubriek': []}
 
                 for key in ['hoofdrubriek', 'subrubriek']:
                     category_urls = []
                     probabilities = []
 
-                    for url, probability in zip(response_data[key][0], response_data[key][1]):
-                        try:
-                            # Remove trailing underscore if present
-                            url = url.rstrip('_')
-                            category = Category.objects.get_from_url(url=url)
-                            category_url = category.get_absolute_url(request=request)
-                        except Category.DoesNotExist:
-                            logger.warning(f"Category not found for URL: {url}")
-                            category_url = self.default_category_url
+                    # Log the current category being processed
+                    logger.info(f"Processing {key}")
+                    logger.info(f"URLs for {key}: {response_data[key][0]}")
+                    logger.info(f"Probabilities for {key}: {response_data[key][1]}")
 
-                        category_urls.append(category_url)
-                        probabilities.append(probability)
+                    # Find the index of the highest probability
+                    max_prob_index = response_data[key][1].index(max(response_data[key][1]))
+                    logger.info(f"Highest probability index for {key}: {max_prob_index}")
+                    logger.info(f"Selected URL for {key}: {response_data[key][0][max_prob_index]}")
+
+                    # Use the original URLs and probabilities
+                    category_urls = response_data[key][0]
+                    probabilities = response_data[key][1]
 
                     data[key].append(category_urls)
                     data[key].append(probabilities)
 
-                # Ensure the protocol is consistent
-                data = self.normalize_urls(data, request)
-
+                logger.info(f"Final response data: {data}")
                 return Response(data)
+
             except json.JSONDecodeError:
                 logger.error("Invalid JSON in ML tool response")
-                return Response({'error': 'Invalid JSON in ML tool response'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({'error': 'Invalid JSON in ML tool response'}, 
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             logger.error(f"ML tool prediction failed: {response.content}")
-            return Response({'error': f'ML tool prediction failed: {response.content}'}, status=response.status_code)
+            return Response({'error': f'ML tool prediction failed: {response.content}'}, 
+                        status=response.status_code)
 
     def normalize_urls(self, data, request):
         scheme = 'https' if request.is_secure() else 'http'

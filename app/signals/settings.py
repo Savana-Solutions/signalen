@@ -229,7 +229,7 @@ SECURE_REDIRECT_EXEMPT: list[str] = [r'^status/', ]  # Allow health checks on lo
 SECURE_PROXY_SSL_HEADER: tuple[str, str] = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE: bool = os.getenv('SESSION_COOKIE_SECURE', True) in TRUE_VALUES
 CSRF_COOKIE_SECURE: bool = os.getenv('CSRF_COOKIE_SECURE', True) in TRUE_VALUES
-
+USE_X_FORWARDED_HOST = True
 
 # Internationalization
 LANGUAGE_CODE: str = 'nl-NL'

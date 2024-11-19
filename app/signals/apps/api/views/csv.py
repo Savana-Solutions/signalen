@@ -3,8 +3,14 @@
 from glob import glob
 from os import path
 
+import logging
+import zipfile
+import io
+import os
+from datetime import datetime
+
 from django.conf import settings
-from django.http import FileResponse
+from django.http import HttpResponse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import NotFound
@@ -13,6 +19,8 @@ from rest_framework.viewsets import ViewSet
 
 from signals.apps.api.generics.permissions import SIAPermissions, SIAReportPermissions
 from signals.auth.backend import JWTAuthBackend
+
+logger = logging.getLogger(__name__)
 
 
 class PassthroughRenderer(BaseRenderer):
@@ -35,27 +43,34 @@ class PrivateCsvViewSet(ViewSet):
     authentication_classes = (JWTAuthBackend, )
     permission_classes = (SIAPermissions & SIAReportPermissions, )
 
-    def list(self, detail=True, renderer_classes=(PassthroughRenderer,)):
+    def list(self, request):
         if not settings.DWH_MEDIA_ROOT:
             raise NotFound(detail='Unconfigured Csv location', code=status.HTTP_404_NOT_FOUND)
 
         now = timezone.now()
         src_folder = f'{settings.DWH_MEDIA_ROOT}/{now:%Y}/{now:%m}/{now:%d}'
 
-        if not path.exists(src_folder):
+        if not os.path.exists(src_folder):
             raise NotFound(detail='Incorrect Csv folder', code=status.HTTP_404_NOT_FOUND)
 
-        list_of_files = glob(f'{src_folder}/*.zip', recursive=True)
-        latest_file = None if not list_of_files else max(list_of_files, key=path.getctime)
+        csv_files = [f for f in os.listdir(src_folder) if f.endswith('.csv')]
 
-        if not latest_file:
+        if not csv_files:
             raise NotFound(detail='No Csv files in folder', code=status.HTTP_404_NOT_FOUND)
 
-        return FileResponse(
-            open(latest_file, 'rb'),
-            as_attachment=True,
-            filename=self._path_leaf(latest_file)
-        )
+        # Create a ZIP file in memory
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for csv_filename in csv_files:
+                file_path = os.path.join(src_folder, csv_filename)
+                zip_file.write(file_path, csv_filename)
+
+        # Prepare the response
+        zip_buffer.seek(0)
+        response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename=csv_files_{now:%Y%m%d}.zip'
+
+        return response
 
     def _path_leaf(self, file_name):
         head, tail = path.split(file_name)
