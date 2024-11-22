@@ -112,34 +112,49 @@ class PDFSummaryService:
         """
         Get context data for map in PDF.
         """
+        logger.info(f'Getting map data for signal {signal.id}')
         img_data_uri = None
         bbox = None
 
-        if settings.DEFAULT_MAP_TILE_SERVER:
-            # This flow is meant for WMTS services.
-            map_img = WMTSMapGenerator.make_map(
-                url_template=settings.DEFAULT_MAP_TILE_SERVER,
-                lat=signal.location.geometrie.coords[1],
-                lon=signal.location.geometrie.coords[0],
-                zoom=17,
-                img_size=[680, 250]
-            )
-            # transform image to png -> bytes -> data uri
-            png_array = io.BytesIO()
-            map_img.save(png_array, format='png')
-            encoded = base64.b64encode(png_array.getvalue()).decode()
-            img_data_uri = 'data:image/png;base64,{}'.format(encoded)
-        else:
-            # This flow is meant for WMS services that serve data in EPSG:28992
-            # (Rijksdriehoek) coordinate system (continental Netherlands).
-            rd_coordinates = signal.location.get_rd_coordinates()
-            bbox = '{},{},{},{}'.format(
-                rd_coordinates.x - 340.00,
-                rd_coordinates.y - 125.00,
-                rd_coordinates.x + 340.00,
-                rd_coordinates.y + 125.00,
-            )
-        return bbox, img_data_uri
+        try:
+            if settings.DEFAULT_MAP_TILE_SERVER:
+                logger.info(f'Using WMTS service with tile server: {settings.DEFAULT_MAP_TILE_SERVER}')
+                
+                # Get RD coordinates
+                rd_coordinates = signal.location.get_rd_coordinates()
+                logger.info(f'Using RD coordinates: x={rd_coordinates.x}, y={rd_coordinates.y}')
+
+                map_img = WMTSMapGenerator.make_map(
+                    url_template=settings.DEFAULT_MAP_TILE_SERVER,
+                    x=rd_coordinates.x,
+                    y=rd_coordinates.y,
+                    zoom=12,  # Adjust this value as needed
+                    img_size=[680, 250]
+                )
+                logger.info('Map image generated')
+
+                # transform image to png -> bytes -> data uri
+                png_array = io.BytesIO()
+                map_img.save(png_array, format='png')
+                encoded = base64.b64encode(png_array.getvalue()).decode()
+                img_data_uri = 'data:image/png;base64,{}'.format(encoded)
+                logger.info('Successfully created base64 encoded image data URI')
+            else:
+                logger.info('Using WMS service with EPSG:28992 coordinate system')
+                rd_coordinates = signal.location.get_rd_coordinates()
+                bbox = '{},{},{},{}'.format(
+                    rd_coordinates.x - 340.00,
+                    rd_coordinates.y - 125.00,
+                    rd_coordinates.x + 340.00,
+                    rd_coordinates.y + 125.00,
+                )
+                logger.info(f'Generated bbox: {bbox}')
+
+            return bbox, img_data_uri
+
+        except Exception as e:
+            logger.error(f'Error generating map data: {str(e)}', exc_info=True)
+            raise
 
     @staticmethod
     def _get_context_data(signal, user, include_contact_details):
