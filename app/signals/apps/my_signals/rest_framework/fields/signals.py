@@ -2,7 +2,7 @@
 # Copyright (C) 2022 - 2023 Gemeente Amsterdam
 from collections import OrderedDict
 
-from datapunt_api.serializers import LinksField
+from signals.apps.signals.utils.links import HTTPSLinksField
 from drf_spectacular.utils import extend_schema_field
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
@@ -35,7 +35,7 @@ from signals.apps.signals.models import Signal
         },
     }
 })
-class MySignalListLinksField(LinksField):
+class MySignalListLinksField(HTTPSLinksField):
     lookup_field = 'uuid'
 
     def to_representation(self, value: Signal) -> OrderedDict:
@@ -113,7 +113,7 @@ class MySignalListLinksField(LinksField):
         },
     }
 })
-class MySignalDetailLinksField(LinksField):
+class MySignalDetailLinksField(HTTPSLinksField):
     lookup_field = 'uuid'
 
     def to_representation(self, value: Signal) -> OrderedDict:

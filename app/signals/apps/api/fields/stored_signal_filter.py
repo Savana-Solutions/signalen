@@ -2,13 +2,13 @@
 # Copyright (C) 2019 - 2023 Gemeente Amsterdam
 from collections import OrderedDict
 
-from datapunt_api.serializers import LinksField
+from signals.apps.signals.utils.links import HTTPSLinksField
 from rest_framework.reverse import reverse
 
 from signals.apps.signals.models import StoredSignalFilter
 
 
-class StoredSignalFilterLinksField(LinksField):
+class StoredSignalFilterLinksField(HTTPSLinksField):
     def to_representation(self, stored_signal_filter: StoredSignalFilter) -> OrderedDict:
         request = self.context.get('request')
 

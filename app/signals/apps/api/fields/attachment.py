@@ -2,7 +2,7 @@
 # Copyright (C) 2019 - 2023 Gemeente Amsterdam
 from collections import OrderedDict
 
-from datapunt_api.serializers import LinksField
+from signals.apps.signals.utils.links import HTTPSLinksField
 from django.db.models import Model
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
@@ -13,7 +13,7 @@ from signals.apps.api.generics.exceptions import UnsupportedModelTypeException
 from signals.apps.signals.models import Attachment
 
 
-class PublicSignalAttachmentLinksField(LinksField):
+class PublicSignalAttachmentLinksField(HTTPSLinksField):
     lookup_field = 'uuid'
 
     def to_representation(self, value: Attachment) -> OrderedDict:
@@ -43,7 +43,7 @@ class PublicSignalAttachmentLinksField(LinksField):
         }
     }
 })
-class PrivateSignalAttachmentLinksField(LinksField):
+class PrivateSignalAttachmentLinksField(HTTPSLinksField):
     def to_representation(self, value: Attachment) -> OrderedDict:
         request = self.context.get('request')
         assert isinstance(request, Request)

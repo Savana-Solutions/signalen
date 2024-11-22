@@ -2,7 +2,7 @@
 # Copyright (C) 2020 - 2023 Gemeente Amsterdam
 from collections import OrderedDict
 
-from datapunt_api.serializers import LinksField
+from signals.apps.signals.utils.links import HTTPSLinksField
 from django.contrib.auth.models import User
 from drf_spectacular.utils import extend_schema_field
 from rest_framework.reverse import reverse
@@ -33,7 +33,7 @@ from rest_framework.reverse import reverse
         },
     }
 })
-class UserLinksField(LinksField):
+class UserLinksField(HTTPSLinksField):
     def to_representation(self, value: User) -> OrderedDict:
         request = self.context.get('request')
 
