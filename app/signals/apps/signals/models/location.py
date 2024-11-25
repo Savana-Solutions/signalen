@@ -9,41 +9,47 @@ from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from signals.apps.signals.models.mixins import CreatedUpdatedModel
 from signals.apps.signals.utils.location import AddressFormatter
 
-STADSDEEL_CENTRUM = 'A'
-STADSDEEL_WESTPOORT = 'B'
-STADSDEEL_WEST = 'E'
-STADSDEEL_OOST = 'M'
-STADSDEEL_NOORD = 'N'
-STADSDEEL_ZUIDOOST = 'T'
-STADSDEEL_ZUID = 'K'
-STADSDEEL_NIEUWWEST = 'F'
-STADSDEEL_AMSTERDAMSE_BOS = 'H'
-STADSDEEL_WEESP = 'W'
+STADSDEEL_BERGHEM = 'berghem'
+STADSDEEL_CKM = 'ckm'
+STADSDEEL_GEFFEN = 'geffen'
+STADSDEEL_HERPEN = 'herpen'
+STADSDEEL_LITH = 'lith'
+STADSDEEL_MHM = 'mhm'
+STADSDEEL_NW = 'nw'
+STADSDEEL_OIJEN_TEEFFELEN = 'oijen-teeffelen'
+STADSDEEL_OSS_ZUID = 'oss-zuid'
+STADSDEEL_RAVENSTEIN = 'ravenstein'
+STADSDEEL_RUWAARD = 'ruwaard'
+STADSDEEL_SCHADEWIJK = 'schadewijk'
+
 STADSDELEN = (
-    (STADSDEEL_CENTRUM, 'Centrum'),
-    (STADSDEEL_WESTPOORT, 'Westpoort'),
-    (STADSDEEL_WEST, 'West'),
-    (STADSDEEL_OOST, 'Oost'),
-    (STADSDEEL_NOORD, 'Noord'),
-    (STADSDEEL_ZUIDOOST, 'Zuidoost'),
-    (STADSDEEL_ZUID, 'Zuid'),
-    (STADSDEEL_NIEUWWEST, 'Nieuw-West'),
-    (STADSDEEL_AMSTERDAMSE_BOS, 'Het Amsterdamse Bos'),
-    (STADSDEEL_WEESP, 'Weesp'),
+    (STADSDEEL_BERGHEM, 'Berghem'),
+    (STADSDEEL_CKM, 'CKM'),
+    (STADSDEEL_GEFFEN, 'Geffen'),
+    (STADSDEEL_HERPEN, 'Herpen'),
+    (STADSDEEL_LITH, 'Lith'),
+    (STADSDEEL_MHM, 'MHM'),
+    (STADSDEEL_NW, 'NW'),
+    (STADSDEEL_OIJEN_TEEFFELEN, 'Oijen-Teeffelen'),
+    (STADSDEEL_OSS_ZUID, 'Oss-Zuid'),
+    (STADSDEEL_RAVENSTEIN, 'Ravenstein'),
+    (STADSDEEL_RUWAARD, 'Ruwaard'),
+    (STADSDEEL_SCHADEWIJK, 'Schadewijk'),
 )
 
 AREA_STADSDEEL_TRANSLATION = {
-    'het-amsterdamse-bos': STADSDEEL_AMSTERDAMSE_BOS,
-    'zuidoost': STADSDEEL_ZUIDOOST,
-    'centrum': STADSDEEL_CENTRUM,
-    'noord': STADSDEEL_NOORD,
-    'westpoort': STADSDEEL_WESTPOORT,
-    'west': STADSDEEL_WEST,
-    'nieuw-west': STADSDEEL_NIEUWWEST,
-    'oost': STADSDEEL_OOST,
-    'zuid': STADSDEEL_ZUID,
-    'stadsdeel-zuid': STADSDEEL_ZUID,
-    'weesp': STADSDEEL_WEESP,
+    'berghem': STADSDEEL_BERGHEM,
+    'ckm': STADSDEEL_CKM,
+    'geffen': STADSDEEL_GEFFEN,
+    'herpen': STADSDEEL_HERPEN,
+    'lith': STADSDEEL_LITH,
+    'mhm': STADSDEEL_MHM,
+    'nw': STADSDEEL_NW,
+    'oijen-teeffelen': STADSDEEL_OIJEN_TEEFFELEN,
+    'oss-zuid': STADSDEEL_OSS_ZUID,
+    'ravenstein': STADSDEEL_RAVENSTEIN,
+    'ruwaard': STADSDEEL_RUWAARD,
+    'schadewijk': STADSDEEL_SCHADEWIJK,
 }
 
 
@@ -56,7 +62,7 @@ class Location(CreatedUpdatedModel):
     )
 
     geometrie = models.PointField(name='geometrie')
-    stadsdeel = models.CharField(null=True, max_length=1, choices=STADSDELEN)
+    stadsdeel = models.CharField(null=True, max_length=20, choices=STADSDELEN)
     area_type_code = models.CharField(null=True, max_length=256)
     area_code = models.CharField(null=True, max_length=256)
     area_name = models.CharField(null=True, max_length=256)  # used for sorting BE-166

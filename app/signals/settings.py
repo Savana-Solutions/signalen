@@ -400,7 +400,7 @@ SEARCH: dict[str, int | dict[str, str]] = {
     'TIMEOUT': int(os.getenv('ELASTICSEARCH_TIMEOUT', 10)),
 }
 
-API_DETERMINE_STADSDEEL_ENABLED_AREA_TYPE: str = 'sia-stadsdeel'
+API_DETERMINE_STADSDEEL_ENABLED_AREA_TYPE: str = 'stadsdeel'
 API_TRANSFORM_SOURCE_BASED_ON_REPORTER_EXCEPTIONS: list[str] = os.getenv(
     'API_TRANSFORM_SOURCE_BASED_ON_REPORTER_EXCEPTIONS',
     'techview@amsterdam.nl,verbeterdebuurt@amsterdam.nl,hnw@amsterdam.nl,webcare@amsterdam.nl,qubz@amsterdam.nl'
@@ -519,6 +519,8 @@ FEATURE_FLAGS: dict[str, bool] = {
     # Run routing expressions again when updating signal subcategory or location
     'DSL_RUN_ROUTING_EXPRESSIONS_ON_UPDATES': os.getenv('DSL_RUN_ROUTING_EXPRESSIONS_ON_UPDATES', False) in TRUE_VALUES,
 }
+
+MY_SIGNALS_TOKEN_EXPIRES_SECONDS = int(os.getenv('MY_SIGNALS_TOKEN_EXPIRES_SECONDS', 60 * 60 * 2))
 
 # Per default log to console
 LOGGING_HANDLERS: dict[str, dict[str, Any]] = {

@@ -40,7 +40,7 @@ def _get_stadsdeel_code(geometry: PointField, default: Optional[str] = None) -> 
 
     from signals.apps.signals.models.location import AREA_STADSDEEL_TRANSLATION
 
-    area_type = getattr(settings, 'API_DETERMINE_STADSDEEL_ENABLED_AREA_TYPE', 'sia-stadsdeel')
+    area_type = getattr(settings, 'API_DETERMINE_STADSDEEL_ENABLED_AREA_TYPE', 'stadsdeel')
     area = _get_area(geometry=geometry, area_type=area_type)
     code = AREA_STADSDEEL_TRANSLATION.get(area.code.lower(), None) if area else None
     return code or default
