@@ -48,17 +48,27 @@ class PrivateSignalAttachmentLinksField(HTTPSLinksField):
         request = self.context.get('request')
         assert isinstance(request, Request)
 
+        # Set the kwargs before calling get_url
+        self.kwargs = {
+            'parent_lookup__signal__pk': value._signal_id,
+            'pk': value.pk
+        }
+
         result = OrderedDict([
             ('self', {
-                'href': reverse('private-signals-attachments-detail', kwargs={
-                    'parent_lookup__signal__pk': value._signal_id,
-                    'pk': value.pk
-                }, request=request) if value.pk else None
+                'href': self.get_url(
+                    value,
+                    'private-signals-attachments-detail',
+                    request,
+                    None
+                ) if value.pk else None
             }),
         ])
 
-        return result
+        # Reset kwargs after use
+        self.kwargs = None
 
+        return result
 
 @extend_schema_field({
     'type': 'string',
@@ -70,6 +80,9 @@ class PrivateSignalAttachmentRelatedField(serializers.HyperlinkedRelatedField):
         if not isinstance(obj, Attachment):
             raise UnsupportedModelTypeException('Only Attachment type models are supported!')
 
-        return self.reverse("private-signals-attachments-detail",
-                            kwargs={'parent_lookup__signal__pk': obj._signal_id, 'pk': obj.pk},
-                            request=request)
+        kwargs = {
+            'parent_lookup__signal__pk': obj._signal_id,
+            'pk': obj.pk
+        }
+        
+        return reverse(view_name, kwargs=kwargs, request=request, format=format)
