@@ -3,7 +3,7 @@
 from collections import OrderedDict
 from typing import Any, Mapping
 
-from signals.apps.signals.utils.links import HTTPSLinksField
+from datapunt_api.serializers import LinksField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model
 from rest_framework.relations import RelatedField
@@ -34,12 +34,12 @@ class UUIDRelatedField(RelatedField):
         return getattr(obj, self.uuid_field)
 
 
-class EmptyHyperlinkedIdentityField(HTTPSLinksField):
+class EmptyHyperlinkedIdentityField(LinksField):
     def to_representation(self, value: Answer) -> OrderedDict:
         return OrderedDict()
 
 
-class BaseQuestionnaireLinksField(HTTPSLinksField):
+class BaseQuestionnaireLinksField(LinksField):
     def _get_url(self, obj: Model, view_name: str) -> str | None:
         request = self.context.get('request')
         namespace = request.resolver_match.namespace if request else None

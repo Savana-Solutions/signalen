@@ -2,7 +2,7 @@
 # Copyright (C) 2019 - 2023 Gemeente Amsterdam
 from collections import OrderedDict
 
-from signals.apps.signals.utils.links import HTTPSLinksField
+from datapunt_api.serializers import LinksField
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.reverse import reverse
@@ -76,7 +76,7 @@ def category_public_url(category, request, format=None):
         },
     }
 })
-class CategoryLinksField(HTTPSLinksField):
+class CategoryLinksField(LinksField):
     def to_representation(self, value):
         request = self.context.get('request')
         result = OrderedDict([
@@ -176,7 +176,7 @@ class CategoryHyperlinkedRelatedField(serializers.HyperlinkedRelatedField):
         },
     }
 })
-class PrivateCategoryLinksField(HTTPSLinksField):
+class PrivateCategoryLinksField(LinksField):
     def _get_public_url(self, obj, request=None):
         return category_public_url(obj, request=request)
 

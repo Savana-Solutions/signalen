@@ -2,7 +2,7 @@
 # Copyright (C) 2019 - 2023 Gemeente Amsterdam, Vereniging van Nederlandse Gemeenten
 from collections import OrderedDict
 
-from signals.apps.signals.utils.links import HTTPSLinksField
+from datapunt_api.serializers import LinksField
 from drf_spectacular.utils import extend_schema_field
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
@@ -99,8 +99,7 @@ from signals.apps.signals.models import Signal
         },
     }
 })
-
-class PrivateSignalLinksFieldWithArchives(HTTPSLinksField):
+class PrivateSignalLinksFieldWithArchives(LinksField):
     def to_representation(self, value: Signal) -> OrderedDict:
         request = self.context.get('request')
         assert isinstance(request, Request)
@@ -156,7 +155,7 @@ class PrivateSignalLinksFieldWithArchives(HTTPSLinksField):
         }
     }
 })
-class PrivateSignalLinksField(HTTPSLinksField):
+class PrivateSignalLinksField(LinksField):
     def to_representation(self, value: Signal) -> OrderedDict:
         request = self.context.get('request')
         assert isinstance(request, Request)
@@ -213,7 +212,7 @@ class PrivateSignalLinksField(HTTPSLinksField):
         },
     }
 })
-class PrivateSignalWithContextLinksField(HTTPSLinksField):
+class PrivateSignalWithContextLinksField(LinksField):
     def to_representation(self, value: Signal) -> OrderedDict:
         request = self.context.get('request')
         assert isinstance(request, Request)
@@ -232,7 +231,7 @@ class PrivateSignalWithContextLinksField(HTTPSLinksField):
         return result
 
 
-class PublicSignalLinksField(HTTPSLinksField):
+class PublicSignalLinksField(LinksField):
     lookup_field = 'signal_id'
 
     def to_representation(self, value: Signal) -> OrderedDict:
