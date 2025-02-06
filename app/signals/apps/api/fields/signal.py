@@ -99,27 +99,22 @@ from signals.apps.signals.models import Signal
         },
     }
 })
-class PrivateSignalLinksFieldWithArchives(LinksField):
+class PrivateSignalLinksFieldWithArchives(HTTPSLinksField):
     def to_representation(self, value: Signal) -> OrderedDict:
         request = self.context.get('request')
         assert isinstance(request, Request)
-
-        # Set the custom kwargs for attachments
-        self.kwargs = {'parent_lookup__signal__pk': value.pk}
-        attachments_url = self.get_url(
-            value,
-            'private-signals-attachments-list',
-            request,
-            None
-        )
-        # Reset kwargs to None for other URLs
-        self.kwargs = None
 
         result = OrderedDict([
             ('curies', {'name': 'sia', 'href': reverse('signal-namespace', request=request)}),
             ('self', {'href': self.get_url(value, 'private-signals-detail', request, None)}),
             ('archives', {'href': self.get_url(value, "private-signals-history", request, None)}),
-            ('sia:attachments', {'href': attachments_url}),
+            ('sia:attachments', {
+                'href': reverse(
+                    'private-signals-attachments-list',
+                    kwargs={'parent_lookup__signal__pk': value.pk},
+                    request=request,
+                )
+            }),
             ('sia:pdf', {'href': self.get_url(value, "private-signals-pdf-download", request, None)}),
             ('sia:context', {'href': self.get_url(value, 'private-signal-context', request, None)}),
         ])
