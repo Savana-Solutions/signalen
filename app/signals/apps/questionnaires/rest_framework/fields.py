@@ -78,10 +78,8 @@ class QuestionHyperlinkedIdentityField(BaseQuestionnaireLinksField):
                 'name': 'sia',
                 'href': reverse('signal-namespace', request=self.context.get('request'))
             }),
-            ('self', {'href': self._reverse('public-question-detail', 
-                                          kwargs={'retrieval_key': value.retrieval_key or value.uuid})}),
-            ('sia:uuid-self', {'href': self._reverse('public-question-detail', 
-                                                    kwargs={'retrieval_key': value.uuid})}),
+            ('self', {'href': self._get_url(value, 'public-question-detail')}),
+            ('sia:uuid-self', {'href': self._reverse('public-question-detail', kwargs={'retrieval_key': value.uuid})}),
             ('sia:post-answer', {
                 'href': self._reverse(
                     'public-question-answer',
@@ -89,7 +87,7 @@ class QuestionHyperlinkedIdentityField(BaseQuestionnaireLinksField):
                 )
             }),
         ])
-    
+
 
 class SessionPublicLinksField(BaseQuestionnaireLinksField):
     lookup_field = 'uuid'
