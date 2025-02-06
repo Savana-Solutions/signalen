@@ -99,7 +99,7 @@ from signals.apps.signals.models import Signal
         },
     }
 })
-class PrivateSignalLinksFieldWithArchives(HTTPSLinksField):
+class PrivateSignalLinksFieldWithArchives(LinksField):
     def to_representation(self, value: Signal) -> OrderedDict:
         request = self.context.get('request')
         assert isinstance(request, Request)

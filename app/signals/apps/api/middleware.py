@@ -11,6 +11,40 @@ from django.urls import resolve
 
 from signals import __version__
 
+class SecureURLMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        
+        # Check if response has content_type attribute and it's not None
+        content_type = getattr(response, 'content_type', None)
+        if content_type and 'application/json' in content_type:
+            try:
+                # Decode the content
+                content = response.content.decode('utf-8')
+                
+                # Replace all http:// with https:// except for localhost
+                content = content.replace(
+                    'http://', 
+                    'https://'
+                ).replace(
+                    'https://localhost', 
+                    'http://localhost'  # Keep localhost as http
+                )
+                
+                # Update the response content
+                response.content = content.encode('utf-8')
+                
+                # Update content length header
+                response['Content-Length'] = len(response.content)
+                
+            except Exception as e:
+                # Log any errors but don't break the response
+                print(f"Error in SecureURLMiddleware: {e}")
+                
+        return response
 
 class APIVersionHeaderMiddleware:
 

@@ -123,6 +123,7 @@ MIDDLEWARE: list[str] = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'signals.apps.api.middleware.APIVersionHeaderMiddleware',
+    'signals.apps.api.middleware.SecureURLMiddleware',
 ]
 
 # Enable session cookies when authenticating using the bearer token
