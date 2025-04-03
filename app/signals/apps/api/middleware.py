@@ -3,6 +3,7 @@
 import os
 from typing import Callable
 
+import json
 from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.models import AnonymousUser
@@ -15,35 +16,60 @@ class SecureURLMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
+    def secure_url(self, url: str) -> str:
+        """Convert HTTP URLs to HTTPS except for localhost"""
+        if url and isinstance(url, str) and url.startswith('http://') and 'localhost' not in url:
+            return url.replace('http://', 'https://')
+        return url
+
+    def secure_data(self, data):
+        """Recursively secure URLs in data structure"""
+        if isinstance(data, dict):
+            return {k: self.secure_data(v) for k, v in data.items()}
+        elif isinstance(data, list):
+            return [self.secure_data(item) for item in data]
+        elif isinstance(data, str):
+            return self.secure_url(data)
+        return data
+
     def __call__(self, request):
+        # Patch request.build_absolute_uri to use HTTPS
+        original_build_absolute_uri = request.build_absolute_uri
+
+        def secure_build_absolute_uri(location=None):
+            return self.secure_url(original_build_absolute_uri(location))
+
+        request.build_absolute_uri = secure_build_absolute_uri
+        
+        # Get response with secured request
         response = self.get_response(request)
         
-        # Check if response has content_type attribute and it's not None
-        content_type = getattr(response, 'content_type', None)
-        if content_type and 'application/json' in content_type:
+        # Handle JSON responses
+        if getattr(response, 'content_type', None) and 'application/json' in response.content_type:
             try:
-                # Decode the content
                 content = response.content.decode('utf-8')
+                json_data = json.loads(content)
                 
-                # Replace all http:// with https:// except for localhost
-                content = content.replace(
-                    'http://', 
-                    'https://'
-                ).replace(
-                    'https://localhost', 
-                    'http://localhost'  # Keep localhost as http
-                )
+                # Recursively secure all URLs in the JSON structure
+                secured_data = self.secure_data(json_data)
                 
-                # Update the response content
-                response.content = content.encode('utf-8')
-                
-                # Update content length header
+                # Convert back to JSON string
+                secured_content = json.dumps(secured_data)
+                response.content = secured_content.encode('utf-8')
                 response['Content-Length'] = len(response.content)
-                
             except Exception as e:
-                # Log any errors but don't break the response
-                print(f"Error in SecureURLMiddleware: {e}")
-                
+                print(f"Error in SecureURLMiddleware JSON handling: {e}")
+
+        # Handle redirects
+        if hasattr(response, 'url'):
+            secure_url = self.secure_url(response.url)
+            if secure_url != response.url:
+                from django.http import HttpResponseRedirect
+                return HttpResponseRedirect(secure_url)
+
+        # Ensure secure headers
+        response['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+        
         return response
 
 class APIVersionHeaderMiddleware:
