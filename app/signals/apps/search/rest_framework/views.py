@@ -53,7 +53,7 @@ class SearchView(DetailSerializerMixin, ReadOnlyModelViewSet):
 
         multi_match = MultiMatch(
             query=q,
-            fields=[
+            fields=[ 
                 'id',
                 'text',
                 'category_assignment.category.name',

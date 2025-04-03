@@ -16,7 +16,7 @@ from signals.apps.questionnaires.exceptions import (
     MissingEmail,
     SessionInvalidated,
     WrongFlow,
-    WrongState
+    WrongState,
 )
 from signals.apps.questionnaires.models import (
     AttachedFile,
@@ -27,7 +27,7 @@ from signals.apps.questionnaires.models import (
     QuestionGraph,
     Questionnaire,
     Session,
-    StoredFile
+    StoredFile,
 )
 from signals.apps.questionnaires.services.session import SessionService
 from signals.apps.signals import workflow
@@ -40,15 +40,33 @@ def _copy_attachments_to_attached_files(signal, attached_section):
     """
     Attach copied Signal attachments to AttachedSection.
     """
-    for attachment in signal.attachments.order_by('created_at').all():
-        # copy attachment file to AttachedFile / StoredFile models
-        filename = os.path.basename(attachment.file.name)
-        cf = ContentFile(attachment.file.read())
-        cf.name = filename
+    for attachment in signal.attachments.order_by("created_at").all():
+        try:
+            # Get the physical file path
+            file_path = attachment.file.path
 
-        stored_file = StoredFile.objects.create(file=cf)
-        description = os.path.basename(stored_file.file.name)
-        AttachedFile.objects.create(description=description, stored_file=stored_file, section=attached_section)
+            # Read file directly from filesystem
+            with open(file_path, "rb") as f:
+                file_content = f.read()
+
+            filename = os.path.basename(attachment.file.name)
+            cf = ContentFile(file_content)
+            cf.name = filename
+
+            stored_file = StoredFile.objects.create(file=cf)
+            description = os.path.basename(stored_file.file.name)
+            AttachedFile.objects.create(
+                description=description,
+                stored_file=stored_file,
+                section=attached_section,
+            )
+
+        except Exception as e:
+            logger.error(
+                f"Error processing attachment {attachment.file.name}: {str(e)}"
+            )
+            logger.error(f"File path attempted: {file_path}")
+            raise
 
 
 def create_session_for_forward_to_external(signal):
@@ -56,24 +74,41 @@ def create_session_for_forward_to_external(signal):
     Create Question, Questionnaire, and Session for "forwarded to external" flow.
     """
     if signal.status.state != workflow.DOORGEZET_NAAR_EXTERN:
-        msg = f'Signal {signal.id} is not in state DOORGEZET_NAAR_EXTERN'
+        msg = f"Signal {signal.id} is not in state DOORGEZET_NAAR_EXTERN"
         raise WrongState(msg)
 
     if not signal.status.email_override:
-        msg = f'Signal {signal.id} last status DOORGEZET_NAAR_EXTERN must have non-null email_override.'
+        msg = f"Signal {signal.id} last status DOORGEZET_NAAR_EXTERN must have non-null email_override."
         raise MissingEmail(msg)
 
     with transaction.atomic():
-        ilt = IllustratedText.objects.create(title='Melding reactie')
+        ilt = IllustratedText.objects.create(title="Melding reactie")
+        
+        # Format the address properly
+        location = signal.location
+        address_text = ""
+        if hasattr(location, 'address') and location.address:
+            address = location.address
+            street = f"{address.get('openbare_ruimte', '')} {address.get('huisnummer', '')}"
+            postcode_city = f"{address.get('postcode', '')} {address.get('woonplaats', '')}"
+            address_text = f"\n{street.strip()}\n{postcode_city.strip()}\n"
+
         section1 = AttachedSection.objects.create(
-            header='De melding',
-            text=f'Nummer: {signal.get_id_display()}\n',
+            header="De melding",
+            text=f"Nummer: {signal.get_id_display()}\n"
+                 f"{signal.location.stadsdeel or ''}\n"
+                 f"{address_text}",
             illustrated_text=ilt,
         )
-        section2 = AttachedSection.objects.create(header='Omschrijving', text=signal.status.text, illustrated_text=ilt)
+        
+        section2 = AttachedSection.objects.create(
+            header="Omschrijving", text=signal.status.text, illustrated_text=ilt
+        )
 
         if signal.attachments.exists():
-            photo_section = AttachedSection.objects.create(header="Foto's", illustrated_text=ilt)
+            photo_section = AttachedSection.objects.create(
+                header="Foto's", illustrated_text=ilt
+            )
             _copy_attachments_to_attached_files(signal, photo_section)
             ilt.set_attachedsection_order([section1.id, section2.id, photo_section.id])
         else:
@@ -81,25 +116,29 @@ def create_session_for_forward_to_external(signal):
 
         first_question = Question.objects.create(
             required=True,
-            field_type='plain_text',
-            short_label='Reactie na afhandeling',
-            label=('Kunt u omschrijven of en hoe de melding is opgepakt?\n'
-                   'U mag daarbij ook een foto sturen.'),
-            analysis_key='reaction',
+            field_type="plain_text",
+            short_label="Reactie na afhandeling",
+            label=(
+                "Kunt u omschrijven of en hoe de melding is opgepakt?\n"
+                "U mag daarbij ook een foto sturen."
+            ),
+            analysis_key="reaction",
         )
         photo_question = Question.objects.create(
             required=False,
-            field_type='image',
+            field_type="image",
             short_label="Foto's toevoegen",
-            label='Voeg een foto toe om de situatie te verduidelijken.',
-            analysis_key='photo_reaction',
+            label="Voeg een foto toe om de situatie te verduidelijken.",
+            analysis_key="photo_reaction",
             multiple_answers_allowed=True,
         )
 
         graph = QuestionGraph.objects.create(first_question=first_question)
-        Edge.objects.create(graph=graph, question=first_question, next_question=photo_question)
+        Edge.objects.create(
+            graph=graph, question=first_question, next_question=photo_question
+        )
         questionnaire = Questionnaire.objects.create(
-            description=f'Vragenlijst voor naar externe doorgezette melding {signal.get_id_display()}.',
+            description=f"Vragenlijst voor naar externe doorgezette melding {signal.get_id_display()}.",
             graph=graph,
             flow=Questionnaire.FORWARD_TO_EXTERNAL,
             explanation=ilt,
@@ -118,7 +157,7 @@ def create_session_for_forward_to_external(signal):
 
 
 def get_forward_to_external_url(session):
-    return f'{settings.FRONTEND_URL}/incident/extern/{session.uuid}'
+    return f"{settings.FRONTEND_URL}/incident/extern/{session.uuid}"
 
 
 def clean_up_forward_to_external():
@@ -143,7 +182,9 @@ def clean_up_forward_to_external():
         if session._signal.status.id == session._signal_status.id:
             # Signal is still in state DOORGEZET_NAAR_EXTERN, we change its
             # state with an appropriate message.
-            Signal.actions.update_status({'state': workflow.VERZOEK_TOT_AFHANDELING}, session._signal)
+            Signal.actions.update_status(
+                {"state": workflow.VERZOEK_TOT_AFHANDELING}, session._signal
+            )
 
         # We use the invalidated property, and not frozen, because we want to
         # handle each session once and need to mark them invalidated. We cannot
@@ -167,12 +208,12 @@ class ForwardToExternalSessionService(SessionService):
 
         # We need a reference to a Signal and a status update to FORWARD_TO_EXTERNAL
         if signal is None:
-            msg = f'Session {self.session.uuid} is not associated with a Signal.'
+            msg = f"Session {self.session.uuid} is not associated with a Signal."
             logger.warning(msg, stack_info=True)
             raise SessionInvalidated(msg)
 
         if status is None:
-            msg = f'Session {self.session.uuid} is not associated with a Status update.'
+            msg = f"Session {self.session.uuid} is not associated with a Status update."
             logger.warning(msg, stack_info=True)
             raise SessionInvalidated(msg)
 
@@ -180,7 +221,7 @@ class ForwardToExternalSessionService(SessionService):
         """
         Create a history entry on reception of answer to forwarded question.
         """
-        answer = self.answers_by_analysis_key['reaction']
+        answer = self.answers_by_analysis_key["reaction"]
         signal = self.session._signal
 
         # Note our history entry can come in one of two forms. In both cases we
@@ -190,7 +231,9 @@ class ForwardToExternalSessionService(SessionService):
         # status update to VERZOEK_TOT_AFHANDELING (without a message).
         SignalLogService.log_external_reaction_received(self.session, answer.payload)
         if self.session._signal_status == signal.status:
-            Signal.actions.update_status({'state': workflow.VERZOEK_TOT_AFHANDELING}, signal)
+            Signal.actions.update_status(
+                {"state": workflow.VERZOEK_TOT_AFHANDELING}, signal
+            )
 
     def _send_confirmation_mail(self):
         """
@@ -198,12 +241,16 @@ class ForwardToExternalSessionService(SessionService):
         """
         from signals.apps.email_integrations.services import MailService
 
-        answer = self.answers_by_analysis_key['reaction']
+        answer = self.answers_by_analysis_key["reaction"]
         signal = self.session._signal
         email_override = self.session._signal_status.email_override
 
-        MailService.system_mail(signal=signal, action_name='forward_to_external_reaction_received',
-                                reaction_text=answer.payload, email_override=email_override)
+        MailService.system_mail(
+            signal=signal,
+            action_name="forward_to_external_reaction_received",
+            reaction_text=answer.payload,
+            email_override=email_override,
+        )
 
     def _copy_attachments_from_session_to_signal(self):
         """
@@ -214,21 +261,23 @@ class ForwardToExternalSessionService(SessionService):
 
         from signals.apps.signals.models import Attachment
 
-        photo_answer = self.answers_by_analysis_key.get('photo_reaction', None)
+        photo_answer = self.answers_by_analysis_key.get("photo_reaction", None)
         if not photo_answer:
             return
 
         assert isinstance(photo_answer.payload, list)
 
         for attachment_payload in photo_answer.payload:
-            file_path = attachment_payload['file_path']
+            file_path = attachment_payload["file_path"]
             with default_storage.open(file_path) as f:
                 cf = ContentFile(f.read())
                 cf.name = os.path.basename(file_path)
 
             signal = self.session._signal
             email_override = self.session._signal_status.email_override
-            Attachment.objects.create(_signal=signal, file=cf, created_by=email_override)
+            Attachment.objects.create(
+                _signal=signal, file=cf, created_by=email_override
+            )
 
     def freeze(self, refresh=True):
         """
@@ -238,11 +287,11 @@ class ForwardToExternalSessionService(SessionService):
             self.refresh_from_db()  # Make sure cache is not stale // TODO: this can raise, deal with it
 
         if not self._can_freeze:
-            msg = f'Session (uuid={self.session.uuid}) is not fully answered.'
+            msg = f"Session (uuid={self.session.uuid}) is not fully answered."
             raise CannotFreeze(msg)
 
         if self.session.questionnaire.flow != Questionnaire.FORWARD_TO_EXTERNAL:
-            msg = f'Questionnaire flow property for session {self.session.uuid} is not FORWARD_TO_EXTERNAL!'
+            msg = f"Questionnaire flow property for session {self.session.uuid} is not FORWARD_TO_EXTERNAL!"
             raise WrongFlow(msg)
 
         super().freeze()
