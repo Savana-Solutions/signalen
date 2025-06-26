@@ -9,47 +9,26 @@ from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from signals.apps.signals.models.mixins import CreatedUpdatedModel
 from signals.apps.signals.utils.location import AddressFormatter
 
-STADSDEEL_BERGHEM = 'berghem'
-STADSDEEL_CKM = 'ckm'
-STADSDEEL_GEFFEN = 'geffen'
-STADSDEEL_HERPEN = 'herpen'
-STADSDEEL_LITH = 'lith'
-STADSDEEL_MHM = 'mhm'
-STADSDEEL_NW = 'nw'
-STADSDEEL_OIJEN_TEEFFELEN = 'oijen-teeffelen'
-STADSDEEL_OSS_ZUID = 'oss-zuid'
-STADSDEEL_RAVENSTEIN = 'ravenstein'
-STADSDEEL_RUWAARD = 'ruwaard'
-STADSDEEL_SCHADEWIJK = 'schadewijk'
+STADSDEEL_VIDYADHAR_NAGAR = 'vidyadhar-nagar'
+STADSDEEL_JHOTWARA = 'jhotwara'
+STADSDEEL_SANGANER = 'sanganer'
+STADSDEEL_BAGRU = 'bagru'
+STADSDEEL_MALVIYA_NAGAR = 'malviya-nagar'
 
 STADSDELEN = (
-    (STADSDEEL_BERGHEM, 'Berghem'),
-    (STADSDEEL_CKM, 'CKM'),
-    (STADSDEEL_GEFFEN, 'Geffen'),
-    (STADSDEEL_HERPEN, 'Herpen'),
-    (STADSDEEL_LITH, 'Lith'),
-    (STADSDEEL_MHM, 'MHM'),
-    (STADSDEEL_NW, 'NW'),
-    (STADSDEEL_OIJEN_TEEFFELEN, 'Oijen-Teeffelen'),
-    (STADSDEEL_OSS_ZUID, 'Oss-Zuid'),
-    (STADSDEEL_RAVENSTEIN, 'Ravenstein'),
-    (STADSDEEL_RUWAARD, 'Ruwaard'),
-    (STADSDEEL_SCHADEWIJK, 'Schadewijk'),
+    (STADSDEEL_VIDYADHAR_NAGAR, 'Vidyadhar Nagar'),
+    (STADSDEEL_JHOTWARA, 'Jhotwara'),
+    (STADSDEEL_SANGANER, 'Sanganer'),
+    (STADSDEEL_BAGRU, 'Bagru'),
+    (STADSDEEL_MALVIYA_NAGAR, 'Malviya Nagar'),
 )
 
 AREA_STADSDEEL_TRANSLATION = {
-    'berghem': STADSDEEL_BERGHEM,
-    'ckm': STADSDEEL_CKM,
-    'geffen': STADSDEEL_GEFFEN,
-    'herpen': STADSDEEL_HERPEN,
-    'lith': STADSDEEL_LITH,
-    'mhm': STADSDEEL_MHM,
-    'nw': STADSDEEL_NW,
-    'oijen-teeffelen': STADSDEEL_OIJEN_TEEFFELEN,
-    'oss-zuid': STADSDEEL_OSS_ZUID,
-    'ravenstein': STADSDEEL_RAVENSTEIN,
-    'ruwaard': STADSDEEL_RUWAARD,
-    'schadewijk': STADSDEEL_SCHADEWIJK,
+    'vidyadhar-nagar': STADSDEEL_VIDYADHAR_NAGAR,
+    'jhotwara': STADSDEEL_JHOTWARA,
+    'sanganer': STADSDEEL_SANGANER,
+    'bagru': STADSDEEL_BAGRU,
+    'malviya-nagar': STADSDEEL_MALVIYA_NAGAR,
 }
 
 
