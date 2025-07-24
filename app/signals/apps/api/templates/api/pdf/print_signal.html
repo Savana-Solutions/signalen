@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Melding {{ signal.get_id_display }} </title>
+    <title>Report {{ signal.get_id_display }} </title>
     <style type="text/css">
         * {
             font-family: Avenir Next LT W01 Demi,arial,sans-serif;
@@ -91,7 +91,7 @@
                 </td>
                 <td width="60%" style="vertical-align: top;">
                     <p>
-                        <span style="line-height:1.3em">Geprint door {% if not user.is_anonymous %}{{ user.username }}{% else %}SEDA System{% endif %}<br>
+                        <span style="line-height:1.3em">Printed by {% if not user.is_anonymous %}{{ user.username }}{% else %}SEDA System{% endif %}<br>
                         {% now "l, j F Y H:i" %}</span>
                     </p>
                 </td>
@@ -109,24 +109,24 @@
         <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACcAAAAnCAYAAACMo1E1AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAVHSURBVFiFxZhbbFRVFIa/PZcidSiEDm06tKZSIrXcHoTyIoHQB0EhlGLkyYToXF6sJmJorFFIG2OIRklMA1pMwAhiCKG10QpYEhSEBwhTCBAi2FJCip2ZlpZe5r58qHPa0xmmM9Oif3KStc5ee63//OvsfS6KDDEA1iBsZPQoFchXMAvoAe4rOBeBlnlwXkEkkxoq3Qn9MDcEO4G3gZmTxQfN5nuGaHRnfiTygwJ5YuQ8sBY4psCazjwA75w57kGl1q7o6+ufdnJeeB34BjDrElitmCsqMBYWonJyiPb0EHa7CV+8CBF9N72zZw9dXbCg/LUrV26kWndSeGCtF4JekNjRt2SJBJqaRMJhSYRIT48M1dSIb+ZMGT/PnZc3snvbtuemhdgA5HrAM77AI7tdJBBISGoiwu3t0ltcrCP4U1mZp7q6OmfK5HzwmY7Y9u0pkdKp2NkpvXl5Wo4HBoPs3rr1+FRVs3phZHwrU1VsIgItLTr1fi4ri9rt9heS1TckGwzCK8BTMT+7vh6ysuIDIxG4dAna2qC3N2GurI0bMa9erfnPd3Yqk9G4M6k6yeCFY7Er9VmtiW/+zk6RZctEYPSwWEQOHUqonr+xUadeXWXlUHV19YzH1U+qHFAaM8zr1oHRGB9ht8PVq2P+4CA4nXD7dlyouaJC51v7+7ODweCLmZKzxQxjcXH8qN8/2sqJCATg9On4YkVFYBgrOWt4GCBB4tTIPa1ZMxKobzDoiulgMsWfMxpR5rE9PCsUQkRs8YGpkfs7ZkQ7OuJHs7Jgy5b48zk5sGFD3OloVxcSCGj+YHY2JHkpmIycO2aE2tpGb/mJ2LcP1q8f8202OHoUCgvjQoOnTun8+/PmAXRmRE7B2Zgd7e4m7HbHB1mt0NoK3d1w8ybcvZtQNYBQa6tm+7Oy6M7NJRKJnE/G4bHwQZEHorGlP1Rbm9EGLCIS7e3VPWdPLlokTqfzWrL6SZXLhXvAuZgfaGzU3TPpIHDwIDIyovntCxeilPouY3L/4kjMiHo8hJqaMiLnP3BAsx9lZ/OXzRY1Go1HkkyZHAOQ61HKH2tH/5o1abc0eOaM7slwYvlycblcCTZIPSZVLgd8BpGDMT909izh9va0LtC/d69mRwwG/li8GBH5csrkAKLwuYx7/x+pr0+ZWNjtJtjSovnXSkrot1hu2Wy2H1NOMhk80KK1RikJud0ptXSgslLX0l1VVeJwON5IpWZKygEIfDrmCCN1dZPOCbe3E2xu1vw7NhvdVuuDUCg0tYWQCD1K/ZaOegNVVTrVPtm0SRwOxzup1ktZOQCTyPuaM4l6kevXCY7bdm7Pn09HQcF9i8XydTo104JXqZM69S5fTkm1jzdvFpfL9WY6tdJSDkBEPiC2ckUY3rEjLiZ84QLBEyc0/1ZREXfz8/8sKCg4lG69tNEDx8erEmhuHpMsGpWH5eXamEcp2VVVJS6X69UnTgzgITzrVUr7yO4rKdG+yvyHD+va+UtpqTidzt/J4L9M2m0FmAMdiHwR8yN37uDfvx/x+xmurdXigmYzp1esiCil3iLNnzhTgg9yPEppfwJ8ubkyVFOjU+37lSvF5XI1ZFojI+UAcmGA0cUBgPh8jOzZo433WyycW7q0z2QyffSfkwOwwgFRKsHrMbSuWkXIZPqwoaHBl2n+KZFTEEXk3Ynnu/LyuFZScsNms301lfzTAi80jd866isrxW63r/u/eQHQC894lBrygrSObh3fTkfeKbU1hrnQpUTqQibTyK/l5X0Gg+G96cg7bRAw3zMaX3Y4HC9NV85/AIN7HGt0EIJyAAAAAElFTkSuQmCC" alt="marker" tabindex="0" style="position: absolute; left: 320px; top: 85px; width: 40px; height: 40px;" />
     </div>
 
-    <h2>Melding</h2>
+    <h2>Report</h2>
     <table class="results" style="page-break-after: always; page-break-before: avoid; -pdf-page-break: avoid; margin: 30px 0 30px 0;">
         {% if signal.is_child %}
         <tr>
-            <td>Hoofdmelding</td>
+            <td>Main report</td>
             <td>: {{ signal.parent.get_id_display }}</td>
         </tr>
         {% endif %}
         <tr>
-            <td style="width: 200px;">Toelichting</td>
+            <td style="width: 200px;">Note</td>
             <td>: {{ signal.text }}</td>
         </tr>
         <tr>
-            <td>Overlast</td>
+            <td>Problem</td>
             <td>: {{ signal.incident_date_start|date:"d-m-Y" }} {{ signal.incident_date_start|date:"H:i" }}</td>
         </tr>
         <tr>
-            <td>Stadsdeel</td>
+            <td>Zone</td>
             {% if signal.location.stadsdeel %}
             <td>: {{ signal.location.get_stadsdeel_display }}</td>
             {% else %}
@@ -134,27 +134,27 @@
             {% endif %}
         </tr>
         <tr>
-            <td>Adres</td>
+            <td>Address</td>
             <td>: {{ signal.location.address_text }}</td>
         </tr>
         <tr>
-            <td>Gemeld op</td>
+            <td>Reported on</td>
             <td>: {{ signal.created_at|date:"d-m-Y" }} {{ signal.created_at|date:"H:i" }}</td>
         </tr>
         <tr>
-            <td>Hoofdcategorie</td>
+            <td>Main category</td>
             <td>: {{ signal.category_assignment.category.parent.name }}</td>
         </tr>
         <tr>
-            <td>Subcategorie</td>
+            <td>Subcategory</td>
             <td>: {{ signal.category_assignment.category.name }}</td>
         </tr>
         <tr>
-            <td>Urgentie</td>
+            <td>Urgency</td>
             <td>: {{ signal.priority.get_priority_display }}</td>
         </tr>
         <tr>
-            <td>Bron</td>
+            <td>Source</td>
             <td>: {{ signal.source }}</td>
         </tr>
     </table>
@@ -162,31 +162,31 @@
     {% include 'api/pdf/extra_properties.html' with signal=signal %}
 
     <div class="divider">&nbsp;</div>
-    <h2>Melder</h2>
+    <h2>Reporter</h2>
     <table class="results" style="page-break-after: avoid; page-break-before: avoid; -pdf-page-break: avoid; margin: 30px 0 30px 0;">
         <tr>
             <td style="width: 200px;">E-mail</td>
             <td>: {{ reporter_email|default:"Onbekend" }}</td>
         </tr>
         <tr>
-            <td>Telefoonnummer</td>
+            <td>Phone number</td>
             <td>: {{ reporter_phone|default:"Onbekend" }}</td>
         </tr>
         <tr>
-            <td>Verklaring contactgegevens delen</td>
+            <td>Permission to share contact info</td>
             <td>: {{ signal.reporter.sharing_allowed|yesno:"Toegestaan,Niet toegestaan" }}</td>
         </tr>
     </table>
 
     <div class="divider">&nbsp;</div>
-    <h2>Foto's</h2>
+    <h2>Photo's</h2>
     {% if attachment_images %}
         {% for data_uri, att_filename, user_email, created_at in attachment_images %}
             {% if data_uri %}
                 <p>
                     <img src="{{ data_uri|safe }}" style="object-fit: contain; width:680px; max-height:500px;" alt=""><br>
                     {{ att_filename}} op {{ created_at | date:"d-m-Y" }} {{ created_at | date:"H:i" }} door
-                    {% if user_email %}{{ user_email }}{% else %}melder{% endif %}
+                    {% if user_email %}{{ user_email }}{% else %}reporter{% endif %}
                 </p>
             {% else %}
                 <p>Image not available</p>
@@ -194,16 +194,16 @@
         {% endfor %}
         <br>
     {% else %}
-        <p>Er zijn geen foto's beschikbaar omdat de melder in Signalen geen foto's heeft meegeleverd.</p>
+        <p>There are no photos available because the reporter did not provide any photos in SEDA.</p>
     {% endif %}
 
 
     <div class="divider">&nbsp;</div>
-    <h2>Geschiedenis</h2>
+    <h2>History</h2>
     {% for history in signal.history_log.all %}
     <table class="history" style="page-break-after: avoid; page-break-before: avoid; -pdf-page-break: avoid; margin: 30px 0 30px 0;">
         <tr>
-            <td class="changed" style="width: 200px; vertical-align:top; overflow-wrap: break-word;">Gewijzigd op {{ history.created_at|date:"d-m-Y" }} om {{ history.created_at|date:"H:i:s" }} door {{ history.who|default:"SEDA System" }}</td>
+            <td class="changed" style="width: 200px; vertical-align:top; overflow-wrap: break-word;">Edited ob {{ history.created_at|date:"d-m-Y" }} om {{ history.created_at|date:"H:i:s" }} door {{ history.who|default:"SEDA System" }}</td>
             <td class="title" style="vertical-align:top">
                 {{ history.get_action }}<br>
                 {% if history.get_description %}
