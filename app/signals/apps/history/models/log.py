@@ -187,7 +187,7 @@ class Log(models.Model):
             assert self.object.questionnaire
 
             if self.object.questionnaire.flow == Questionnaire.FORWARD_TO_EXTERNAL:
-                action = 'Toelichting ontvangen'
+                action = 'Receive clarification'
         elif what == 'NOT_RECEIVED_SESSION':
             assert self.object
             assert self.object.questionnaire
