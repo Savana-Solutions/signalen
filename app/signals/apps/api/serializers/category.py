@@ -186,25 +186,25 @@ class PrivateCategoryHistoryHalSerializer(serializers.ModelSerializer):
 
         for key, value in log.data.items():
             if key == 'name':
-                action = f'Naam gewijzigd naar:\n {value}'
+                action = f'Name changed to:\n {value}'
             elif key == 'description':
-                action = f'Omschrijving gewijzigd naar:\n {value}'
+                action = f'Description changed to:\n {value}'
             elif key == 'slo':
                 sla = ServiceLevelObjective.objects.get(pk=value[0])
-                action = f'Afhandeltermijn gewijzigd naar:\n {sla.n_days} {"week" if sla.use_calendar_days else "werk"}dagen'  # noqa
+                action = f'Closing period changed to:\n {sla.n_days} {"week" if sla.use_calendar_days else "werk"} days'  # noqa
             elif key == 'is_active':
-                action = f'Status gewijzigd naar:\n {"Actief" if value else "Inactief"}'
+                action = f'Status changed to:\n {"Active" if value else "Inactive"}'
             elif key == 'handling_message':
-                action = f'Servicebelofte gewijzigd naar:\n {value}'
+                action = f'Service promise changed to:\n {value}'
             elif key == 'public_name':
-                action = f'Naam openbaar gewijzigd naar:\n {value}'
+                action = f'Public name changed to:\n {value}'
             elif key == 'is_public_accessible':
-                action = f'Openbaar tonen gewijzigd naar:\n {"Aan" if value else "Uit"}'
+                action = f'Publically show changed to:\n {"On" if value else "Off"}'
             elif key == 'icon':
                 if value == '':
-                    action = 'Icoon verwijderd'
+                    action = 'Icon removed'
                 else:
-                    action = f'Icoon gewijzigd naar:\n {value[value.rindex("/")+1:]}'
+                    action = f'Icon changed to:\n {value[value.rindex("/")+1:]}'
             else:
                 continue  # We do not show other tracked values, so on to the next one
 

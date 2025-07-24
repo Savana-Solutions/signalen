@@ -138,50 +138,50 @@ class Log(models.Model):
         "who" in the style of the signals_history_view
         Present for backwards compatibility
         """
-        return self.created_by or 'Signalen systeem'
+        return self.created_by or 'SEDA System'
 
     def get_action(self) -> str:  # noqa C901
         """
         "get_action" copied from History
         Present for backwards compatibility
         """
-        action = 'Actie onbekend.'
+        action = 'Action unknown.'
         what = self.what
         if what == 'UPDATE_STATUS':
-            _status_choice = 'Onbekend'
+            _status_choice = 'Unknown'
             if self.extra:
-                _status_choice = dict(STATUS_CHOICES).get(self.extra, 'Onbekend')
+                _status_choice = dict(STATUS_CHOICES).get(self.extra, 'Unknown')
 
-            action = f'Status gewijzigd naar: {_status_choice}'
+            action = f'Status changed to: {_status_choice}'
         elif what == 'UPDATE_PRIORITY':
-            _priority = 'Onbekend'
+            _priority = 'Unknown'
             if self.extra:
-                _priority = {'high': 'Hoog', 'normal': 'Normaal', 'low': 'Laag'}.get(self.extra, 'Onbekend')
-            action = f'Urgentie gewijzigd naar: {_priority}'
+                _priority = {'high': 'High', 'normal': 'Normal', 'low': 'Low'}.get(self.extra, 'Unknown')
+            action = f'Changed urgency to: {_priority}'
         elif what == 'UPDATE_CATEGORY_ASSIGNMENT':
-            action = f'Categorie gewijzigd naar: {self.extra}'
+            action = f'Category changed to: {self.extra}'
         elif what == 'UPDATE_LOCATION':
-            action = 'Locatie gewijzigd naar:'
+            action = 'Location changed to:'
         elif what == 'CREATE_NOTE':
-            action = 'Notitie toegevoegd:'
+            action = 'Added note:'
         elif what == 'RECEIVE_FEEDBACK' or what == 'CREATE_FEEDBACK':
-            action = 'Feedback van melder ontvangen'
+            action = 'Received feedback from reporter'
         elif what == 'UPDATE_TYPE_ASSIGNMENT':
-            action = f'Type gewijzigd naar: {_history_translated_action(self.extra)}'
+            action = f'Type changed to: {_history_translated_action(self.extra)}'
         elif what == 'UPDATE_DIRECTING_DEPARTMENTS_ASSIGNMENT':
-            action = f'Regie gewijzigd naar: {self.extra or "Verantwoordelijke afdeling"}'
+            action = f'Region changed to: {self.extra or "Responsible department"}'
         elif what == 'UPDATE_ROUTING_ASSIGNMENT':
-            _route_assignment = self.extra or 'Verantwoordelijke afdeling (routering)'
-            action = f'Routering: afdeling/afdelingen gewijzigd naar: {_route_assignment}'
+            _route_assignment = self.extra or 'Responsible department (routing)'
+            action = f'Routing: afdeling/afdelingen gewijzigd naar: {_route_assignment}'
         elif what == 'UPDATE_USER_ASSIGNMENT':
             if self.extra:
-                action = f'Melding toewijzing gewijzigd naar: {self.extra}'
+                action = f'Report assignment changed to: {self.extra}'
             else:
-                action = 'Melding niet meer toegewezen aan behandelaar.'
+                action = 'Report no longer assigned to reporter.'
         elif what == 'CREATE_SIGNAL' and self.object_pk != self._signal_id:
-            action = 'Deelmelding toegevoegd'
+            action = 'Split report added'
         elif what == 'UPDATE_SLA':
-            action = 'Servicebelofte:'
+            action = 'Service promise:'
         elif what == 'RECEIVE_SESSION':
             assert self.object
             assert self.object.questionnaire
@@ -193,9 +193,9 @@ class Log(models.Model):
             assert self.object.questionnaire
 
             if self.object.questionnaire.flow == Questionnaire.FORWARD_TO_EXTERNAL:
-                action = 'Geen toelichting ontvangen'
+                action = 'No clarification received'
         elif what == 'UPDATE_REPORTER':
-            action = 'Contactgegevens melder:'
+            action = 'Contact information of reporter:'
 
         return action
 
@@ -211,9 +211,9 @@ class Log(models.Model):
 
             description = self.object.get_description()
         elif what == 'CHILD_SIGNAL_CREATED':
-            description = f'Melding {self.extra}'
+            description = f'Report {self.extra}'
         elif what == 'UPDATE_SLA' and self.description is None:
-            description = 'Servicebelofte onbekend'
+            description = 'Service promise unknown'
 
         return description
 
