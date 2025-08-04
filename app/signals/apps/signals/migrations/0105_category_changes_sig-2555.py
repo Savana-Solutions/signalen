@@ -12,7 +12,7 @@ NEW_CATEGORIES = {
             'name': 'Overige Wonen',
             'handling': 'I5DMC',
             'handling_message':
-                "Uw melding wordt ingepland: wij laten u binnen 5 werkdagen "
+                "Uw melding wordt planned: wij laten u binnen 5 werkdagen "
                 "weten hoe en wanneer uw melding wordt afgehandeld. Dat doen "
                 "we via e-mail.",
             'departments': ['WON'],

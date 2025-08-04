@@ -25,7 +25,7 @@ class Questionnaire(models.Model):
     FORWARD_TO_EXTERNAL = 'FORWARD_TO_EXTERNAL'
     FLOW_CHOICES = (
         (EXTRA_PROPERTIES, 'Uitvraag'),
-        (REACTION_REQUEST, 'Reactie gevraagd'),
+        (REACTION_REQUEST, 'Reaction requested'),
         (FEEDBACK_REQUEST, 'Klanttevredenheidsonderzoek'),
         (FORWARD_TO_EXTERNAL, 'Doorzetten naar externe'),
     )

@@ -25,7 +25,7 @@ class Command(BaseCommand):
         # be worked on and solved (and thus need to show up in the `punctuality`
         # filter).
         no_deadlines = Signal.objects.filter(category_assignment__deadline__isnull=True).exclude(
-            status__state__in=[workflow.GESPLITST, workflow.AFGEHANDELD, workflow.GEANNULEERD]
+            status__state__in=[workflow.SPLIT, workflow.COMPLETED, workflow.CANCELLED]
         )
 
         for signal in no_deadlines.iterator(chunk_size=1000):
@@ -47,7 +47,7 @@ class Command(BaseCommand):
         self._set_deadlines()
 
         no_deadlines = Signal.objects.filter(category_assignment__deadline__isnull=True).exclude(
-            status__state__in=[workflow.GESPLITST, workflow.AFGEHANDELD, workflow.GEANNULEERD]
+            status__state__in=[workflow.SPLIT, workflow.COMPLETED, workflow.CANCELLED]
         )
         self.stdout.write(f'Number of signals without deadlines {no_deadlines.count()}')
         self.stdout.write('Done')

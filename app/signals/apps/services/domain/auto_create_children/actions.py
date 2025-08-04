@@ -9,7 +9,7 @@ from signals.apps.services.domain.auto_create_children.rules import (
     EikenprocessierupsRule
 )
 from signals.apps.signals.models import Category, Signal
-from signals.apps.signals.workflow import GEMELD
+from signals.apps.signals.workflow import REPORTED
 
 
 class CreateChildrenContainerAction(ExtraPropertiesMixin):
@@ -74,7 +74,7 @@ class CreateChildrenContainerAction(ExtraPropertiesMixin):
                 'geometrie': geometry,
             }
             status_data = {
-                'state': GEMELD,
+                'state': REPORTED,
             }
             category_data = {
                 'category': category,
@@ -124,7 +124,7 @@ class CreateChildrenEikenprocessierupsAction(ExtraPropertiesMixin):
                 'geometrie': signal.location.geometrie,
             }
             status_data = {
-                'state': GEMELD,
+                'state': REPORTED,
             }
             category_data = {
                 'category': signal.category_assignment.category,

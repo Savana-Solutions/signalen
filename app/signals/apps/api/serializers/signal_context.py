@@ -85,7 +85,7 @@ class SignalContextReporterSerializer(serializers.ModelSerializer):
             },
             'state_display': {
                 'type': 'string',
-                'example': 'Gemeld',
+                'example': 'Reported',
             },
         },
     })
@@ -206,7 +206,7 @@ class SignalContextSerializer(HALSerializer):
             email=reporter_email
         ).filter(parent__isnull=True).count()
         open_signals_for_reporter_count = Signal.objects.filter_reporter(email=reporter_email).exclude(
-            status__state__in=[workflow.GEANNULEERD, workflow.AFGEHANDELD, workflow.GESPLITST]
+            status__state__in=[workflow.CANCELLED, workflow.COMPLETED, workflow.SPLIT]
         ).filter(parent__isnull=True).count()
         # Not filtering parent__isnull=True, as feedback is not requested for child signals.
         satisfied_count = Signal.objects.reporter_feedback_satisfied_count(email=reporter_email)
@@ -239,7 +239,7 @@ class SignalContextGeoSerializer(GeoFeatureModelSerializer):
             },
             'state_display': {
                 'type': 'string',
-                'example': 'Gemeld',
+                'example': 'Reported',
             },
         },
     })

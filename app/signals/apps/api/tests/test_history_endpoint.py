@@ -79,7 +79,7 @@ class TestHistoryAction(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
         status = Signal.actions.update_status(
             {
                 'text': 'DIT IS EEN TEST',
-                'state': workflow.BEHANDELING,
+                'state': workflow.IN_PROGRESS,
                 'user': self.user,
             },
             self.signal

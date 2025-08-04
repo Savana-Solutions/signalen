@@ -107,7 +107,7 @@ def _update_status_actualiseerZaakstatus_Lk01(signal, request_data):
     """
     status_text = _get_status_text_actualiseerZaakstatus_Lk01(request_data)
     status_data = {
-        'state': workflow.AFGEHANDELD_EXTERN,
+        'state': workflow.DONE_EXTERNAL,
         'text': status_text,
         'extra_properties': {
             'sigmax_datum_afgehandeld': request_data['datum_afgehandeld'],

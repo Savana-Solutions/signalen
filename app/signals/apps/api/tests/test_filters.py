@@ -25,7 +25,7 @@ from signals.apps.signals.factories import (
     TypeFactory
 )
 from signals.apps.signals.models import Category, Priority, Signal, SignalDepartments
-from signals.apps.signals.workflow import BEHANDELING, GEMELD, ON_HOLD
+from signals.apps.signals.workflow import IN_PROGRESS, REPORTED, ON_HOLD
 from signals.test.utils import SignalsBaseApiTestCase
 
 
@@ -60,7 +60,7 @@ class TestFilters(SignalsBaseApiTestCase):
                 [now - timedelta(hours=idx)
                  for idx in range(cls.SIGNALS_DISTRIBUTE_HOURS_CNT)]
 
-        cls.states = 3 * [BEHANDELING] + 2 * [ON_HOLD] + (len(times) - 3 - 2) * [GEMELD]
+        cls.states = 3 * [IN_PROGRESS] + 2 * [ON_HOLD] + (len(times) - 3 - 2) * [REPORTED]
         shuffle(cls.states)
 
         cls.sub_categories = [CategoryFactory.create() for _ in range(cls.SUBCATEGORY_CNT)]
@@ -232,11 +232,11 @@ class TestFilters(SignalsBaseApiTestCase):
         """ Test result sets of statuses separately, and combined. """
         params = {"status": ['m']}
         result_ids = self._request_filter_signals(params)
-        self.assertEqual(self.states.count(GEMELD), len(result_ids))
+        self.assertEqual(self.states.count(REPORTED), len(result_ids))
 
         params = {"status": ['b']}
         result_ids = self._request_filter_signals(params)
-        self.assertEqual(self.states.count(BEHANDELING), len(result_ids))
+        self.assertEqual(self.states.count(IN_PROGRESS), len(result_ids))
 
         params = {"status": ['h']}
         result_ids = self._request_filter_signals(params)
@@ -244,7 +244,7 @@ class TestFilters(SignalsBaseApiTestCase):
 
         params = {"status": ['h', 'b']}
         result_ids = self._request_filter_signals(params)
-        self.assertEqual(self.states.count(ON_HOLD) + self.states.count(BEHANDELING),
+        self.assertEqual(self.states.count(ON_HOLD) + self.states.count(IN_PROGRESS),
                          len(result_ids))
 
     def test_filter_feedback_not_received(self):
@@ -1298,20 +1298,20 @@ class TestPunctualityFilter(SignalsBaseApiTestCase):
         self.created_at = datetime(2021, 2, 19, 12, 0, 0, tzinfo=tzinfo)
         with freeze_time(self.created_at):
             self.assertEqual(datetime.now(tz=tzinfo), self.created_at)
-            # State workflow.AFGEHANDELD, workflow.GEANNULEERD and
-            # workflow.GESPLITST cannot be late because work on them finished.
+            # State workflow.COMPLETED, workflow.CANCELLED and
+            # workflow.SPLIT cannot be late because work on them finished.
             self.signal_no_slo = SignalFactory.create(
-                category_assignment__category=self.cat_no_slo, status__state=workflow.GEMELD)
+                category_assignment__category=self.cat_no_slo, status__state=workflow.REPORTED)
             self.signal_no_slo_2 = SignalFactory.create(
-                category_assignment__category=self.cat_no_slo, status__state=workflow.AFGEHANDELD)
+                category_assignment__category=self.cat_no_slo, status__state=workflow.COMPLETED)
             self.signal_slo_w = SignalFactory.create(
-                category_assignment__category=self.cat_slo_w, status__state=workflow.GEMELD)
+                category_assignment__category=self.cat_slo_w, status__state=workflow.REPORTED)
             self.signal_slo_w_2 = SignalFactory.create(
-                category_assignment__category=self.cat_slo_w, status__state=workflow.AFGEHANDELD)
+                category_assignment__category=self.cat_slo_w, status__state=workflow.COMPLETED)
             self.signal_slo_c = SignalFactory.create(
-                category_assignment__category=self.cat_slo_c, status__state=workflow.GEMELD)
+                category_assignment__category=self.cat_slo_c, status__state=workflow.REPORTED)
             self.signal_slo_c_2 = SignalFactory.create(
-                category_assignment__category=self.cat_slo_c, status__state=workflow.AFGEHANDELD)
+                category_assignment__category=self.cat_slo_c, status__state=workflow.COMPLETED)
 
     def test_filter_null(self):
         params = {'punctuality': 'null'}

@@ -14,7 +14,7 @@ class TestTasks(TestCase):
     @mock.patch('signals.apps.email_integrations.tasks.MailService.status_mail', autospec=True)
     def test_send_mail_reporter_created(self, mocked_mail):
         signal = SignalFactory.create()
-        signal.status = StatusFactory(_signal=signal, state=workflow.BEHANDELING)
+        signal.status = StatusFactory(_signal=signal, state=workflow.IN_PROGRESS)
         signal.save()
 
         tasks.send_mail_reporter(pk=signal.pk)

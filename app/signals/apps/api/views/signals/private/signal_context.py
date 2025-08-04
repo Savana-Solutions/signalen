@@ -92,7 +92,7 @@ class SignalContextViewSet(mixins.RetrieveModelMixin, GenericViewSet):
                                         },
                                         'state_display': {
                                             'type': 'string',
-                                            'example': 'Gemeld',
+                                            'example': 'Reported',
                                         },
                                     }
                                 }

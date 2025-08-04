@@ -7,7 +7,7 @@ from unittest import mock
 from django.core.management import call_command
 from django.test import TestCase
 
-from signals.apps.signals.workflow import TE_VERZENDEN, VERZENDEN_MISLUKT
+from signals.apps.signals.workflow import TO_SEND, SEND_FAILED
 from signals.settings import SIGMAX_SEND_FAIL_TIMEOUT_MINUTES
 
 
@@ -34,6 +34,6 @@ class TestFailStuckSendingSignals(TestCase):
 
         mocked_fail_stuck_sending_signals.assert_called_once()
 
-        self.assertIn(f'Add status "{VERZENDEN_MISLUKT}" to Signals that are stuck in "{TE_VERZENDEN}" '
+        self.assertIn(f'Add status "{SEND_FAILED}" to Signals that are stuck in "{TO_SEND}" '
                       f'for at least {SIGMAX_SEND_FAIL_TIMEOUT_MINUTES} minutes', output)
         self.assertIn('Done!', output)

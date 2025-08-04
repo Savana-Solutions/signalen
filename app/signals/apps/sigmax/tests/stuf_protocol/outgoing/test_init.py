@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class TestHandle(TestCase):
     def setUp(self):
-        self.signal = SignalFactory.create(status__state=workflow.TE_VERZENDEN)
+        self.signal = SignalFactory.create(status__state=workflow.TO_SEND)
 
     @mock.patch('signals.apps.sigmax.stuf_protocol.outgoing.MAX_ROUND_TRIPS', 2)
     @mock.patch('signals.apps.sigmax.stuf_protocol.outgoing.send_creeerZaak_Lk01', autospec=True)
@@ -68,7 +68,7 @@ class TestHandle(TestCase):
             handle(self.signal)
 
         self.signal.refresh_from_db()
-        self.assertEqual(self.signal.status.state, workflow.VERZENDEN_MISLUKT)
+        self.assertEqual(self.signal.status.state, workflow.SEND_FAILED)
         self.assertEqual(self.signal.status.text, 'Verzending van melding naar THOR is mislukt.')
 
     @mock.patch('signals.apps.sigmax.stuf_protocol.outgoing.send_signal_and_pdf', autospec=True)
@@ -79,6 +79,6 @@ class TestHandle(TestCase):
 
         self.signal.refresh_from_db()
 
-        self.assertEqual(self.signal.status.state, workflow.VERZONDEN)
+        self.assertEqual(self.signal.status.state, workflow.SENT)
         self.assertIn('Let op: waarschijnlijk is de PDF niet verzonden naar CityControl.',
                       self.signal.status.text)

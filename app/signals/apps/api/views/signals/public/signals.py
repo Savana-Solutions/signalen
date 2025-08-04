@@ -22,11 +22,11 @@ from signals.apps.signals.models import Signal
 from signals.apps.signals.models.aggregates.json_agg import JSONAgg
 from signals.apps.signals.models.views.signal import PublicSignalGeographyFeature
 from signals.apps.signals.workflow import (
-    AFGEHANDELD,
-    AFGEHANDELD_EXTERN,
-    GEANNULEERD,
-    GESPLITST,
-    VERZOEK_TOT_HEROPENEN
+    COMPLETED,
+    DONE_EXTERNAL,
+    CANCELLED,
+    SPLIT,
+    REQUEST_TO_REOPEN
 )
 from signals.throttling import PostOnlyNoUserRateThrottle
 
@@ -185,7 +185,7 @@ class PublicSignalViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
         """
         queryset = self.filter_queryset(
             self.get_queryset().exclude(
-                Q(state__in=[AFGEHANDELD, AFGEHANDELD_EXTERN, GEANNULEERD, GESPLITST, VERZOEK_TOT_HEROPENEN]) |
+                Q(state__in=[COMPLETED, DONE_EXTERNAL, CANCELLED, SPLIT, REQUEST_TO_REOPEN]) |
                 ~Q(child_category_is_public_accessible=True)
             )
         ).order_by('geometry')

@@ -63,14 +63,14 @@ class TriggerForwardToExternalFlowViaAPI(APITestCase, SuperUserMixin):
             'email_override': 'external@example.com',
             'send_email': True,
             'text': QUESTION_FOR_EXTERNAL_PARTY,
-            'state': workflow.DOORGEZET_NAAR_EXTERN
+            'state': workflow.FORWARDED_TO_EXTERN
         }
     }
     SIGNAL_DETAIL_ENDPOINT = '/signals/v1/private/signals/{signal_id}'
 
     def setUp(self):
-        self.signal = SignalFactory.create(status__state=workflow.GEMELD)
-        self.signal_with_image = SignalFactoryWithImage.create(status__state=workflow.GEMELD)
+        self.signal = SignalFactory.create(status__state=workflow.REPORTED)
+        self.signal_with_image = SignalFactoryWithImage.create(status__state=workflow.REPORTED)
         EmailTemplate.objects.create(key=EmailTemplate.SIGNAL_STATUS_CHANGED_FORWARD_TO_EXTERNAL,
                                      title='Uw melding {{ formatted_signal_id }}'
                                            f' {EmailTemplate.SIGNAL_STATUS_CHANGED_FORWARD_TO_EXTERNAL}',
@@ -80,11 +80,11 @@ class TriggerForwardToExternalFlowViaAPI(APITestCase, SuperUserMixin):
     @patch('signals.apps.signals.managers.update_status', autospec=True)
     def test_change_status_to_DOORGEZET_NAAR_EXTERN_django_signal_sent_correctly(self, patched_django_signal):
         """
-        Trigger the DOORGEZET_NAAR_EXTERN flow via API
+        Trigger the FORWARDED_TO_EXTERN flow via API
         """
         patched_django_signal.send_robust = MagicMock()
 
-        # Simulate triggering DOORGEZET_NAAR_EXTERN flow via a status update:
+        # Simulate triggering FORWARDED_TO_EXTERN flow via a status update:
         self.client.force_authenticate(user=self.superuser)
         url = self.SIGNAL_DETAIL_ENDPOINT.format(signal_id=self.signal.id)
 
@@ -96,7 +96,7 @@ class TriggerForwardToExternalFlowViaAPI(APITestCase, SuperUserMixin):
         self.signal.refresh_from_db()
 
         self.assertEqual(self.signal.status.text, self.STATUS_UPDATE['status']['text'])
-        self.assertEqual(self.signal.status.state, workflow.DOORGEZET_NAAR_EXTERN)
+        self.assertEqual(self.signal.status.state, workflow.FORWARDED_TO_EXTERN)
         self.assertEqual(self.signal.status.email_override, self.STATUS_UPDATE['status']['email_override'])
         self.assertEqual(self.signal.status.send_email, True)
 
@@ -215,7 +215,7 @@ class TestForwardToExternalRetrieveSessionAndFillOut(ValidateJsonSchemaMixin, AP
         with freeze_time(self.t_creation):
             self.signal = SignalFactoryValidLocation.create(
                 created_at=self.t_creation,
-                status__state=workflow.DOORGEZET_NAAR_EXTERN,
+                status__state=workflow.FORWARDED_TO_EXTERN,
                 status__text='SOME QUESTION',
                 status__email_override='a@example.com'
             )
@@ -223,7 +223,7 @@ class TestForwardToExternalRetrieveSessionAndFillOut(ValidateJsonSchemaMixin, AP
 
         self.assertIsInstance(self.session, Session)
         self.assertEqual(self.session.questionnaire.flow, Questionnaire.FORWARD_TO_EXTERNAL)
-        self.assertEqual(self.session._signal.status.state, workflow.DOORGEZET_NAAR_EXTERN)
+        self.assertEqual(self.session._signal.status.state, workflow.FORWARDED_TO_EXTERN)
 
         self.session_url = self.session_detail_endpoint.format(uuid=str(self.session.uuid))
         self.answers_url = self.session_answers_endpoint.format(uuid=str(self.session.uuid))
@@ -355,7 +355,7 @@ class TestForwardToExternalRetrieveSessionAndFillOut(ValidateJsonSchemaMixin, AP
         with freeze_time(self.t_creation + timedelta(seconds=60 * 60 * 24)):
             new_status = StatusFactory.create(
                 _signal=self.signal,
-                state=workflow.DOORGEZET_NAAR_EXTERN,
+                state=workflow.FORWARDED_TO_EXTERN,
                 text='SOME SECOND QUESTION',
                 email_override='b@example.com',
             )
@@ -381,12 +381,12 @@ class TestForwardToExternalRetrieveSessionAndFillOut(ValidateJsonSchemaMixin, AP
         """
         Forwarded to external flow will not "close" open sessions when the status
         of the associated Signal changes to something other than
-        DOORGEZET_NAAR_EXTERN.
+        FORWARDED_TO_EXTERN.
         """
         patched_get_url.return_value = '/some/url/'
 
         with freeze_time(self.t_creation + timedelta(seconds=60 * 60 * 24)):
-            new_status = StatusFactory.create(state=workflow.BEHANDELING, text='We are busy.')
+            new_status = StatusFactory.create(state=workflow.IN_PROGRESS, text='We are busy.')
             self.signal.status = new_status
             self.signal.save()
 
@@ -493,7 +493,7 @@ class TestForwardToExternalRetrieveSessionAndFillOut(ValidateJsonSchemaMixin, AP
 
         self.assertEqual(Status.objects.count(), n_statusses + 1)
         status = Status.objects.last()
-        self.assertEqual(status.state, workflow.VERZOEK_TOT_AFHANDELING)
+        self.assertEqual(status.state, workflow.CLOSURE_REQUESTED)
         self.assertEqual(status.text, None)
 
         # Status update causes no log entry because they use Django Signals fired in on_commit callback that is
@@ -588,7 +588,7 @@ class TestForwardToExternalRetrieveSessionAndFillOut(ValidateJsonSchemaMixin, AP
 
         self.assertEqual(Status.objects.count(), n_statusses + 1)
         status = Status.objects.last()
-        self.assertEqual(status.state, workflow.VERZOEK_TOT_AFHANDELING)
+        self.assertEqual(status.state, workflow.CLOSURE_REQUESTED)
         self.assertEqual(status.text, None)
 
         # Status update causes no log entry because they use Django Signals fired in on_commit callback that is
@@ -652,7 +652,7 @@ class TestForwardToExternalRetrieveSessionAndFillOut(ValidateJsonSchemaMixin, AP
 
         self.assertEqual(Status.objects.count(), n_statusses + 1)
         status = Status.objects.last()
-        self.assertEqual(status.state, workflow.VERZOEK_TOT_AFHANDELING)
+        self.assertEqual(status.state, workflow.CLOSURE_REQUESTED)
         self.assertEqual(status.text, None)
 
         self.assertEqual(Status.objects.count(), n_statusses + 1)
@@ -669,7 +669,7 @@ class TestForwardToExternalRetrieveSessionAndFillOut(ValidateJsonSchemaMixin, AP
         """
         Retrieve outstanding session and provide an answer check triggered email.
         """
-        Signal.actions.update_status({'text': 'STATUS GEMELD', 'state': workflow.GEMELD}, self.signal)
+        Signal.actions.update_status({'text': 'STATUS REPORTED', 'state': workflow.REPORTED}, self.signal)
         n_statusses = Status.objects.count()
         n_log_entries = Log.objects.count()
 
@@ -716,8 +716,8 @@ class TestForwardToExternalRetrieveSessionAndFillOut(ValidateJsonSchemaMixin, AP
         self.assertEqual(mail.outbox[0].to, [self.session._signal_status.email_override])
 
         # Check that we get an entry in the signal history containing the provided answer
-        # (Because our signal was no longer in workflow.DOORGEZET_NAAR_EXTERN, there will
-        # be no status transition to workflow.VERZOEK_TOT_AFHANDELING.)
+        # (Because our signal was no longer in workflow.FORWARDED_TO_EXTERN, there will
+        # be no status transition to workflow.CLOSURE_REQUESTED.)
         self.assertEqual(Status.objects.count(), n_statusses)
 
         # Status update causes no log entry because they use Django Signals fired in on_commit callback that is
@@ -750,7 +750,7 @@ class TestAttachedFileOrder(ValidateJsonSchemaMixin, APITestCase, SuperUserMixin
 
         with freeze_time(self.t_report):
             self.signal = SignalFactory.create(
-                status__state=workflow.DOORGEZET_NAAR_EXTERN,
+                status__state=workflow.FORWARDED_TO_EXTERN,
                 status__text='SOME QUESTION',
                 status__email_override='a@example.com'
             )
@@ -809,7 +809,7 @@ class TestDateTimeSerializationInLogs(ValidateJsonSchemaMixin, APITestCase, Supe
 
         with freeze_time(self.t_test):
             self.signal = SignalFactory.create(
-                status__state=workflow.DOORGEZET_NAAR_EXTERN,
+                status__state=workflow.FORWARDED_TO_EXTERN,
                 status__text='SOME QUESTION',
                 status__email_override='a@example.com'
             )

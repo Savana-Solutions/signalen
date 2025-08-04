@@ -26,7 +26,7 @@ NEW_CATEGORIES = {
             'description': 'Meldingen die betrekking hebben op een kapotte kolk en riolering.',
             'handling': 'A3DEC',
             'handling_message':
-                'Uw melding wordt ingepland: wij laten u binnen 5 werkdagen weten hoe en wanneer uw melding wordt '
+                'Uw melding wordt planned: wij laten u binnen 5 werkdagen weten hoe en wanneer uw melding wordt '
                 'afgehandeld.  Als u een mailadres hebt opgegeven, zullen we u op de hoogte houden.',
             'departments': ['STW'],
             'slo': '5W',

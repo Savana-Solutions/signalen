@@ -73,12 +73,12 @@ def create_session_for_forward_to_external(signal):
     """
     Create Question, Questionnaire, and Session for "forwarded to external" flow.
     """
-    if signal.status.state != workflow.DOORGEZET_NAAR_EXTERN:
-        msg = f"Signal {signal.id} is not in state DOORGEZET_NAAR_EXTERN"
+    if signal.status.state != workflow.FORWARDED_TO_EXTERN:
+        msg = f"Signal {signal.id} is not in state FORWARDED_TO_EXTERN"
         raise WrongState(msg)
 
     if not signal.status.email_override:
-        msg = f"Signal {signal.id} last status DOORGEZET_NAAR_EXTERN must have non-null email_override."
+        msg = f"Signal {signal.id} last status FORWARDED_TO_EXTERN must have non-null email_override."
         raise MissingEmail(msg)
 
     with transaction.atomic():
@@ -169,21 +169,21 @@ def clean_up_forward_to_external():
         frozen=False,
         invalidated=False,
         submit_before__lt=now(),
-        _signal_status__state=workflow.DOORGEZET_NAAR_EXTERN,
+        _signal_status__state=workflow.FORWARDED_TO_EXTERN,
     )
 
     count = 0
     for session in open_session_qs:
         # When invalidating a session we add a log entry stating we received no
         # reaction from the external party. On top of that we transition the
-        # to signal state to VERZOEK_TOT_AFHANDELING if not status updates were
+        # to signal state to CLOSURE_REQUESTED if not status updates were
         # performed since forwarding to an external party.
         SignalLogService.log_external_reaction_not_received(session)
         if session._signal.status.id == session._signal_status.id:
-            # Signal is still in state DOORGEZET_NAAR_EXTERN, we change its
+            # Signal is still in state FORWARDED_TO_EXTERN, we change its
             # state with an appropriate message.
             Signal.actions.update_status(
-                {"state": workflow.VERZOEK_TOT_AFHANDELING}, session._signal
+                {"state": workflow.CLOSURE_REQUESTED}, session._signal
             )
 
         # We use the invalidated property, and not frozen, because we want to
@@ -228,11 +228,11 @@ class ForwardToExternalSessionService(SessionService):
         # use the history app to add a log entry with the message (reaction) we
         # received from the external party. And on top of that if the signal
         # status was not updated after we forwarded it we create a further
-        # status update to VERZOEK_TOT_AFHANDELING (without a message).
+        # status update to CLOSURE_REQUESTED (without a message).
         SignalLogService.log_external_reaction_received(self.session, answer.payload)
         if self.session._signal_status == signal.status:
             Signal.actions.update_status(
-                {"state": workflow.VERZOEK_TOT_AFHANDELING}, signal
+                {"state": workflow.CLOSURE_REQUESTED}, signal
             )
 
     def _send_confirmation_mail(self):

@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 ('flow', models.CharField(
                     choices=[
                         ('EXTRA_PROPERTIES', 'Uitvraag'),
-                        ('REACTION_REQUEST', 'Reactie gevraagd'),
+                        ('REACTION_REQUEST', 'Reaction requested'),
                         ('FEEDBACK_REQUEST', 'Klanttevredenheidsonderzoek')
                     ],
                     default='EXTRA_PROPERTIES',

@@ -31,23 +31,23 @@ def _is_status_applicable(status: Status) -> bool:
     Notes
     -----
     The status is considered applicable if the following conditions are met:
-    - The state of the status is `workflow.TE_VERZENDEN`.
+    - The state of the status is `workflow.TO_SEND`.
     - The target API of the status is `Status.TARGET_API_SIGMAX`.
 
     Examples
     --------
     >>> s = Status()
-    >>> s.state = workflow.TE_VERZENDEN
+    >>> s.state = workflow.TO_SEND
     >>> s.target_api = Status.TARGET_API_SIGMAX
     >>> _is_status_applicable(s)
     True
 
-    >>> s.state = workflow.TE_VERZENDEN
+    >>> s.state = workflow.TO_SEND
     >>> s.target_api = None
     >>> _is_status_applicable(s)
     False
     """
-    return status.state == workflow.TE_VERZENDEN and status.target_api == Status.TARGET_API_SIGMAX
+    return status.state == workflow.TO_SEND and status.target_api == Status.TARGET_API_SIGMAX
 
 
 def is_signal_applicable(signal: Signal) -> bool:
@@ -73,7 +73,7 @@ def is_signal_applicable(signal: Signal) -> bool:
     --------
     >>> s = Signal()
     >>> s.status = Status()
-    >>> s.status.state = workflow.TE_VERZENDEN
+    >>> s.status.state = workflow.TO_SEND
     >>> s.status.target_api = Status.TARGET_API_SIGMAX
     >>> is_signal_applicable(s)
     True
@@ -127,10 +127,10 @@ def fail_stuck_sending_signals() -> None:
 
     Notes
     -----
-    This function identifies signals that are in the sending state (`workflow.TE_VERZENDEN`)
+    This function identifies signals that are in the sending state (`workflow.TO_SEND`)
     and have a target API of `Status.TARGET_API_SIGMAX`. It checks if the signals have been
     in the sending state for longer than the specified timeout period (`settings.SIGMAX_SEND_FAIL_TIMEOUT_MINUTES`).
-    If such signals are found, their status is updated to `workflow.VERZENDEN_MISLUKT` and a failure message
+    If such signals are found, their status is updated to `workflow.SEND_FAILED` and a failure message
     is added to the status text.
 
     Examples
@@ -139,14 +139,14 @@ def fail_stuck_sending_signals() -> None:
     # If there are signals stuck in the sending state for too long, they will be marked as failed
     """
     before = timezone.now() - timedelta(minutes=float(settings.SIGMAX_SEND_FAIL_TIMEOUT_MINUTES))
-    stuck_signals = Signal.objects.filter(status__state=workflow.TE_VERZENDEN,
+    stuck_signals = Signal.objects.filter(status__state=workflow.TO_SEND,
                                           status__target_api=Status.TARGET_API_SIGMAX,
                                           status__updated_at__lte=before)
 
     for signal in stuck_signals:
         Signal.actions.update_status(data={
-            'state': workflow.VERZENDEN_MISLUKT,
-            'text': 'Melding stond langer dan {} minuten op TE_VERZENDEN. Mislukt'.format(
+            'state': workflow.SEND_FAILED,
+            'text': 'Melding stond langer dan {} minuten op TO_SEND. Mislukt'.format(
                 settings.SIGMAX_SEND_FAIL_TIMEOUT_MINUTES
             )
         }, signal=signal)

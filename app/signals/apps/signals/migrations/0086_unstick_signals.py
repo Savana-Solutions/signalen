@@ -5,7 +5,7 @@ Fix SIG-2069
 """
 from django.db import migrations
 
-from signals.apps.signals.workflow import AFGEHANDELD_EXTERN
+from signals.apps.signals.workflow import DONE_EXTERNAL
 
 PROBLEMATIC_SIA_IDS = [
     344461,
@@ -23,7 +23,7 @@ def _set_state_afgehandeld_extern(apps, schema_editor):
     for signal in Signal.objects.filter(id__in=PROBLEMATIC_SIA_IDS):
         new_status = Status(
             _signal=signal,
-            state=AFGEHANDELD_EXTERN,
+            state=DONE_EXTERNAL,
             text='Vastgelopen melding vrijgegeven zonder tussenkomst CityControl.'
         )
         new_status.save()  # no full_clean, bypass workflow checks

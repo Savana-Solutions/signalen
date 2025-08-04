@@ -5,7 +5,7 @@ from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyChoice, FuzzyText
 
 from signals.apps.signals.models import Status
-from signals.apps.signals.workflow import GEMELD
+from signals.apps.signals.workflow import REPORTED
 
 
 class StatusFactory(DjangoModelFactory):
@@ -18,7 +18,7 @@ class StatusFactory(DjangoModelFactory):
 
     text = FuzzyText(length=400)
     user = Sequence(lambda n: 'veelmelder{}@example.com'.format(n))
-    state = GEMELD  # Initial state is always 'm'
+    state = REPORTED  # Initial state is always 'm'
     extern: FuzzyChoice = FuzzyChoice((True, False))
 
     @post_generation

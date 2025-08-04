@@ -84,7 +84,7 @@ Dank voor uw melding. Fijn dat u zich betrokken voelt bij de stad.
 {{ text }}
 
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Wat doen we met uw melding?**  
@@ -148,7 +148,7 @@ Op {{ created_at|date:"j F Y" }} om {{ created_at|date:"H.i" }} uur hebt u een m
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -172,7 +172,7 @@ Op {{ created_at|date:"j F Y" }} om {{ created_at|date:"H.i" }} uur hebt u een m
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -210,7 +210,7 @@ Bent u tevreden met de afhandeling van uw melding?
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -234,7 +234,7 @@ Op {{ created_at|date:"j F Y" }} om {{ created_at|date:"H.i" }} uur hebt u een m
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -256,7 +256,7 @@ Op {{ created_at|date:"j F Y" }} hebt u een melding gedaan bij de gemeente. Wij 
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -289,7 +289,7 @@ Bedankt voor uw reactie. U krijgt binnen 3 werkdagen weer bericht van ons.
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -323,7 +323,7 @@ Bent u tevreden met de afhandeling van uw melding?
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -374,7 +374,7 @@ Bedankt voor uw reactie. U hoort binnen 3 werkdagen weer bericht van ons.
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -396,7 +396,7 @@ U liet ons het volgende weten:
 Gegevens van de melding
 
 - Nummer: {{ formatted_signal_id }}
-- Gemeld op: {{ created_at|date:"DATETIME_FORMAT" }}
+- Reported on: {{ created_at|date:"DATETIME_FORMAT" }}
 - Plaats: {% if location %}{{ location|format_address:"O hlT, P W" }}{% endif %}
 
 
@@ -482,7 +482,7 @@ Uw melding
 {signal.text}
 
 Nummer: SIG-{signal.id}
-Gemeld op: 4 juli 2023, 15.37 uur
+Reported on: 4 juli 2023, 15.37 uur
 Plaats: Sesamstraat 666, 1011 AA Ergens
 
 Wat doen we met uw melding?
@@ -533,7 +533,7 @@ Nee, ik geef de gemeente Amsterdam geen toestemming om mijn melding door te stur
 <p><strong>Uw melding</strong><br />
 {signal.text}</p>
 <p>Nummer: SIG-{signal.id}<br />
-Gemeld op: 4 juli 2023, 15.37 uur<br />
+Reported on: 4 juli 2023, 15.37 uur<br />
 Plaats: Sesamstraat 666, 1011 AA Ergens</p>
 <p><strong>Wat doen we met uw melding?</strong><br />
 Test handling message (child category)</p>
@@ -564,7 +564,7 @@ t**t@******e.com</p>
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.AFGEHANDELD,
+                status__state=workflow.COMPLETED,
             )
 
         MailService.status_mail(signal=signal)
@@ -589,7 +589,7 @@ Nee, ik ben niet tevreden Nee, ik ben niet tevreden http://dummy_link/kto/nee/{f
 
 Gegevens van uw melding
 Nummer: SIG-{signal.id}
-Gemeld op: 4 juli 2023, 15.37 uur
+Reported on: 4 juli 2023, 15.37 uur
 Plaats: Sesamstraat 666, 1011 AA Ergens
 
 Meer weten?
@@ -621,7 +621,7 @@ Gemeente Amsterdam""" # noqa
 <p><a href="http://dummy_link/kto/nee/{feedback.token}"><img alt="Nee, ik ben niet tevreden" src="https://acc.meldingen.amsterdam.nl/assets/images/unhappy.png" /> Nee, ik ben niet tevreden</a></p>
 <p><strong>Gegevens van uw melding</strong><br />
 Nummer: SIG-{signal.id}<br />
-Gemeld op: 4 juli 2023, 15.37 uur<br />
+Reported on: 4 juli 2023, 15.37 uur<br />
 Plaats: Sesamstraat 666, 1011 AA Ergens</p>
 <p><strong>Meer weten?</strong><br />
 Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot en met vrijdag van 08.00 tot 18.00. Geef dan ook het nummer van uw melding door: SIG-{signal.id}.</p>
@@ -636,7 +636,7 @@ Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.INGEPLAND,
+                status__state=workflow.PLANNED,
                 status__send_email=True,
             )
 
@@ -654,7 +654,7 @@ Meer informatie
 
 Gegevens van uw melding
 Nummer: SIG-{signal.id}
-Gemeld op: 4 juli 2023, 15.37 uur
+Reported on: 4 juli 2023, 15.37 uur
 Plaats: Sesamstraat 666, 1011 AA Ergens
 
 Meer weten?
@@ -683,7 +683,7 @@ Gemeente Amsterdam""" # noqa
 {signal.status.text}</p>
 <p><strong>Gegevens van uw melding</strong><br />
 Nummer: SIG-{signal.id}<br />
-Gemeld op: 4 juli 2023, 15.37 uur<br />
+Reported on: 4 juli 2023, 15.37 uur<br />
 Plaats: Sesamstraat 666, 1011 AA Ergens</p>
 <p><strong>Meer weten?</strong><br />
 Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot en met vrijdag van 08.00 tot 18.00. Geef dan ook het nummer van uw melding door: SIG-{signal.id}.</p>
@@ -698,7 +698,7 @@ Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.HEROPEND,
+                status__state=workflow.REOPENED,
             )
 
         MailService.status_mail(signal=signal)
@@ -718,7 +718,7 @@ Waarom bent u niet tevreden?
 
 Gegevens van uw melding
 Nummer: SIG-{signal.id}
-Gemeld op: 4 juli 2023, 15.37 uur
+Reported on: 4 juli 2023, 15.37 uur
 Plaats: Sesamstraat 666, 1011 AA Ergens
 
 Meer weten?
@@ -749,7 +749,7 @@ Bent u tevreden met de afhandeling van uw melding?<br />
 <p><strong>Waarom bent u niet tevreden?</strong></p>
 <p><strong>Gegevens van uw melding</strong><br />
 Nummer: SIG-{signal.id}<br />
-Gemeld op: 4 juli 2023, 15.37 uur<br />
+Reported on: 4 juli 2023, 15.37 uur<br />
 Plaats: Sesamstraat 666, 1011 AA Ergens</p>
 <p><strong>Meer weten?</strong><br />
 Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot en met vrijdag van 08.00 tot 18.00. Geef dan ook het nummer van uw melding door: SIG-{signal.id}.</p>
@@ -764,7 +764,7 @@ Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.BEHANDELING,
+                status__state=workflow.IN_PROGRESS,
                 status__send_email=True,
             )
 
@@ -782,7 +782,7 @@ Stand van zaken
 
 Gegevens van uw melding
 Nummer: SIG-{signal.id}
-Gemeld op: 4 juli 2023, 15.37 uur
+Reported on: 4 juli 2023, 15.37 uur
 Plaats: Sesamstraat 666, 1011 AA Ergens
 
 Meer weten?
@@ -811,7 +811,7 @@ Gemeente Amsterdam""" # noqa
 {signal.status.text}</p>
 <p><strong>Gegevens van uw melding</strong><br />
 Nummer: SIG-{signal.id}<br />
-Gemeld op: 4 juli 2023, 15.37 uur<br />
+Reported on: 4 juli 2023, 15.37 uur<br />
 Plaats: Sesamstraat 666, 1011 AA Ergens</p>
 <p><strong>Meer weten?</strong><br />
 Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot en met vrijdag van 08:00 tot 18:00. Geef dan ook het nummer van uw melding door: SIG-{signal.id}.</p>
@@ -826,7 +826,7 @@ Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.REACTIE_GEVRAAGD,
+                status__state=workflow.REACTION_REQUESTED,
             )
 
         MailService.status_mail(signal=signal)
@@ -843,7 +843,7 @@ U liet ons het volgende weten
 
 Gegevens van uw melding
 Nummer: SIG-{signal.id}
-Gemeld op: 4 juli 2023, 15.37 uur
+Reported on: 4 juli 2023, 15.37 uur
 Plaats: Sesamstraat 666, 1011 AA Ergens
 
 Meer weten?
@@ -871,7 +871,7 @@ Gemeente Amsterdam""" # noqa
 {signal.text}</p>
 <p><strong>Gegevens van uw melding</strong><br />
 Nummer: SIG-{signal.id}<br />
-Gemeld op: 4 juli 2023, 15.37 uur<br />
+Reported on: 4 juli 2023, 15.37 uur<br />
 Plaats: Sesamstraat 666, 1011 AA Ergens</p>
 <p><strong>Meer weten?</strong><br />
 Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot en met vrijdag van 08.00 tot 18.00. Geef dan ook het nummer van uw melding door: SIG-{signal.id}.</p>
@@ -886,7 +886,7 @@ Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.REACTIE_ONTVANGEN,
+                status__state=workflow.REACTION_RECEIVED,
             )
 
         MailService.status_mail(signal=signal)
@@ -905,7 +905,7 @@ Nee, bel of e-mail mij niet meer over deze melding of over mijn reactie.
 
 Gegevens van uw melding
 Nummer: SIG-{signal.id}
-Gemeld op: 4 juli 2023, 15.37 uur
+Reported on: 4 juli 2023, 15.37 uur
 Plaats: Sesamstraat 666, 1011 AA Ergens
 
 Meer weten?
@@ -935,7 +935,7 @@ Gemeente Amsterdam""" # noqa
  Nee, bel of e-mail mij niet meer over deze melding of over mijn reactie. </p>
 <p><strong>Gegevens van uw melding</strong><br />
 Nummer: SIG-{signal.id}<br />
-Gemeld op: 4 juli 2023, 15.37 uur<br />
+Reported on: 4 juli 2023, 15.37 uur<br />
 Plaats: Sesamstraat 666, 1011 AA Ergens</p>
 <p><strong>Meer weten?</strong><br />
 Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot en met vrijdag van 08.00 tot 18.00. Geef dan ook het nummer van uw melding door: SIG-{signal.id}.</p>
@@ -950,10 +950,10 @@ Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.VERZOEK_TOT_HEROPENEN,
+                status__state=workflow.REQUEST_TO_REOPEN,
             )
 
-        StatusFactory.create(_signal=signal, state=workflow.AFGEHANDELD)
+        StatusFactory.create(_signal=signal, state=workflow.COMPLETED)
         FeedbackFactory.create(
             _signal=signal,
             allows_contact=True,
@@ -983,7 +983,7 @@ Bonus text
 
 Gegevens van uw melding
 Nummer: SIG-{signal.id}
-Gemeld op: 4 juli 2023, 15.37 uur
+Reported on: 4 juli 2023, 15.37 uur
 Plaats: Sesamstraat 666, 1011 AA Ergens
 
 Meer weten?
@@ -1016,7 +1016,7 @@ Some text about how happy I am.</p>
 <p>Bonus text</p>
 <p><strong>Gegevens van uw melding</strong><br />
 Nummer: SIG-{signal.id}<br />
-Gemeld op: 4 juli 2023, 15.37 uur<br />
+Reported on: 4 juli 2023, 15.37 uur<br />
 Plaats: Sesamstraat 666, 1011 AA Ergens</p>
 <p><strong>Meer weten?</strong><br />
 Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot en met vrijdag van 08:00 tot 18:00. Geef dan ook het nummer van uw melding door: SIG-{signal.id}.</p>
@@ -1031,7 +1031,7 @@ Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.DOORGEZET_NAAR_EXTERN,
+                status__state=workflow.FORWARDED_TO_EXTERN,
                 status__email_override='tester@example.com'
             )
 
@@ -1082,7 +1082,7 @@ U kunt de melding gelijk inzien en oppakken. Als de melding verwerkt, ontvangen 
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.AFGEHANDELD,
+                status__state=workflow.COMPLETED,
                 status__email_override='tester@example.com'
             )
 
@@ -1115,7 +1115,7 @@ Ja, bel of e-mail mij over deze melding of over mijn reactie.
 
 Gegevens van uw melding
 Nummer: SIG-{signal.id}
-Gemeld op: 4 juli 2023, 15.37 uur
+Reported on: 4 juli 2023, 15.37 uur
 Plaats: Sesamstraat 666, 1011 AA Ergens
 
 Meer weten?
@@ -1148,7 +1148,7 @@ Bonus text</p>
 Ja, bel of e-mail mij over deze melding of over mijn reactie.</p>
 <p><strong>Gegevens van uw melding</strong><br />
 Nummer: SIG-{signal.id}<br />
-Gemeld op: 4 juli 2023, 15.37 uur<br />
+Reported on: 4 juli 2023, 15.37 uur<br />
 Plaats: Sesamstraat 666, 1011 AA Ergens</p>
 <p><strong>Meer weten?</strong><br />
 Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot en met vrijdag van 08.00 tot 18.00. Geef dan ook het nummer van uw melding door: SIG-{signal.id}.</p>
@@ -1163,7 +1163,7 @@ Voor vragen over uw melding kunt u bellen met telefoonnummer 14 020, maandag tot
             signal = SignalFactory.create(
                 reporter__email='test@example.com',
                 reporter__phone='0123456789',
-                status__state=workflow.AFGEHANDELD,
+                status__state=workflow.COMPLETED,
             )
 
         reaction_text = 'external reaction test...'
@@ -1185,7 +1185,7 @@ U liet ons het volgende weten:
 Gegevens van de melding
 
 - Nummer: SIG-{signal.id}
-- Gemeld op: 4 juli 2023 15:37
+- Reported on: 4 juli 2023 15:37
 - Plaats: 
 
 Met vriendelijke groet,
@@ -1210,7 +1210,7 @@ Gemeente Amsterdam""" # noqa
 <p>Gegevens van de melding</p>
 <ul>
 <li>Nummer: SIG-{signal.id}</li>
-<li>Gemeld op: 4 juli 2023 15:37</li>
+<li>Reported on: 4 juli 2023 15:37</li>
 <li>Plaats: </li>
 </ul>
 <p>Met vriendelijke groet,</p>

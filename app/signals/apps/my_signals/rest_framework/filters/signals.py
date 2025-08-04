@@ -2,7 +2,7 @@
 # Copyright (C) 2022 Gemeente Amsterdam
 from django_filters.rest_framework import FilterSet, filters
 
-from signals.apps.signals.workflow import AFGEHANDELD, GEANNULEERD, GESPLITST
+from signals.apps.signals.workflow import COMPLETED, CANCELLED, SPLIT
 
 
 class MySignalFilterSet(FilterSet):
@@ -10,7 +10,7 @@ class MySignalFilterSet(FilterSet):
                                   choices=[('open', 'Open'), ('closed', 'Closed')])
 
     def filter_status(self, queryset, name, value):
-        filter_kwargs = {f'{name}__in': [AFGEHANDELD, GEANNULEERD, GESPLITST, ]}
+        filter_kwargs = {f'{name}__in': [COMPLETED, CANCELLED, SPLIT, ]}
         if value.lower() == 'open':
             # Only Signals in a "closed" state will be returned
             return queryset.exclude(**filter_kwargs)

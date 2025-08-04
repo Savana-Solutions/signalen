@@ -38,10 +38,10 @@ class TestPrivateSignalEmailPreview(SIAReadUserMixin, SIAReadWriteUserMixin, Sig
         currently_set_status = self.signal.status
         status_count = self.signal.statuses.count()
 
-        text = f'Lorem ipsum {workflow.REACTIE_GEVRAAGD} ...'
+        text = f'Lorem ipsum {workflow.REACTION_REQUESTED} ...'
         endpoint = f'/signals/v1/private/signals/{self.signal.id}/email/preview/'
 
-        response = self.client.post(endpoint, data={'status': workflow.REACTIE_GEVRAAGD, 'text': text}, format='json')
+        response = self.client.post(endpoint, data={'status': workflow.REACTION_REQUESTED, 'text': text}, format='json')
         self.assertEqual(response.status_code, 200)
 
         response_data = response.json()
@@ -74,10 +74,10 @@ class TestPrivateSignalEmailPreview(SIAReadUserMixin, SIAReadWriteUserMixin, Sig
         currently_set_status = self.signal.status
         status_count = self.signal.statuses.count()
 
-        text = f'Lorem ipsum {workflow.AFGEHANDELD} ...'
+        text = f'Lorem ipsum {workflow.COMPLETED} ...'
         endpoint = f'/signals/v1/private/signals/{self.signal.id}/email/preview/'
 
-        response = self.client.post(endpoint, data={'status': workflow.AFGEHANDELD, 'text': text}, format='json')
+        response = self.client.post(endpoint, data={'status': workflow.COMPLETED, 'text': text}, format='json')
         self.assertEqual(response.status_code, 200)
 
         response_data = response.json()
@@ -108,7 +108,7 @@ class TestPrivateSignalEmailPreview(SIAReadUserMixin, SIAReadWriteUserMixin, Sig
         currently_set_status = self.signal.status
         status_count = self.signal.statuses.count()
 
-        for new_status in [workflow.GEMELD, workflow.AFWACHTING, workflow.BEHANDELING, workflow.GEANNULEERD, ]:
+        for new_status in [workflow.REPORTED, workflow.AWAITING, workflow.IN_PROGRESS, workflow.CANCELLED, ]:
             text = f'Lorem ipsum {new_status} ...'
             endpoint = f'/signals/v1/private/signals/{self.signal.id}/email/preview/'
 
@@ -131,19 +131,19 @@ class TestPrivateSignalEmailPreview(SIAReadUserMixin, SIAReadWriteUserMixin, Sig
             # no new notes are added to the signal
             self.assertEqual(self.signal.statuses.count(), status_count)
 
-        # We need to test workflow.VERZOEK_TOT_AFHANDELING seperatly because we cannot transition to this state from
-        # the state GEMELD
+        # We need to test workflow.CLOSURE_REQUESTED seperatly because we cannot transition to this state from
+        # the state REPORTED
 
-        status = StatusFactory.create(_signal=self.signal, state=workflow.AFWACHTING)
+        status = StatusFactory.create(_signal=self.signal, state=workflow.AWAITING)
         self.signal.status = status
         self.signal.save()
 
         status_count = self.signal.statuses.count()
 
-        text = f'Lorem ipsum {workflow.VERZOEK_TOT_AFHANDELING} ...'
+        text = f'Lorem ipsum {workflow.CLOSURE_REQUESTED} ...'
         endpoint = f'/signals/v1/private/signals/{self.signal.id}/email/preview/'
 
-        response = self.client.post(endpoint, data={'status': workflow.VERZOEK_TOT_AFHANDELING, 'text': text},
+        response = self.client.post(endpoint, data={'status': workflow.CLOSURE_REQUESTED, 'text': text},
                                     format='json')
         self.assertEqual(response.status_code, 200)
 
@@ -168,37 +168,37 @@ class TestPrivateSignalEmailPreview(SIAReadUserMixin, SIAReadWriteUserMixin, Sig
         # Test handling of missing email rules.
         patched.actions = []
 
-        text = f'Lorem ipsum {workflow.BEHANDELING} ...'
+        text = f'Lorem ipsum {workflow.IN_PROGRESS} ...'
         endpoint = f'/signals/v1/private/signals/{self.signal.id}/email/preview/'
 
-        response = self.client.post(endpoint, data={'status': workflow.BEHANDELING, 'text': text}, format='json')
+        response = self.client.post(endpoint, data={'status': workflow.IN_PROGRESS, 'text': text}, format='json')
         self.assertEqual(response.status_code, 404)
 
     def test_no_email_preview_for_forbidden_state_transition(self):
         # For a forbidden state transition (see workflow.py) we want the same
         # error message for email previews and (failed) state transitions.
-        text = f'Lorem ipsum {workflow.REACTIE_ONTVANGEN} ...'
+        text = f'Lorem ipsum {workflow.REACTION_RECEIVED} ...'
         endpoint = f'/signals/v1/private/signals/{self.signal.id}/email/preview/'
         signals_endpoint = f'/signals/v1/private/signals/{self.signal.id}'
 
-        response = self.client.post(endpoint, data={'status': workflow.REACTIE_ONTVANGEN, 'text': text}, format='json')
+        response = self.client.post(endpoint, data={'status': workflow.REACTION_RECEIVED, 'text': text}, format='json')
         self.assertEqual(response.status_code, 400)
         preview_response_json = response.json()
 
         response = self.client.patch(
-            signals_endpoint, data={'status': {'state': workflow.REACTIE_ONTVANGEN, 'text': text}}, format='json')
+            signals_endpoint, data={'status': {'state': workflow.REACTION_RECEIVED, 'text': text}}, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), preview_response_json)  # matching error message
 
     def test_no_email_preview_state_te_verzenden(self):
-        # Test documenting edge case. The workflow.TE_VERZENDEN state has no
+        # Test documenting edge case. The workflow.TO_SEND state has no
         # email rule and requires the `target_api` property that cannot be set
         # through the email preview viewset/serializer. In this case we want
         # an HTTP 400.
-        text = f'Lorem ipsum {workflow.TE_VERZENDEN} ...'
+        text = f'Lorem ipsum {workflow.TO_SEND} ...'
         endpoint = f'/signals/v1/private/signals/{self.signal.id}/email/preview/'
 
-        response = self.client.post(endpoint, data={'status': workflow.TE_VERZENDEN, 'text': text}, format='json')
+        response = self.client.post(endpoint, data={'status': workflow.TO_SEND, 'text': text}, format='json')
         self.assertEqual(response.status_code, 400)
 
     def test_missing_required_query_parameter(self):

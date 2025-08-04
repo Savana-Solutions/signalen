@@ -8,10 +8,10 @@ from django.utils import timezone
 from signals.apps.signals.models import Reporter
 from signals.apps.signals.models.signal import Signal
 from signals.apps.signals.workflow import (
-    AFGEHANDELD,
-    GEANNULEERD,
-    GESPLITST,
-    VERZOEK_TOT_AFHANDELING
+    COMPLETED,
+    CANCELLED,
+    SPLIT,
+    CLOSURE_REQUESTED
 )
 from signals.celery import app
 
@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 @app.task(priority=0)
 def anonymize_reporters(days=365):
     created_before = (timezone.now() - timezone.timedelta(days=days))
-    allowed_signal_states = [AFGEHANDELD, GEANNULEERD, GESPLITST, VERZOEK_TOT_AFHANDELING]
+    allowed_signal_states = [COMPLETED, CANCELLED, SPLIT, CLOSURE_REQUESTED]
 
     reporter_ids = Reporter.objects.filter(
         (Q(email__isnull=False) & ~Q(email__exact='')) | (Q(phone__isnull=False) & ~Q(phone__exact='')),

@@ -27,7 +27,7 @@ def SIG_1830(apps, schema_editor):
     Service belofte
     Dezelfde als de overige 3:
 
-    “Uw melding wordt ingepland: wij laten u binnen 5 werkdagen weten hoe en wanneer uw melding wordt afgehandeld.
+    “Uw melding wordt planned: wij laten u binnen 5 werkdagen weten hoe en wanneer uw melding wordt afgehandeld.
      Dat doen we via e-mail.”
 
     Woonfraude

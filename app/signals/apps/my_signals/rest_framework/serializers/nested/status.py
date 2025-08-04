@@ -20,18 +20,18 @@ class _NestedMySignalStatusSerializer(ModelSerializer):
 
     def get_public_state(self, obj):
 
-        if obj.state in [workflow.HEROPEND, workflow.REACTIE_GEVRAAGD, workflow.REACTIE_ONTVANGEN, ]:
+        if obj.state in [workflow.REOPENED, workflow.REACTION_REQUESTED, workflow.REACTION_RECEIVED, ]:
             return obj.state.upper()
-        elif obj.state in [workflow.AFGEHANDELD, workflow.GEANNULEERD, workflow.GESPLITST, ]:
+        elif obj.state in [workflow.COMPLETED, workflow.CANCELLED, workflow.SPLIT, ]:
             return 'CLOSED'
         else:
             return 'OPEN'
 
     def get_public_state_display(self, obj):
-        _status_state_translations = {workflow.HEROPEND: 'Heropend',
-                                      workflow.GEANNULEERD: 'Afgesloten',
-                                      workflow.AFGEHANDELD: 'Afgesloten',
-                                      workflow.GESPLITST: 'Afgesloten',
-                                      workflow.REACTIE_GEVRAAGD: 'Vraag aan u verstuurd',
-                                      workflow.REACTIE_ONTVANGEN: 'Antwoord van u ontvangen'}
+        _status_state_translations = {workflow.REOPENED: 'Reopened',
+                                      workflow.CANCELLED: 'Afgesloten',
+                                      workflow.COMPLETED: 'Afgesloten',
+                                      workflow.SPLIT: 'Afgesloten',
+                                      workflow.REACTION_REQUESTED: 'Vraag aan u verstuurd',
+                                      workflow.REACTION_RECEIVED: 'Antwoord van u ontvangen'}
         return _status_state_translations.get(obj.state, 'Open')

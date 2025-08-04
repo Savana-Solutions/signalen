@@ -19,7 +19,7 @@ from signals.apps.signals.tests.scenarios.context.domain_signals_delete import *
 )
 @scenario(
     'features/do_not_delete_signals.feature',
-    'Do not delete a Signal in the state Afgehandeld for x years',
+    'Do not delete a Signal in the state Completed for x years',
     features_base_dir='./signals/apps/signals/tests/scenarios',
 )
 def test_delete_signal_afgehandeld():
@@ -35,7 +35,7 @@ def test_delete_signal_afgehandeld():
 )
 @scenario(
     'features/do_not_delete_signals.feature',
-    'Do not delete a Signal in the state Geannuleerd for x years',
+    'Do not delete a Signal in the state Cancelled for x years',
     features_base_dir='./signals/apps/signals/tests/scenarios',
 )
 def test_delete_signal_geannuleerd():
@@ -51,7 +51,7 @@ def test_delete_signal_geannuleerd():
 )
 @scenario(
     'features/do_not_delete_signals.feature',
-    'Do not delete a Signal in the state Gesplitst for x years',
+    'Do not delete a Signal in the state Split for x years',
     features_base_dir='./signals/apps/signals/tests/scenarios',
 )
 def test_delete_signal_gesplitst():

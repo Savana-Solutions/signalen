@@ -3,9 +3,9 @@
 from signals.apps.signals import workflow
 
 SIGNALS_API_CLOSED_STATES = frozenset([
-    workflow.AFGEHANDELD,
-    workflow.GEANNULEERD,
-    workflow.GESPLITST,
+    workflow.COMPLETED,
+    workflow.CANCELLED,
+    workflow.SPLIT,
 ])
 SIGNALS_API_STATE_CLOSED = 'CLOSED'
 SIGNALS_API_STATE_CLOSED_DISPLAY = 'Gesloten'

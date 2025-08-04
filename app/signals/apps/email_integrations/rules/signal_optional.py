@@ -9,7 +9,7 @@ class SignalOptionalRule(AbstractRule):
         """
         Run status validations for the Rule
 
-        - The status is GEMELD, AFWACHTING, BEHANDELING, ON_HOLD, VERZOEK_TOT_AFHANDELING, GEANNULEERD or INGEPLAND
+        - The status is REPORTED, AWAITING, IN_PROGRESS, ON_HOLD, CLOSURE_REQUESTED, CANCELLED or PLANNED
         - send_mail must be True
         """
         return self._validate_status_state(status) and self._validate_status_send_mail(status)
@@ -17,22 +17,22 @@ class SignalOptionalRule(AbstractRule):
     def _validate_status_state(self, status):
         """
         Validate that the status is one of:
-         - GEMELD
-         - AFWACHTING
-         - BEHANDELING
+         - REPORTED
+         - AWAITING
+         - IN_PROGRESS
          - ON_HOLD
-         - VERZOEK_TOT_AFHANDELING
-         - GEANNULEERD
-         - INGEPLAND
+         - CLOSURE_REQUESTED
+         - CANCELLED
+         - PLANNED
         """
         return status.state in [
-            workflow.GEMELD,
-            workflow.AFWACHTING,
-            workflow.BEHANDELING,
+            workflow.REPORTED,
+            workflow.AWAITING,
+            workflow.IN_PROGRESS,
             workflow.ON_HOLD,
-            workflow.VERZOEK_TOT_AFHANDELING,
-            workflow.GEANNULEERD,
-            workflow.INGEPLAND,
+            workflow.CLOSURE_REQUESTED,
+            workflow.CANCELLED,
+            workflow.PLANNED,
         ]
 
     def _validate_status_send_mail(self, status):

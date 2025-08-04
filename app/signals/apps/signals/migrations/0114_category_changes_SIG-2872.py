@@ -12,7 +12,7 @@ NEW_CATEGORIES = {
             'name': 'Eikenprocessierups',
             'handling': 'EMPTY',  # There is no handling for 10 working day's, also handling is no longer used.
             'handling_message':
-                'Uw melding wordt beoordeeld en indien nodig ingepland: wij laten u binnen twee weken weten hoe en '
+                'Uw melding wordt beoordeeld en indien nodig planned: wij laten u binnen twee weken weten hoe en '
                 'wanneer uw melding wordt afgehandeld. Als u een mailadres hebt opgegeven, zullen we u op de hoogte '
                 'houden.',
             'departments': ['STW'],

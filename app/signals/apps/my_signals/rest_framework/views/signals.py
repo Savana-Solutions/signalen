@@ -91,14 +91,14 @@ class MySignalsViewSet(DetailSerializerMixin, ReadOnlyModelViewSet):
         - Do not return logs about SignalUser (User assignment)  
         - Do not return logs about Note  
         - Do not return logs about Priority  
-        - Do not return logs about Status changes to LEEG, AFWACHTING, ON_HOLD, GEANNULEERD, GESPLITST, 
-          VERZOEK_TOT_AFHANDELING, INGEPLAND, VERZOEK_TOT_HEROPENEN, TE_VERZENDEN, VERZONDEN, VERZENDEN_MISLUKT, 
-          DOORGEZET_NAAR_EXTERN, AFGEHANDELD_EXTERN
+        - Do not return logs about Status changes to LEEG, AWAITING, ON_HOLD, CANCELLED, SPLIT, 
+          CLOSURE_REQUESTED, PLANNED, REQUEST_TO_REOPEN, TO_SEND, SENT, SEND_FAILED, 
+          FORWARDED_TO_EXTERN, DONE_EXTERNAL
         - Status changes are translated to a more reporter friendly name  
-        -- GEANNULEERD, AFGEHANDELD -> Afgesloten    
-        -- HEROPEND -> Heropend  
-        -- REACTIE_GEVRAAGD -> Vraag aan u verstuurd  
-        -- REACTIE_ONTVANGEN -> Antwoord van u ontvangen    
+        -- CANCELLED, COMPLETED -> Afgesloten    
+        -- REOPENED -> Reopened  
+        -- REACTION_REQUESTED -> Vraag aan u verstuurd  
+        -- REACTION_RECEIVED -> Antwoord van u ontvangen    
         -- All other statusses -> Open  
         - Do not return the first occurrences of logs about CategoryAssignment, Location and Type    
         """  # noqa
@@ -111,18 +111,18 @@ class MySignalsViewSet(DetailSerializerMixin, ReadOnlyModelViewSet):
         # Some Status transactions are excluded
         status_type = ContentType.objects.get_for_model(Status)
         excluded_q |= Q(Q(content_type=status_type) & Q(extra__in=[workflow.LEEG,
-                                                                   workflow.AFWACHTING,
+                                                                   workflow.AWAITING,
                                                                    workflow.ON_HOLD,
-                                                                   workflow.GEANNULEERD,
-                                                                   workflow.GESPLITST,
-                                                                   workflow.VERZOEK_TOT_AFHANDELING,
-                                                                   workflow.INGEPLAND,
-                                                                   workflow.VERZOEK_TOT_HEROPENEN,
-                                                                   workflow.TE_VERZENDEN,
-                                                                   workflow.VERZONDEN,
-                                                                   workflow.VERZENDEN_MISLUKT,
-                                                                   workflow.DOORGEZET_NAAR_EXTERN,
-                                                                   workflow.AFGEHANDELD_EXTERN, ]))
+                                                                   workflow.CANCELLED,
+                                                                   workflow.SPLIT,
+                                                                   workflow.CLOSURE_REQUESTED,
+                                                                   workflow.PLANNED,
+                                                                   workflow.REQUEST_TO_REOPEN,
+                                                                   workflow.TO_SEND,
+                                                                   workflow.SENT,
+                                                                   workflow.SEND_FAILED,
+                                                                   workflow.FORWARDED_TO_EXTERN,
+                                                                   workflow.DONE_EXTERNAL, ]))
 
         # The first occurrence in the history log of a Location, CategoryAssignment or Type transition are excluded
         exclude_first_occurrence_content_types = ContentType.objects.get_for_models(Location, CategoryAssignment, Type)

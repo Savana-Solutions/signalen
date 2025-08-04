@@ -65,13 +65,13 @@ class TestRetrieveReactionRequest(ValidateJsonSchemaMixin, APITestCase):
         with freeze_time(self.t_creation):
             self.signal = SignalFactory.create(
                 created_at=self.t_creation,
-                status__state=workflow.REACTIE_GEVRAAGD,
+                status__state=workflow.REACTION_REQUESTED,
                 status__text='SOME QUESTION'
             )
             self.session = create_session_for_reaction_request(self.signal)
 
         self.assertIsInstance(self.session, Session)
-        self.assertEqual(self.session._signal.status.state, workflow.REACTIE_GEVRAAGD)
+        self.assertEqual(self.session._signal.status.state, workflow.REACTION_REQUESTED)
 
         self.session_url = self.session_detail_endpoint.format(uuid=str(self.session.uuid))
 
@@ -125,7 +125,7 @@ class TestRetrieveReactionRequest(ValidateJsonSchemaMixin, APITestCase):
         Retrieve session for which a newer reaction request was created.
         """
         with freeze_time(self.t_answer_in_time):
-            new_status = StatusFactory.create(_signal=self.signal, state=workflow.REACTIE_GEVRAAGD, text='NEW QUESTION')
+            new_status = StatusFactory.create(_signal=self.signal, state=workflow.REACTION_REQUESTED, text='NEW QUESTION')
             self.signal.status = new_status
             self.signal.save()
         self.signal.refresh_from_db()
@@ -142,9 +142,9 @@ class TestRetrieveReactionRequest(ValidateJsonSchemaMixin, APITestCase):
 
     def test_retrieve_session_signal_state_not_REACTIE_GEVRAAGD(self):
         """
-        Retrieve session for which signal is no longer in state REACTIE_GEVRAAGD
+        Retrieve session for which signal is no longer in state REACTION_REQUESTED
         """
-        new_status = StatusFactory.create(state=workflow.GEMELD, text='NEW STATE', _signal=self.signal)
+        new_status = StatusFactory.create(state=workflow.REPORTED, text='NEW STATE', _signal=self.signal)
         new_status.save()
         self.signal.status = new_status
         self.signal.save()
@@ -155,7 +155,7 @@ class TestRetrieveReactionRequest(ValidateJsonSchemaMixin, APITestCase):
         response_json = response.json()
 
         self.assertEqual(response.status_code, 500)
-        expected = f'Session {self.session.uuid} is invalidated, associated signal not in state REACTIE_GEVRAAGD.'
+        expected = f'Session {self.session.uuid} is invalidated, associated signal not in state REACTION_REQUESTED.'
         self.assertEqual(response_json['detail'], expected)
 
     def test_retrieve_session_does_not_exist(self):

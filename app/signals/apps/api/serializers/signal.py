@@ -481,7 +481,7 @@ class PrivateSignalSerializerList(SignalValidationMixin, HALSerializer):
         # Set default status
         logged_in_user = self.context['request'].user
         INITIAL_STATUS = {
-            'state': workflow.GEMELD,  # see models.py is already default
+            'state': workflow.REPORTED,  # see models.py is already default
             'text': None,
             'user': logged_in_user.email,
         }
@@ -662,7 +662,7 @@ class PublicSignalCreateSerializer(SignalValidationMixin, serializers.ModelSeria
         return Signal.actions.create_initial(
             validated_data,
             location_data,
-            {'state': workflow.GEMELD},
+            {'state': workflow.REPORTED},
             category_assignment_data,
             reporter_data,
             priority_data=None,

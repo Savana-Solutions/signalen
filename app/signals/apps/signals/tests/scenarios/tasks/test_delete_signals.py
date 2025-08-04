@@ -19,7 +19,7 @@ from signals.apps.signals.tests.scenarios.context.domain_signals_delete import *
 )
 @scenario(
     'features/delete_signals.feature',
-    'Delete a Signal in the state Afgehandeld for x years',
+    'Delete a Signal in the state Completed for x years',
     features_base_dir='./signals/apps/signals/tests/scenarios',
 )
 def test_delete_signal_afgehandeld():
@@ -35,7 +35,7 @@ def test_delete_signal_afgehandeld():
 )
 @scenario(
     'features/delete_signals.feature',
-    'Delete all Signals in the state Afgehandeld for x years',
+    'Delete all Signals in the state Completed for x years',
     features_base_dir='./signals/apps/signals/tests/scenarios',
 )
 def test_delete_all_signals_afgehandeld():
@@ -51,7 +51,7 @@ def test_delete_all_signals_afgehandeld():
 )
 @scenario(
     'features/delete_signals.feature',
-    'Delete a Signal in the state Geannuleerd for x years',
+    'Delete a Signal in the state Cancelled for x years',
     features_base_dir='./signals/apps/signals/tests/scenarios',
 )
 def test_delete_signal_geannuleerd():
@@ -67,7 +67,7 @@ def test_delete_signal_geannuleerd():
 )
 @scenario(
     'features/delete_signals.feature',
-    'Delete all Signals in the state Geannuleerd for x years',
+    'Delete all Signals in the state Cancelled for x years',
     features_base_dir='./signals/apps/signals/tests/scenarios',
 )
 def test_delete_all_signals_geannuleerd():
@@ -83,7 +83,7 @@ def test_delete_all_signals_geannuleerd():
 )
 @scenario(
     'features/delete_signals.feature',
-    'Delete a Signal in the state Gesplitst for x years',
+    'Delete a Signal in the state Split for x years',
     features_base_dir='./signals/apps/signals/tests/scenarios',
 )
 def test_delete_signal_gesplitst():
@@ -99,7 +99,7 @@ def test_delete_signal_gesplitst():
 )
 @scenario(
     'features/delete_signals.feature',
-    'Delete all Signals in the state Gesplitst for x years',
+    'Delete all Signals in the state Split for x years',
     features_base_dir='./signals/apps/signals/tests/scenarios',
 )
 def test_delete_all_signals_gesplitst():

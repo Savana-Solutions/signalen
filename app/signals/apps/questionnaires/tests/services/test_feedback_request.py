@@ -41,14 +41,14 @@ class TestFeedbackRequestSessionService(TestCase):
         self.assertEqual(f'{settings.FRONTEND_URL}/feedback/nee/{session.uuid}', neg_url)
 
     def test_create_session_wrong_state(self):
-        signal = SignalFactory.create(status__state=workflow.BEHANDELING)
+        signal = SignalFactory.create(status__state=workflow.IN_PROGRESS)
 
         with self.assertRaises(WrongState):
             create_session_for_feedback_request(signal)
 
     def test_create_session(self):
         with freeze_time(self.now):
-            signal = SignalFactory.create(status__state=workflow.AFGEHANDELD)
+            signal = SignalFactory.create(status__state=workflow.COMPLETED)
             session = create_session_for_feedback_request(signal)
 
         dt = (session.submit_before - self.now)
@@ -56,7 +56,7 @@ class TestFeedbackRequestSessionService(TestCase):
         self.assertEqual(session._signal, signal)
 
     def test_questionnaire(self):
-        signal = SignalFactory.create(status__state=workflow.AFGEHANDELD)
+        signal = SignalFactory.create(status__state=workflow.COMPLETED)
         session = create_session_for_feedback_request(signal)
         questionnaire = session.questionnaire
         graph = questionnaire.graph
@@ -71,7 +71,7 @@ class TestFeedbackRequestSessionService(TestCase):
 
     def test_create_two_questionnaires(self):
         # We cannot re-use Question.key, this test demonstrates the problem
-        signal = SignalFactory.create(status__state=workflow.AFGEHANDELD)
+        signal = SignalFactory.create(status__state=workflow.COMPLETED)
         session_1 = create_session_for_feedback_request(signal)
         session_2 = create_session_for_feedback_request(signal)
 
@@ -80,7 +80,7 @@ class TestFeedbackRequestSessionService(TestCase):
 
     def test_fill_out_questionnaire_satisfied(self):
         # Check predefined questionnaire structure, then fill out the questionnaire.
-        signal = SignalFactory.create(status__state=workflow.AFGEHANDELD)
+        signal = SignalFactory.create(status__state=workflow.COMPLETED)
         session = create_session_for_feedback_request(signal)
         service = get_session_service(session)
         self.assertIsInstance(service, FeedbackRequestSessionService)
@@ -116,7 +116,7 @@ class TestFeedbackRequestSessionService(TestCase):
         Trigger a reopen request on Signal.
         """
         # -- set up our session and SessionService subclass
-        signal = SignalFactory.create(status__state=workflow.AFGEHANDELD)
+        signal = SignalFactory.create(status__state=workflow.COMPLETED)
         session = create_session_for_feedback_request(signal)
         service = get_session_service(session)
         self.assertIsInstance(service, FeedbackRequestSessionService)
@@ -150,7 +150,7 @@ class TestFeedbackRequestSessionService(TestCase):
         service.freeze()
         self.assertEqual(Feedback.objects.count(), 1)
         signal.refresh_from_db()
-        self.assertEqual(signal.status.state, workflow.VERZOEK_TOT_HEROPENEN)
+        self.assertEqual(signal.status.state, workflow.REQUEST_TO_REOPEN)
 
         feedback = Feedback.objects.first()
         self.assertEqual(feedback.is_satisfied, False)
@@ -163,7 +163,7 @@ class TestFeedbackRequestSessionService(TestCase):
         Give feedback without triggering reopen request on Signal.
         """
         # -- set up our session and SessionService subclass
-        signal = SignalFactory.create(status__state=workflow.AFGEHANDELD)
+        signal = SignalFactory.create(status__state=workflow.COMPLETED)
         session = create_session_for_feedback_request(signal)
         service = get_session_service(session)
         self.assertIsInstance(service, FeedbackRequestSessionService)
@@ -197,7 +197,7 @@ class TestFeedbackRequestSessionService(TestCase):
         service.freeze()
         self.assertEqual(Feedback.objects.count(), 1)
         signal.refresh_from_db()
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD)
+        self.assertEqual(signal.status.state, workflow.COMPLETED)
 
         feedback = Feedback.objects.first()
         self.assertEqual(feedback.is_satisfied, False)

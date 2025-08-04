@@ -18,7 +18,7 @@ class TestTDOSignalRepresentation(TestCase):
         self.point_cityhall = Point(52.367640, 4.899527, srid=4326)
 
         with freeze_time(self.created_at):
-            SignalFactory.create_batch(size=self.signal_count, status__state=workflow.GEMELD)
+            SignalFactory.create_batch(size=self.signal_count, status__state=workflow.REPORTED)
 
     def test_count(self):
         self.assertEqual(TDOSignal.objects.count(), self.signal_count)
@@ -28,7 +28,7 @@ class TestTDOSignalRepresentation(TestCase):
         s = Signal.objects.first()
 
         with freeze_time(updated_at):
-            Signal.actions.update_status({'state': workflow.AFGEHANDELD, 'text': 'klaar'}, s)
+            Signal.actions.update_status({'state': workflow.COMPLETED, 'text': 'klaar'}, s)
         s.refresh_from_db()
 
         e = TDOSignal.objects.get(id=s.id)
@@ -46,13 +46,13 @@ class TestTDOSignalRepresentation(TestCase):
 
     def test_status(self):
         s = Signal.objects.first()
-        Signal.actions.update_status({'state': workflow.AFGEHANDELD, 'text': 'klaar'}, s)
+        Signal.actions.update_status({'state': workflow.COMPLETED, 'text': 'klaar'}, s)
         s.refresh_from_db()
 
         e = TDOSignal.objects.get(id=s.id)
         self.assertEqual(s.status.state, e.status)
-        self.assertEqual(s.status.get_state_display(), 'Afgehandeld')
-        self.assertEqual(e.status_display, 'Afgehandeld')
+        self.assertEqual(s.status.get_state_display(), 'Completed')
+        self.assertEqual(e.status_display, 'Completed')
 
     def test_slugs(self):
         s = Signal.objects.first()

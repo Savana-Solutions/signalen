@@ -99,8 +99,8 @@ def get_feedback_urls(session):
 
 
 def create_session_for_feedback_request(signal):
-    if signal.status.state != workflow.AFGEHANDELD:
-        msg = f'Signal {signal.id} is not in state AFGEHANDELD!'
+    if signal.status.state != workflow.COMPLETED:
+        msg = f'Signal {signal.id} is not in state COMPLETED!'
         raise WrongState(msg)
 
     with transaction.atomic():
@@ -168,10 +168,10 @@ class FeedbackRequestSessionService(SessionService):
                     reopen = sa.reopens_when_unhappy
 
         with transaction.atomic():
-            if reopen and signal.status.state == workflow.AFGEHANDELD:
+            if reopen and signal.status.state == workflow.COMPLETED:
                 payload = {
                     'text': 'De melder is niet tevreden blijkt uit feedback. Zo nodig heropenen.',
-                    'state': workflow.VERZOEK_TOT_HEROPENEN,
+                    'state': workflow.REQUEST_TO_REOPEN,
                 }
                 Signal.actions.update_status(payload, signal)
             feedback.save()

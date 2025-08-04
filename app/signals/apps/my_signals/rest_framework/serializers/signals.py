@@ -67,11 +67,11 @@ class SignalDetailSerializer(SignalSerializer):
 
 
 class HistoryLogHalSerializer(HALSerializer):
-    _status_state_translations = {workflow.HEROPEND: 'Heropend',
-                                  workflow.GEANNULEERD: 'Afgesloten',
-                                  workflow.AFGEHANDELD: 'Afgesloten',
-                                  workflow.REACTIE_GEVRAAGD: 'Vraag aan u verstuurd',
-                                  workflow.REACTIE_ONTVANGEN: 'Antwoord van u ontvangen'}
+    _status_state_translations = {workflow.REOPENED: 'Reopened',
+                                  workflow.CANCELLED: 'Afgesloten',
+                                  workflow.COMPLETED: 'Afgesloten',
+                                  workflow.REACTION_REQUESTED: 'Vraag aan u verstuurd',
+                                  workflow.REACTION_RECEIVED: 'Antwoord van u ontvangen'}
 
     when = serializers.DateTimeField(source='created_at')
     action = serializers.SerializerMethodField()

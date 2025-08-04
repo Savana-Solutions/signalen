@@ -21,7 +21,7 @@ from signals.apps.signals import workflow
 from signals.apps.signals.factories import CategoryFactory, SignalFactory, SourceFactory
 from signals.apps.signals.models import Attachment, Note, Priority, Reporter, Signal, Type
 from signals.apps.signals.tests.attachment_helpers import small_gif
-from signals.apps.signals.workflow import AFGEHANDELD, GEMELD, STATUS_CHOICES
+from signals.apps.signals.workflow import COMPLETED, REPORTED, STATUS_CHOICES
 from signals.test.utils import SignalsBaseApiTestCase
 
 THIS_DIR = os.path.dirname(__file__)
@@ -78,7 +78,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         self.assertEqual(1, Signal.objects.count())
 
         signal = Signal.objects.last()
-        self.assertEqual(workflow.GEMELD, signal.status.state)
+        self.assertEqual(workflow.REPORTED, signal.status.state)
         self.assertEqual(self.subcategory, signal.category_assignment.category)
         self.assertEqual("melder@example.com", signal.reporter.email)
         self.assertEqual("Amstel 1 1011PN Amsterdam", signal.location.address_text)
@@ -93,7 +93,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         """ Tests that an error is returned when we try to set the status """
 
         self.create_initial_data["status"] = {
-            "state": workflow.BEHANDELING,
+            "state": workflow.IN_PROGRESS,
             "text": "Invalid stuff happening here"
         }
 
@@ -172,7 +172,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
     def test_get_by_uuid_access_status(self):
         # SIA must not publicly expose what step in the resolution process a certain
         # Signal/melding is
-        signal = SignalFactory.create(status__state=workflow.GEMELD)
+        signal = SignalFactory.create(status__state=workflow.REPORTED)
 
         response = self.client.get(self.detail_endpoint.format(uuid=signal.uuid), format='json')
         response_json = response.json()
@@ -181,7 +181,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         self.assertJsonSchema(self.retrieve_schema, response_json)
         self.assertEqual(response_json['status']['state'], 'OPEN')
 
-        signal = SignalFactory.create(status__state=workflow.AFGEHANDELD)
+        signal = SignalFactory.create(status__state=workflow.COMPLETED)
 
         response = self.client.get(self.detail_endpoint.format(uuid=signal.uuid), format='json')
         response_json = response.json()
@@ -218,7 +218,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         self.assertNotIn('attachments', response_json)
 
     def test_add_attachment_imagetype(self):
-        signal = SignalFactory.create(status__state=GEMELD)
+        signal = SignalFactory.create(status__state=REPORTED)
         note_count = Note.objects.count()
 
         data = {"file": SimpleUploadedFile('image.gif', small_gif, content_type='image/gif')}
@@ -241,7 +241,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         self.assertEqual(f'Bijlage toegevoegd door melder: {filename}', note.text)
 
     def test_add_attachment_extension_not_allowed(self):
-        signal = SignalFactory.create(status__state=GEMELD)
+        signal = SignalFactory.create(status__state=REPORTED)
 
         doc_upload = os.path.join(THIS_DIR, 'test-data', 'sia-ontwerp-testfile.doc')
         with open(doc_upload, encoding='latin-1') as f:
@@ -253,11 +253,11 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
 
     def test_add_attachment_in_correct_state_allowed(self):
         # Uploads should be allowed when a reaction is requested or when the signal is newly created.
-        signal = SignalFactory.create(status__state=GEMELD)
+        signal = SignalFactory.create(status__state=REPORTED)
 
-        # AFGEHANDELD has extra rules, we do not test them here. See test_add_attachment_in_state_AFGEHANDELD.
+        # COMPLETED has extra rules, we do not test them here. See test_add_attachment_in_state_AFGEHANDELD.
         allowed_states = set(PUBLIC_UPLOAD_ALLOWED_STATES)
-        allowed_states.remove(AFGEHANDELD)
+        allowed_states.remove(COMPLETED)
 
         for state in allowed_states:
             data = {"file": SimpleUploadedFile('image.gif', small_gif, content_type='image/gif')}
@@ -268,7 +268,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
             self.assertEqual(response.status_code, 201)
 
     def test_attachment_is_public_by_default(self):
-        signal = SignalFactory.create(status__state=GEMELD)
+        signal = SignalFactory.create(status__state=REPORTED)
         data = {"file": SimpleUploadedFile('image.gif', small_gif, content_type='image/gif')}
 
         response = self.client.post(self.attachment_endpoint.format(uuid=signal.uuid), data)
@@ -279,18 +279,18 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         attachment = attachments[0]
         self.assertTrue(attachment.public)
 
-    @patch('signals.apps.api.serializers.attachment.PUBLIC_UPLOAD_ALLOWED_STATES', new=(AFGEHANDELD,))
+    @patch('signals.apps.api.serializers.attachment.PUBLIC_UPLOAD_ALLOWED_STATES', new=(COMPLETED,))
     def test_add_attachment_in_state_AFGEHANDELD(self):
         # When a nuisance complaint is handled it transitions to the state
-        # AFGEHANDELD and a feedback request is potentially sent. If such a
+        # COMPLETED and a feedback request is potentially sent. If such a
         # feedback request is open, images can be part of that feedback.
         self.assertLess(0, FEEDBACK_EXPECTED_WITHIN_N_DAYS)
         attachment_count = Attachment.objects.count()
         now = timezone.now()
 
         with freeze_time(now):
-            signal = SignalFactory.create(status__state=GEMELD)
-            signal.status.state = AFGEHANDELD
+            signal = SignalFactory.create(status__state=REPORTED)
+            signal.status.state = COMPLETED
             signal.status.save()
 
         # No feedback requested => no uploads allowed.
@@ -328,7 +328,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
             self.assertIn('No feedback expected for this signal hence no uploads allowed.', response.json())
             self.assertEqual(Attachment.objects.count(), attachment_count + 1)
 
-    @patch('signals.apps.api.serializers.attachment.PUBLIC_UPLOAD_ALLOWED_STATES', new=(AFGEHANDELD,))
+    @patch('signals.apps.api.serializers.attachment.PUBLIC_UPLOAD_ALLOWED_STATES', new=(COMPLETED,))
     def test_add_attachment_in_state_AFGEHANDELD_several_feedback_requests(self):
         # Several feedback requests can be open at once. In this test we open
         # two feedback requests and provide feedback to the second one. The
@@ -339,8 +339,8 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         now = timezone.now()
 
         with freeze_time(now):
-            signal = SignalFactory.create(status__state=GEMELD)
-            signal.status.state = AFGEHANDELD
+            signal = SignalFactory.create(status__state=REPORTED)
+            signal.status.state = COMPLETED
             signal.status.save()
 
         with freeze_time(now + timedelta(seconds=1800)):
@@ -362,7 +362,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
     def test_add_attachment_in_wrong_state_not_allowed(self):
         # We don't want people to upload images long after creating the original
         # nuisance complaint was created.
-        signal = SignalFactory.create(status__state=GEMELD)
+        signal = SignalFactory.create(status__state=REPORTED)
         not_allowed = set(x[0] for x in STATUS_CHOICES) - set(PUBLIC_UPLOAD_ALLOWED_STATES)
 
         for state in not_allowed:

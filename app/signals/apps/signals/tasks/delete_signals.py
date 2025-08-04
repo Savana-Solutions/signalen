@@ -10,7 +10,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from signals.apps.signals.models import DeletedSignal, Signal
-from signals.apps.signals.workflow import AFGEHANDELD, GEANNULEERD, GESPLITST
+from signals.apps.signals.workflow import COMPLETED, CANCELLED, SPLIT
 from signals.celery import app
 
 log = logging.getLogger(__name__)
@@ -29,9 +29,9 @@ def delete_signals_in_state_for_x_days(state: str, days: int):
     if not settings.FEATURE_FLAGS.get('DELETE_SIGNALS_IN_STATE_X_AFTER_PERIOD_Y_ENABLED', False):
         raise ValueError('Feature flag "DELETE_SIGNALS_IN_STATE_X_AFTER_PERIOD_Y_ENABLED" is not enabled')
 
-    if state not in [AFGEHANDELD, GEANNULEERD, GESPLITST, ]:
+    if state not in [COMPLETED, CANCELLED, SPLIT, ]:
         raise ValueError('Invalid state(s) provided must be one of '
-                         f'"{", ".join([AFGEHANDELD, GEANNULEERD, GESPLITST, ])}"')
+                         f'"{", ".join([COMPLETED, CANCELLED, SPLIT, ])}"')
 
     if days < 365:
         raise ValueError('Invalid days provided must be at least 365')
@@ -99,6 +99,6 @@ def delete_closed_signals(days: int = 365):
                "same functionality.")
     warnings.warn(message, DeprecationWarning, stacklevel=2)
 
-    delete_signals_in_state_for_x_days.delay(state=AFGEHANDELD, days=days)
-    delete_signals_in_state_for_x_days.delay(state=GEANNULEERD, days=days)
-    delete_signals_in_state_for_x_days.delay(state=GESPLITST, days=days)
+    delete_signals_in_state_for_x_days.delay(state=COMPLETED, days=days)
+    delete_signals_in_state_for_x_days.delay(state=CANCELLED, days=days)
+    delete_signals_in_state_for_x_days.delay(state=SPLIT, days=days)

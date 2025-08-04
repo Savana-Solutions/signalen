@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (C) 2021 - 2022 Gemeente Amsterdam
 from signals.apps.email_integrations.rules.abstract import AbstractRule
-from signals.apps.signals.workflow import INGEPLAND
+from signals.apps.signals.workflow import PLANNED
 
 
 class SignalScheduledRule(AbstractRule):
@@ -9,16 +9,16 @@ class SignalScheduledRule(AbstractRule):
         """
         Run status validations for the Rule
 
-        - The status is INGEPLAND
+        - The status is PLANNED
         - send_mail must be True
         """
         return self._validate_status_state(status) and self._validate_status_send_mail(status)
 
     def _validate_status_state(self, status):
         """
-        Validate that the status is INGEPLAND
+        Validate that the status is PLANNED
         """
-        return status.state == INGEPLAND
+        return status.state == PLANNED
 
     def _validate_status_send_mail(self, status):
         return status.send_email

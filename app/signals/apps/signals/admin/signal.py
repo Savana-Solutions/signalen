@@ -20,19 +20,19 @@ class SignalAdmin(admin.ModelAdmin):
     search_fields = ['id__exact']  # we do not want to page through 400k or more signals
 
     # Add an action that frees signals stuck between SIA and CityControl. These
-    # signals need to be in workflow.VERZONDEN state.
+    # signals need to be in workflow.SENT state.
     actions = ['free_signals']
 
-    @admin.action(description='Free SIA signals (meldingen) stuck in state VERZONDEN.')
+    @admin.action(description='Free SIA signals (meldingen) stuck in state SENT.')
     def free_signals(self, request, queryset):
-        filtered_signals = queryset.filter(status__state=workflow.VERZONDEN)
+        filtered_signals = queryset.filter(status__state=workflow.SENT)
 
         with transaction.atomic():
             updated_signal_ids = []
             for signal in filtered_signals:
                 new_status = Status(
                     _signal=signal,
-                    state=workflow.AFGEHANDELD_EXTERN,
+                    state=workflow.DONE_EXTERNAL,
                     text='Vastgelopen melding vrijgegeven zonder tussenkomst CityControl.',
                     created_by=request.user.email
                 )

@@ -207,7 +207,7 @@ def validate_template(template: str) -> bool:
         'text': 'Deze tekst wordt gebruikt in de validatie van een EmailTemplate.',
         'text_extra': 'Er is ruimte voor meer tekst.',
         'address': STADHUIS,
-        'status_text': 'Gemeld',
+        'status_text': 'Reported',
         'status_state': 'm',
         'handling_message': 'Hartelijk dank voor uw melding. Wij gaan hier spoedig mee aan de slag',
         'ORGANIZATION_NAME': settings.ORGANIZATION_NAME,

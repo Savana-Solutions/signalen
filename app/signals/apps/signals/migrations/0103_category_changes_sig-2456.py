@@ -14,7 +14,7 @@ NEW_CATEGORIES = {
             'name': 'Beplanting',  # SIG-2457
             'handling': 'I5DMC',
             'handling_message':
-                "Uw melding wordt ingepland: wij laten u binnen 5 werkdagen "
+                "Uw melding wordt planned: wij laten u binnen 5 werkdagen "
                 "weten hoe en wanneer uw melding wordt afgehandeld. Dat doen "
                 "we via e-mail.",
             'departments': ['V&OR'],
@@ -24,7 +24,7 @@ NEW_CATEGORIES = {
             'name': 'Japanse duizendknoop',  # SIG-2457
             'handling': 'I5DMC',
             'handling_message':
-                "Uw melding wordt ingepland: wij laten u binnen 5 werkdagen "
+                "Uw melding wordt planned: wij laten u binnen 5 werkdagen "
                 "weten hoe en wanneer uw melding wordt afgehandeld. Dat doen "
                 "we via e-mail.",
             'departments': ['V&OR'],
@@ -34,7 +34,7 @@ NEW_CATEGORIES = {
             'name': 'Boom - ziekten en plagen',  # SIG-2457
             'handling': 'I5DMC',
             'handling_message':
-                "Uw melding wordt ingepland: wij laten u binnen 5 werkdagen "
+                "Uw melding wordt planned: wij laten u binnen 5 werkdagen "
                 "weten hoe en wanneer uw melding wordt afgehandeld. Dat doen "
                 "we via e-mail.",
             'departments': ['V&OR'],
@@ -44,7 +44,7 @@ NEW_CATEGORIES = {
             'name': 'Boom - verzoek inspectie',  # SIG-2457
             'handling': 'I5DMC',
             'handling_message':
-                "Uw melding wordt ingepland: wij laten u binnen 5 werkdagen "
+                "Uw melding wordt planned: wij laten u binnen 5 werkdagen "
                 "weten hoe en wanneer uw melding wordt afgehandeld. Dat doen "
                 "we via e-mail.",
             'departments': ['V&OR'],
@@ -54,7 +54,7 @@ NEW_CATEGORIES = {
             'name': 'Boom - stormschade',  # SIG-2457
             'handling': 'I5DMC',
             'handling_message':
-                "Uw melding wordt ingepland: wij laten u binnen 5 werkdagen "
+                "Uw melding wordt planned: wij laten u binnen 5 werkdagen "
                 "weten hoe en wanneer uw melding wordt afgehandeld. Dat doen "
                 "we via e-mail.",
             'departments': ['STW'],

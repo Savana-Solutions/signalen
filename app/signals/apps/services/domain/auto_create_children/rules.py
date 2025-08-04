@@ -3,7 +3,7 @@
 from django.conf import settings
 
 from signals.apps.services.domain.auto_create_children.mixins import ExtraPropertiesMixin
-from signals.apps.signals.workflow import GEMELD
+from signals.apps.signals.workflow import REPORTED
 
 
 class ContainerRule(ExtraPropertiesMixin):
@@ -24,7 +24,7 @@ class ContainerRule(ExtraPropertiesMixin):
     def __call__(self, signal):
         """
         - A signal is not a parent or a child signal
-        - A signal has the status "GEMELD" ("m")
+        - A signal has the status "REPORTED" ("m")
         - A signal belongs to the sub category "container-is-vol", "container-voor-papier-is-vol",
           "container-voor-plastic-afval-is-vol", "container-glas-vol", "container-glas-kapot",
           "container-is-kapot", "container-voor-papier-is-stuk", or "container-voor-plastic-afval-is-kapot".
@@ -35,7 +35,7 @@ class ContainerRule(ExtraPropertiesMixin):
         if not settings.FEATURE_FLAGS.get('AUTOMATICALLY_CREATE_CHILD_SIGNALS_PER_CONTAINER', False):
             return False
 
-        if signal.is_parent or signal.is_child or signal.status.state != GEMELD:
+        if signal.is_parent or signal.is_child or signal.status.state != REPORTED:
             return False
 
         category_slug = signal.category_assignment.category.slug
@@ -60,7 +60,7 @@ class EikenprocessierupsRule(ExtraPropertiesMixin):
     def __call__(self, signal):
         """
         - A signal is not a parent or a child signal
-        - A signal has the status "GEMELD" ("m")
+        - A signal has the status "REPORTED" ("m")
         - A signal belongs to the sub category "eikenprocessierups"
         - A signal must contain at least 2 or more containers but not more than the value of the setting SIGNAL_MAX_NUMBER_OF_CHILDREN
 
@@ -69,7 +69,7 @@ class EikenprocessierupsRule(ExtraPropertiesMixin):
         if not settings.FEATURE_FLAGS.get('AUTOMATICALLY_CREATE_CHILD_SIGNALS_PER_EIKENPROCESSIERUPS_TREE', False):
             return False
 
-        if signal.is_parent or signal.is_child or signal.status.state != GEMELD:
+        if signal.is_parent or signal.is_child or signal.status.state != REPORTED:
             return False
 
         category_slug = signal.category_assignment.category.slug

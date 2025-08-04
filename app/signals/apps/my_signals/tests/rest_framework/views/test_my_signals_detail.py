@@ -10,7 +10,7 @@ from rest_framework.test import APITestCase
 from signals.apps.api.views import NamespaceView
 from signals.apps.my_signals.models import Token
 from signals.apps.signals.factories import AttachmentFactory, SignalFactory, StatusFactory
-from signals.apps.signals.workflow import AFGEHANDELD
+from signals.apps.signals.workflow import COMPLETED
 
 urlpatterns = [
     path('v1/relations/', NamespaceView.as_view(), name='signal-namespace'),
@@ -72,7 +72,7 @@ class TestMySignalsDetailEndpoint(APITestCase):
         self.assertEqual(attachments[0].get('caption'), self.CAPTION)
 
         # Update the status to a "CLOSED" state
-        status = StatusFactory.create(_signal=self.signal, state=AFGEHANDELD)
+        status = StatusFactory.create(_signal=self.signal, state=COMPLETED)
         self.signal.status = status
         self.signal.save()
 

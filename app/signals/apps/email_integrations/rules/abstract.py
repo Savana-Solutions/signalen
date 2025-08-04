@@ -26,7 +26,7 @@ class AbstractRule(ABC):
         Run all validations
 
         - The reporter email must be set
-        - The Signal cannot be a child Signal OR should have the status GESPLITST
+        - The Signal cannot be a child Signal OR should have the status SPLIT
         """
         return (self._validate_reporter_email(signal) and
                 self._validate_historical_data(signal) and
@@ -42,15 +42,15 @@ class AbstractRule(ABC):
 
     def _validate_historical_data(self, signal):
         """
-        Validate that a Signal is not a child Signal OR that the Signal has the status GESPLITST.
+        Validate that a Signal is not a child Signal OR that the Signal has the status SPLIT.
 
         Note: Currently child signals (Dutch jargon "deelmeldingen") are used internally to track tasks that follow
               from an original signal ("hoofdmelding"). Internal tasks are never communicated to the reporter, hence no
               emails can be sent from child signals. Before that child signals were communicated to the parent signal's
-              reporter. In that case the original complaint transitioned to the status GESPLITST. (See SIG-2931.)
+              reporter. In that case the original complaint transitioned to the status SPLIT. (See SIG-2931.)
         """
         return Signal.objects.filter(id=signal.id).filter(
-            Q(parent_id__isnull=True) | Q(parent__status__state__exact=workflow.GESPLITST)
+            Q(parent_id__isnull=True) | Q(parent__status__state__exact=workflow.SPLIT)
         )
 
     def _validate(self, signal):

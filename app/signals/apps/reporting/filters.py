@@ -12,7 +12,7 @@ class SignalsOpenPerCategoryCountFilterSet(FilterSet):
 
     def filter_queryset(self, queryset):
         queryset = queryset.exclude(
-            status__state__in=[workflow.AFGEHANDELD, workflow.GEANNULEERD, workflow.GESPLITST]
+            status__state__in=[workflow.COMPLETED, workflow.CANCELLED, workflow.SPLIT]
         ).filter(
             category_assignment__deadline_factor_3__lt=timezone.now()
         )
@@ -24,5 +24,5 @@ class SignalsReopenRequestedPerCategoryCountFilterSet(FilterSet):
     end = filters.IsoDateTimeFilter(field_name='status__created_at', lookup_expr='lte')
 
     def filter_queryset(self, queryset):
-        queryset = queryset.filter(status__state=workflow.VERZOEK_TOT_HEROPENEN)
+        queryset = queryset.filter(status__state=workflow.REQUEST_TO_REOPEN)
         return super().filter_queryset(queryset)

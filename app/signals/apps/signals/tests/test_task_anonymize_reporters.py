@@ -9,17 +9,17 @@ from signals.apps.signals.factories import SignalFactory
 from signals.apps.signals.models import Reporter
 from signals.apps.signals.tasks import anonymize_reporter, anonymize_reporters
 from signals.apps.signals.workflow import (
-    AFGEHANDELD,
-    BEHANDELING,
-    GEANNULEERD,
-    GESPLITST,
-    VERZOEK_TOT_AFHANDELING
+    COMPLETED,
+    IN_PROGRESS,
+    CANCELLED,
+    SPLIT,
+    CLOSURE_REQUESTED
 )
 
 
 class TestAnonymizeTasks(TransactionTestCase):
     def test_anonymize_reporter(self):
-        signal = SignalFactory.create(status__state=AFGEHANDELD)
+        signal = SignalFactory.create(status__state=COMPLETED)
         reporter = signal.reporter
 
         self.assertIsNotNone(reporter.email)
@@ -37,7 +37,7 @@ class TestAnonymizeTasks(TransactionTestCase):
         self.assertTrue(reporter.phone_anonymized)
 
     def test_anonymize_reporters(self):
-        allowed_states = [AFGEHANDELD, GEANNULEERD, GESPLITST, VERZOEK_TOT_AFHANDELING]
+        allowed_states = [COMPLETED, CANCELLED, SPLIT, CLOSURE_REQUESTED]
         with freeze_time(timezone.now() - timezone.timedelta(days=1)):
             for allowed_state in allowed_states:
                 SignalFactory.create(status__state=allowed_state)
@@ -56,7 +56,7 @@ class TestAnonymizeTasks(TransactionTestCase):
             self.assertTrue(reporter.phone_anonymized)
 
     def test_anonymize_reporters_less_than_x_days_ago(self):
-        allowed_states = [AFGEHANDELD, GEANNULEERD, GESPLITST, VERZOEK_TOT_AFHANDELING]
+        allowed_states = [COMPLETED, CANCELLED, SPLIT, CLOSURE_REQUESTED]
         with freeze_time(timezone.now() - timezone.timedelta(days=1)):
             for allowed_state in allowed_states:
                 SignalFactory.create(status__state=allowed_state)
@@ -77,7 +77,7 @@ class TestAnonymizeTasks(TransactionTestCase):
 
     def test_anonymize_reporters_not_in_correct_state(self):
         with freeze_time(timezone.now() - timezone.timedelta(days=1)):
-            SignalFactory.create_batch(5, status__state=BEHANDELING)
+            SignalFactory.create_batch(5, status__state=IN_PROGRESS)
 
         self.assertEqual(Reporter.objects.count(), 5)
 
@@ -95,25 +95,25 @@ class TestAnonymizeTasks(TransactionTestCase):
 
     def test_anonymize_reporters_multiple_cases(self):
         with freeze_time(timezone.now() - timezone.timedelta(days=1)):
-            SignalFactory.create(status__state=AFGEHANDELD)
+            SignalFactory.create(status__state=COMPLETED)
 
         with freeze_time(timezone.now() - timezone.timedelta(days=1)):
-            SignalFactory.create(status__state=BEHANDELING)
+            SignalFactory.create(status__state=IN_PROGRESS)
 
         with freeze_time(timezone.now() - timezone.timedelta(days=2)):
-            SignalFactory.create(status__state=BEHANDELING)
+            SignalFactory.create(status__state=IN_PROGRESS)
 
         with freeze_time(timezone.now() - timezone.timedelta(days=2)):
-            SignalFactory.create(status__state=GESPLITST)
+            SignalFactory.create(status__state=SPLIT)
 
         with freeze_time(timezone.now() - timezone.timedelta(days=3)):
-            SignalFactory.create(status__state=VERZOEK_TOT_AFHANDELING)
+            SignalFactory.create(status__state=CLOSURE_REQUESTED)
 
         with freeze_time(timezone.now() - timezone.timedelta(days=3)):
-            SignalFactory.create(status__state=BEHANDELING)
+            SignalFactory.create(status__state=IN_PROGRESS)
 
         with freeze_time(timezone.now() - timezone.timedelta(days=4)):
-            SignalFactory.create(status__state=GEANNULEERD)
+            SignalFactory.create(status__state=CANCELLED)
 
         self.assertEqual(Reporter.objects.count(), 7)
 
@@ -125,7 +125,7 @@ class TestAnonymizeTasks(TransactionTestCase):
 
     def test_anonymize_reporters_that_has_null_phone(self):
         with freeze_time(timezone.now() - timezone.timedelta(days=3)):
-            signal = SignalFactory.create(status__state=AFGEHANDELD)
+            signal = SignalFactory.create(status__state=COMPLETED)
         reporter = signal.reporter
         reporter.phone = None
         reporter.save()
@@ -147,7 +147,7 @@ class TestAnonymizeTasks(TransactionTestCase):
 
     def test_anonymize_reporters_that_has_empty_phone(self):
         with freeze_time(timezone.now() - timezone.timedelta(days=3)):
-            signal = SignalFactory.create(status__state=AFGEHANDELD)
+            signal = SignalFactory.create(status__state=COMPLETED)
         reporter = signal.reporter
         reporter.phone = ''
         reporter.save()
@@ -169,7 +169,7 @@ class TestAnonymizeTasks(TransactionTestCase):
 
     def test_anonymize_reporters_that_has_null_email(self):
         with freeze_time(timezone.now() - timezone.timedelta(days=3)):
-            signal = SignalFactory.create(status__state=AFGEHANDELD)
+            signal = SignalFactory.create(status__state=COMPLETED)
         reporter = signal.reporter
         reporter.email = None
         reporter.save()
@@ -191,7 +191,7 @@ class TestAnonymizeTasks(TransactionTestCase):
 
     def test_anonymize_reporters_that_has_empty_email(self):
         with freeze_time(timezone.now() - timezone.timedelta(days=3)):
-            signal = SignalFactory.create(status__state=AFGEHANDELD)
+            signal = SignalFactory.create(status__state=COMPLETED)
         reporter = signal.reporter
         reporter.email = ''
         reporter.save()

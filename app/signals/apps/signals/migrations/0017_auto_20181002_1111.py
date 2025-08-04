@@ -16,12 +16,12 @@ class Migration(migrations.Migration):
             model_name='status',
             name='state',
             field=models.CharField(blank=True, choices=[
-                ('m', 'Gemeld'), ('i', 'In afwachting van behandeling'),
-                ('b', 'In behandeling'),
+                ('m', 'Reported'), ('i', 'Awaiting handling'),
+                ('b', 'In progress'),
                 ('h', 'On hold'),
-                ('ready to send', 'Te verzenden naar extern systeem'),
-                ('o', 'Afgehandeld'),
-                ('a', 'Geannuleerd'),
+                ('ready to send', 'To send naar extern systeem'),
+                ('o', 'Completed'),
+                ('a', 'Cancelled'),
                 ('sent', 'Verzonden naar extern systeem'),
                 ('send failed', 'Verzending naar extern systeem mislukt'),
                 ('done external', 'Melding is afgehandeld in extern systeem')

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (C) 2019 - 2021 Gemeente Amsterdam
-"""SIG-1102 Migrate ON_HOLD to INGEPLAND"""
+"""SIG-1102 Migrate ON_HOLD to PLANNED"""
 from django.db import migrations, models
 
 from signals.apps.signals import workflow
@@ -11,13 +11,13 @@ def migrate_on_hold(apps, schema_editor):
     Status = apps.get_model('signals', 'Status')
 
     on_hold_str = dict(workflow.STATUS_CHOICES).get(workflow.ON_HOLD)
-    ingepland_str = dict(workflow.STATUS_CHOICES).get(workflow.INGEPLAND)
+    ingepland_str = dict(workflow.STATUS_CHOICES).get(workflow.PLANNED)
     message = 'Status `{}` afgevoerd en status `{}` ingevoerd'.format(on_hold_str, ingepland_str)
 
     on_hold_signals = Signal.objects.filter(status__state=workflow.ON_HOLD)
     for signal in on_hold_signals:
         status = Status(_signal=signal,
-                        state=workflow.INGEPLAND,
+                        state=workflow.PLANNED,
                         text=message)
         status.full_clean()
         status.save()
@@ -37,12 +37,12 @@ class Migration(migrations.Migration):
             model_name='status',
             name='state',
             field=models.CharField(blank=True,
-                                   choices=[('m', 'Gemeld'), ('i', 'In afwachting van behandeling'),
-                                            ('b', 'In behandeling'), ('h', 'On hold'),
-                                            ('ingepland', 'Ingepland'),
-                                            ('ready to send', 'Te verzenden naar extern systeem'),
-                                            ('o', 'Afgehandeld'), ('a', 'Geannuleerd'),
-                                            ('reopened', 'Heropend'), ('s', 'Gesplitst'),
+                                   choices=[('m', 'Reported'), ('i', 'Awaiting handling'),
+                                            ('b', 'In progress'), ('h', 'On hold'),
+                                            ('planned', 'Planned'),
+                                            ('ready to send', 'To send naar extern systeem'),
+                                            ('o', 'Completed'), ('a', 'Cancelled'),
+                                            ('reopened', 'Reopened'), ('s', 'Split'),
                                             ('closure requested', 'Verzoek tot afhandeling'),
                                             ('sent', 'Verzonden naar extern systeem'), (
                                             'send failed',

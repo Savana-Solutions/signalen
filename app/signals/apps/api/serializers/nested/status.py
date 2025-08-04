@@ -51,12 +51,12 @@ class _NestedStatusModelSerializer(SIAModelSerializer):
 
     def _validate_state_TE_VERZENDEN(self, attrs):
         """
-        Validate all info for TE_VERZENDEN flow is present.
+        Validate all info for TO_SEND flow is present.
 
         Note: This state is only used for communication with the CityControl
         system (by the Sigmax company).
         """
-        if (attrs['state'] == workflow.TE_VERZENDEN
+        if (attrs['state'] == workflow.TO_SEND
                 and attrs.get('target_api') == Status.TARGET_API_SIGMAX):
 
             request = self.context.get('request')
@@ -68,9 +68,9 @@ class _NestedStatusModelSerializer(SIAModelSerializer):
 
     def _validate_state_REACTIE_GEVRAAGD(self, attrs):
         """
-        Validate all info for REACTIE_GEVRAAGD flow is present.
+        Validate all info for REACTION_REQUESTED flow is present.
         """
-        if attrs['state'] == workflow.REACTIE_GEVRAAGD:  # SIG-3887
+        if attrs['state'] == workflow.REACTION_REQUESTED:  # SIG-3887
             signal = self.context['view'].get_object()
             if not signal.reporter.email:
                 msg = 'No email address known for signal with ID={{ signal.id }}.'
@@ -83,11 +83,11 @@ class _NestedStatusModelSerializer(SIAModelSerializer):
 
     def _validate_state_DOORGEZET_NAAR_EXTERN(self, attrs):
         """
-        Validate all info for DOORGEZET_NAAR_EXTERN flow is present.
+        Validate all info for FORWARDED_TO_EXTERN flow is present.
         """
-        if attrs['state'] == workflow.DOORGEZET_NAAR_EXTERN:  # ps-261
+        if attrs['state'] == workflow.FORWARDED_TO_EXTERN:  # ps-261
             if not (attrs['email_override'] and attrs['send_email'] and attrs['text']):
-                msg = 'email_override, send_email, and text must all be set for DOORGEZET_NAAR_EXTERN flow'
+                msg = 'email_override, send_email, and text must all be set for FORWARDED_TO_EXTERN flow'
                 raise ValidationError({'text': msg})
 
 

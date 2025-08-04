@@ -37,7 +37,7 @@ class TestSignalContextView(SuperUserMixin, APITestCase):
 
         with freeze_time(now - timedelta(days=5)):
             signal = SignalFactory.create(reporter__email=self.reporter_1_email,
-                                          status__state=workflow.BEHANDELING,
+                                          status__state=workflow.IN_PROGRESS,
                                           location__geometrie=stadhuis_point,
                                           location__buurt_code=STADHUIS['buurt_code'],
                                           category_assignment__category=self.test_category)
@@ -53,14 +53,14 @@ class TestSignalContextView(SuperUserMixin, APITestCase):
 
         with freeze_time(now - timedelta(days=4)):
             SignalFactory.create(reporter__email=self.reporter_1_email,
-                                 status__state=workflow.BEHANDELING,
+                                 status__state=workflow.IN_PROGRESS,
                                  location__geometrie=stadhuis_point,
                                  location__buurt_code=STADHUIS['buurt_code'],
                                  category_assignment__category=self.test_category)
 
         with freeze_time(now - timedelta(days=3)):
             signal = SignalFactory.create(reporter__email=self.reporter_1_email,
-                                          status__state=workflow.AFGEHANDELD,
+                                          status__state=workflow.COMPLETED,
                                           location__geometrie=arena_point,
                                           location__area_code='arena',
                                           location__buurt_code=ARENA['buurt_code'],
@@ -68,13 +68,13 @@ class TestSignalContextView(SuperUserMixin, APITestCase):
             FeedbackFactory.create(_signal=signal, submitted_at=now, is_satisfied=False)
 
             SignalFactory.create(reporter__email=self.reporter_1_email,
-                                 status__state=workflow.AFGEHANDELD,
+                                 status__state=workflow.COMPLETED,
                                  location__geometrie=filmhuis_eye_point,
                                  location__buurt_code=FILMMUSEUM_EYE['buurt_code'],
                                  category_assignment__category=self.test_category)
 
             signal = SignalFactory.create(reporter__email=self.reporter_1_email,
-                                          status__state=workflow.AFGEHANDELD,
+                                          status__state=workflow.COMPLETED,
                                           location__geometrie=blauwe_theehuis_point,
                                           location__buurt_code=BLAUWE_THEEHUIS['buurt_code'],
                                           category_assignment__category=self.test_category)
@@ -87,12 +87,12 @@ class TestSignalContextView(SuperUserMixin, APITestCase):
 
         self.anonymous_signals = [
             SignalFactory.create(reporter__email=None,
-                                 status__state=workflow.BEHANDELING,
+                                 status__state=workflow.IN_PROGRESS,
                                  location__geometrie=filmhuis_eye_point,
                                  location__buurt_code=FILMMUSEUM_EYE['buurt_code'],
                                  category_assignment__category=self.test_category),
             SignalFactory.create(reporter__email='',
-                                 status__state=workflow.BEHANDELING,
+                                 status__state=workflow.IN_PROGRESS,
                                  location__geometrie=blauwe_theehuis_point,
                                  location__buurt_code=BLAUWE_THEEHUIS['buurt_code'],
                                  category_assignment__category=self.test_category)

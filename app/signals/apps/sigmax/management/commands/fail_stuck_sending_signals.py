@@ -5,7 +5,7 @@ from timeit import default_timer as timer
 from django.core.management import BaseCommand
 
 from signals.apps.sigmax.tasks import fail_stuck_sending_signals
-from signals.apps.signals.workflow import TE_VERZENDEN, VERZENDEN_MISLUKT
+from signals.apps.signals.workflow import TO_SEND, SEND_FAILED
 from signals.settings import SIGMAX_SEND_FAIL_TIMEOUT_MINUTES
 
 
@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         start = timer()
 
-        self.stdout.write(f'Add status "{VERZENDEN_MISLUKT}" to Signals that are stuck in "{TE_VERZENDEN}" '
+        self.stdout.write(f'Add status "{SEND_FAILED}" to Signals that are stuck in "{TO_SEND}" '
                           f'for at least {SIGMAX_SEND_FAIL_TIMEOUT_MINUTES} minutes')
         fail_stuck_sending_signals()
 

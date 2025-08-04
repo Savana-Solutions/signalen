@@ -21,7 +21,7 @@ class TestMailActions(TestCase):
     def test_send_status_email(self):
         self.assertEqual(len(mail.outbox), 0)
 
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
         self.assertTrue(MailService.status_mail(signal))
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, f'Uw melding {signal.get_id_display()}')
@@ -38,7 +38,7 @@ class TestMailActions(TestCase):
             title='Uw Feedback is ontvangen',
             body='test text {{ feedback_text }} {{ feedback_text_extra }}'
         )
-        signal = SignalFactory.create(status__state=workflow.GEMELD,
+        signal = SignalFactory.create(status__state=workflow.REPORTED,
                                       reporter__email='test@example.com')
 
         text = 'my text _1234567'
@@ -61,19 +61,19 @@ class TestMailActions(TestCase):
 
     def test_only_send_feedback_negative_contact_mail(self):
         """
-        Test to see if when a status is changed from VERZOEK_TOT_AFHANDELING to AFGEHANDELD and has allows_contact on
+        Test to see if when a status is changed from CLOSURE_REQUESTED to COMPLETED and has allows_contact on
         the feedback to only send one email
         """
         self.assertEqual(len(mail.outbox), 0)
-        signal = SignalFactory.create(status__state=workflow.VERZOEK_TOT_AFHANDELING,
+        signal = SignalFactory.create(status__state=workflow.CLOSURE_REQUESTED,
                                       reporter__email='test@example.com')
-        status = StatusFactory.create(_signal=signal, state=workflow.AFGEHANDELD)
+        status = StatusFactory.create(_signal=signal, state=workflow.COMPLETED)
         feedback = FeedbackFactory.create(
             allows_contact=True,
             _signal=signal,
         )
         feedback.save()
-        signal.status = status  # change to new status AFGEHANDELD
+        signal.status = status  # change to new status COMPLETED
         signal.save()
 
         self.assertTrue(MailService.status_mail(signal))

@@ -39,8 +39,8 @@ def create_session_for_reaction_request(signal):
     """
     Prepare a Session to be answered by the original reporter.
     """
-    if signal.status.state != workflow.REACTIE_GEVRAAGD:
-        msg = f'Signal {signal.id} is not in state REACTIE_GEVRAAGD!'
+    if signal.status.state != workflow.REACTION_REQUESTED:
+        msg = f'Signal {signal.id} is not in state REACTION_REQUESTED!'
         raise WrongState(msg)
 
     with transaction.atomic():
@@ -51,11 +51,11 @@ def create_session_for_reaction_request(signal):
             label=signal.status.text,  # <-- this should not be empty, max 400 characters
             analysis_key='reaction',
         )
-        graph = QuestionGraph.objects.create(first_question=question, name='Reactie gevraagd.')
+        graph = QuestionGraph.objects.create(first_question=question, name='Reaction requested.')
         questionnaire = Questionnaire.objects.create(
             is_active=True,
             graph=graph,
-            name='Reactie gevraagd',
+            name='Reaction requested',
             flow=Questionnaire.REACTION_REQUEST,
         )
         session = Session.objects.create(
@@ -72,17 +72,17 @@ def get_reaction_url(session):
 
 
 def clean_up_reaction_request():
-    # Find all signals that have been in state REACTIE_GEVRAAGD for too
-    # long and change their state to REACTIE_ONTVANGEN with a text saying
+    # Find all signals that have been in state REACTION_REQUESTED for too
+    # long and change their state to REACTION_RECEIVED with a text saying
     # no reaction was received.
     signals = Signal.objects.filter(
-        status__state=workflow.REACTIE_GEVRAAGD,
+        status__state=workflow.REACTION_REQUESTED,
         status__created_at__lt=now() - timedelta(days=REACTION_REQUEST_DAYS_OPEN)
     )
 
     count = 0
     for signal in signals:
-        payload = {'text': NO_REACTION_RECEIVED_TEXT, 'state': workflow.REACTIE_ONTVANGEN}
+        payload = {'text': NO_REACTION_RECEIVED_TEXT, 'state': workflow.REACTION_RECEIVED}
         Signal.actions.update_status(data=payload, signal=signal)
         count += 1
 
@@ -106,9 +106,9 @@ class ReactionRequestSessionService(SessionService):
             logger.warning(msg, stack_info=True)
             raise SessionInvalidated(msg)
 
-        # Make sure that the signal is in state REACTIE_GEVRAAGD.
-        if signal.status.state != workflow.REACTIE_GEVRAAGD:
-            msg = f'Session {self.session.uuid} is invalidated, associated signal not in state REACTIE_GEVRAAGD.'
+        # Make sure that the signal is in state REACTION_REQUESTED.
+        if signal.status.state != workflow.REACTION_REQUESTED:
+            msg = f'Session {self.session.uuid} is invalidated, associated signal not in state REACTION_REQUESTED.'
             logger.warning(msg, stack_info=True)
             raise SessionInvalidated(msg)
 
@@ -140,4 +140,4 @@ class ReactionRequestSessionService(SessionService):
         answer = self.answers_by_analysis_key['reaction']
 
         Signal.actions.update_status(
-            {'text': answer.payload, 'state': workflow.REACTIE_ONTVANGEN}, self.session._signal)
+            {'text': answer.payload, 'state': workflow.REACTION_RECEIVED}, self.session._signal)

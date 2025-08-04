@@ -65,7 +65,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
         instance = super().update(instance, validated_data)
 
         # Check if the Signal needs to be reopened
-        if instance._signal.status and instance._signal.status.state != workflow.AFGEHANDELD:
+        if instance._signal.status and instance._signal.status.state != workflow.COMPLETED:
             # The signal is not in the handled state, so no need to reopen
             return instance
 
@@ -81,7 +81,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
         if sa_qs.count() < len(validated_data['text_list']) or sa_qs.filter(reopens_when_unhappy=True).exists():
             # A custom answer is given OR an answer that requires reopening is given
             payload = {'text': 'De melder is niet tevreden blijkt uit feedback. Zo nodig heropenen.',
-                       'state': workflow.VERZOEK_TOT_HEROPENEN}
+                       'state': workflow.REQUEST_TO_REOPEN}
             Signal.actions.update_status(data=payload, signal=instance._signal)
 
         if instance._signal.allows_contact:

@@ -17,11 +17,11 @@ from signals.apps.signals.tasks import (
 )
 from signals.apps.signals.tests.valid_locations import ARENA, STADHUIS
 from signals.apps.signals.workflow import (
-    AFGEHANDELD,
-    AFGEHANDELD_EXTERN,
-    GEANNULEERD,
-    GEMELD,
-    VERZOEK_TOT_HEROPENEN
+    COMPLETED,
+    DONE_EXTERNAL,
+    CANCELLED,
+    REPORTED,
+    REQUEST_TO_REOPEN
 )
 from signals.test.utils import SignalsBaseApiTestCase
 
@@ -402,11 +402,11 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         parent_cat = ParentCategoryFactory.create()
         child_cat = CategoryFactory.create(name='child', parent=parent_cat, is_public_accessible=True)
 
-        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=AFGEHANDELD)
-        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=AFGEHANDELD_EXTERN)
-        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=GEANNULEERD)
-        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=VERZOEK_TOT_HEROPENEN)
-        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=GEMELD)
+        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=COMPLETED)
+        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=DONE_EXTERNAL)
+        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=CANCELLED)
+        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=REQUEST_TO_REOPEN)
+        SignalFactoryValidLocation.create(category_assignment__category=child_cat, status__state=REPORTED)
 
         refresh_materialized_view_public_signals_geography_feature_collection()
 
@@ -427,8 +427,8 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         non_accessible_cat = CategoryFactory.create(parent=parent_cat, is_public_accessible=False)
         accessible_cat = CategoryFactory.create(parent=parent_cat, is_public_accessible=True)
 
-        SignalFactoryValidLocation.create(category_assignment__category=non_accessible_cat, status__state=GEMELD)
-        SignalFactoryValidLocation.create(category_assignment__category=accessible_cat, status__state=GEMELD)
+        SignalFactoryValidLocation.create(category_assignment__category=non_accessible_cat, status__state=REPORTED)
+        SignalFactoryValidLocation.create(category_assignment__category=accessible_cat, status__state=REPORTED)
 
         refresh_materialized_view_public_signals_geography_feature_collection()
 
@@ -451,7 +451,7 @@ class TestPublicSignalViewSet(SignalsBaseApiTestCase):
         parent_cat = ParentCategoryFactory.create()
         non_accessible_cat = CategoryFactory.create(parent=parent_cat, is_public_accessible=False)
 
-        SignalFactoryValidLocation.create(category_assignment__category=non_accessible_cat, status__state=AFGEHANDELD)
+        SignalFactoryValidLocation.create(category_assignment__category=non_accessible_cat, status__state=COMPLETED)
         refresh_materialized_view_public_signals_geography_feature_collection()
 
         response = self.client.get(f'{self.geography_endpoint}/?bbox=4.700000,52.200000,5.000000,52.500000&'

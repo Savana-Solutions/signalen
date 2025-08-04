@@ -4,7 +4,7 @@ from django.conf import settings
 
 from signals.apps.email_integrations.rules.abstract import AbstractRule
 from signals.apps.signals.models import Status
-from signals.apps.signals.workflow import AFGEHANDELD, VERZOEK_TOT_HEROPENEN
+from signals.apps.signals.workflow import COMPLETED, REQUEST_TO_REOPEN
 
 
 class SignalHandledNegativeRule(AbstractRule):
@@ -13,8 +13,8 @@ class SignalHandledNegativeRule(AbstractRule):
         """
         Run status validations for the Rule
 
-        - The status is AFGEHANDELD
-        - The previous state is VERZOEK_TOT_HEROPENEN
+        - The status is COMPLETED
+        - The previous state is REQUEST_TO_REOPEN
         - latest feed has allows_contact set True
         """
 
@@ -24,13 +24,13 @@ class SignalHandledNegativeRule(AbstractRule):
 
     def _validate_status_state(self, status):
         """
-        Validate that the status is AFGEHANDELD
+        Validate that the status is COMPLETED
         """
-        return status.state == AFGEHANDELD
+        return status.state == COMPLETED
 
     def _validate_previous_state_VERZOEK_TOT_HEROPENEN(self, status) -> bool:
         """
-        Validate that the previous state is VERZOEK_TOT_HEROPENEN
+        Validate that the previous state is REQUEST_TO_REOPEN
         """
 
         return Status.objects.filter(
@@ -40,7 +40,7 @@ class SignalHandledNegativeRule(AbstractRule):
         ).order_by('-created_at').values_list(
             'state',
             flat=True
-        ).first() == VERZOEK_TOT_HEROPENEN
+        ).first() == REQUEST_TO_REOPEN
 
     def _is_allows_contact(self, status) -> bool:
         """

@@ -534,18 +534,18 @@ class TestQuestionnairesService(TestCase):
 
     def test_get_session_reaction_request_flow_two_requests(self):
         # A session for reaction request flow for a signal in a state other
-        # than REACTIE_GEVRAAGD should raise SessionInvalidated.
-        signal = SignalFactory.create(status__state=workflow.GEMELD)
+        # than REACTION_REQUESTED should raise SessionInvalidated.
+        signal = SignalFactory.create(status__state=workflow.REPORTED)
         session = SessionFactory.create(_signal=signal, questionnaire__flow=Questionnaire.REACTION_REQUEST)
         session_service = get_session_service(session.uuid)
 
         with self.assertRaises(SessionInvalidated) as cm:
             session_service.is_publicly_accessible()
-        self.assertIn('associated signal not in state REACTIE_GEVRAAGD', str(cm.exception))
+        self.assertIn('associated signal not in state REACTION_REQUESTED', str(cm.exception))
 
         # A session for reaction request flow for a signal that also has a more
         # recent session, should raise SessionInvalidated.
-        status = StatusFactory.create(state=workflow.REACTIE_GEVRAAGD)
+        status = StatusFactory.create(state=workflow.REACTION_REQUESTED)
         signal.status = status
         signal.save()
         SessionFactory.create(_signal=signal, questionnaire__flow=Questionnaire.REACTION_REQUEST)  # more recent
@@ -562,7 +562,7 @@ class TestQuestionnairesService(TestCase):
         get_session_at = signal_created_at + timedelta(days=REACTION_REQUEST_DAYS_OPEN * 2)
 
         with freeze_time(signal_created_at):
-            signal = SignalFactory.create(status__state=workflow.GEMELD)
+            signal = SignalFactory.create(status__state=workflow.REPORTED)
             session = SessionFactory.create(
                 _signal=signal, questionnaire__flow=Questionnaire.EXTRA_PROPERTIES, submit_before=submit_before)
 
@@ -576,7 +576,7 @@ class TestQuestionnairesService(TestCase):
 
     def test_get_session_frozen(self):
         # A session that is frozen should raise SessionFrozen
-        signal = SignalFactory.create(status__state=workflow.GEMELD)
+        signal = SignalFactory.create(status__state=workflow.REPORTED)
         session = SessionFactory.create(_signal=signal, questionnaire__flow=Questionnaire.REACTION_REQUEST, frozen=True)
         session_service = get_session_service(session.uuid)
         session_service.refresh_from_db()

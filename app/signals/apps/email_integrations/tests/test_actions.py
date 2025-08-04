@@ -254,21 +254,21 @@ class TestSignalCreatedAction(ActionTestMixin, TestCase):
     """
     Test the SignalCreatedAction. The action should only be triggerd when the following rules apply:
 
-    - The status is GEMELD
-    - The status GEMELD is set only once
+    - The status is REPORTED
+    - The status REPORTED is set only once
     """
-    state = workflow.GEMELD
+    state = workflow.REPORTED
     action = SignalCreatedAction(EmailTemplateRenderer())
 
     def test_signal_set_state_second_time(self):
         """
-        Check that if the status GEMELD is set for a second time the action is not triggered
+        Check that if the status REPORTED is set for a second time the action is not triggered
         """
         self.assertEqual(len(mail.outbox), 0)
 
         signal = SignalFactory.create(status__state=self.state, reporter__email='test@example.com')
 
-        status = StatusFactory.create(_signal=signal, state=workflow.BEHANDELING)
+        status = StatusFactory.create(_signal=signal, state=workflow.IN_PROGRESS)
         signal.status = status
         signal.save()
 
@@ -501,20 +501,20 @@ class TestSignalHandledAction(ActionTestMixin, TestCase):
     """
     Test the SignalHandledAction. The action should only be triggerd when the following rules apply:
 
-    - The status is AFGEHANDELD
-    - The previous state is not VERZOEK_TOT_HEROPENEN
+    - The status is COMPLETED
+    - The previous state is not REQUEST_TO_REOPEN
     """
-    state = workflow.AFGEHANDELD
+    state = workflow.COMPLETED
     action = SignalHandledAction(EmailTemplateRenderer())
 
     def test_signal_set_state_second_time(self):
         """
-        If the Signal status is set to AFGEHANDELD a second time and the previous state is not VERZOEK_TOT_HEROPENEN
+        If the Signal status is set to COMPLETED a second time and the previous state is not REQUEST_TO_REOPEN
         the action should be triggered
         """
         self.assertEqual(len(mail.outbox), 0)
 
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         status = StatusFactory.create(_signal=signal, state=self.state)
         signal.status = status
@@ -525,7 +525,7 @@ class TestSignalHandledAction(ActionTestMixin, TestCase):
         self.assertEqual(Note.objects.count(), 1)
         self.assertTrue(Note.objects.filter(text=self.action.note).exists())
 
-        status = StatusFactory.create(_signal=signal, state=workflow.HEROPEND)
+        status = StatusFactory.create(_signal=signal, state=workflow.REOPENED)
         signal.status = status
         signal.save()
 
@@ -540,12 +540,12 @@ class TestSignalHandledAction(ActionTestMixin, TestCase):
 
     def test_signal_set_state_second_time_second_last_state_verzoek_tot_heropenen(self):
         """
-        If the Signal status is set to AFGEHANDELD a second time and the previous state is VERZOEK_TOT_HEROPENEN the
+        If the Signal status is set to COMPLETED a second time and the previous state is REQUEST_TO_REOPEN the
         action should not be triggered
         """
         self.assertEqual(len(mail.outbox), 0)
 
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         status = StatusFactory.create(_signal=signal, state=self.state)
         signal.status = status
@@ -556,7 +556,7 @@ class TestSignalHandledAction(ActionTestMixin, TestCase):
         self.assertEqual(Note.objects.count(), 1)
         self.assertTrue(Note.objects.filter(text=self.action.note).exists())
 
-        status = StatusFactory.create(_signal=signal, state=workflow.VERZOEK_TOT_HEROPENEN)
+        status = StatusFactory.create(_signal=signal, state=workflow.REQUEST_TO_REOPEN)
         signal.status = status
         signal.save()
 
@@ -572,8 +572,8 @@ class TestSignalHandledAction(ActionTestMixin, TestCase):
 
 class TestSignalHandledNegativeAction(ActionTestMixin, TestCase):
     action = SignalHandledNegativeAction(EmailTemplateRenderer())
-    state = workflow.AFGEHANDELD
-    prev_state = workflow.VERZOEK_TOT_HEROPENEN
+    state = workflow.COMPLETED
+    prev_state = workflow.REQUEST_TO_REOPEN
     signal = None
     feedback = None
 
@@ -712,10 +712,10 @@ class TestSignalScheduledAction(ActionTestMixin, TestCase):
     """
     Test the SignalScheduledAction. The action should only be triggerd when the following rules apply:
 
-    - The status is INGEPLAND
+    - The status is PLANNED
     - send_email must be True
     """
-    state = workflow.INGEPLAND
+    state = workflow.PLANNED
     send_email = True
     action = SignalScheduledAction(EmailTemplateRenderer())
 
@@ -724,10 +724,10 @@ class TestSignalReopenedAction(ActionTestMixin, TestCase):
     """
     Test the SignalReopenedAction. The action should only be triggerd when the following rules apply:
 
-    - The status is HEROPEND
+    - The status is REOPENED
     """
     action = SignalReopenedAction(EmailTemplateRenderer())
-    state = workflow.HEROPEND
+    state = workflow.REOPENED
 
     def test_get_additional_context(self):
         signal = SignalFactory.create(status__state=self.state)
@@ -788,9 +788,9 @@ class TestSignalReactionRequestAction(ActionTestMixin, TestCase):
     """
     Test the SignalReactionRequestAction. The action should only be triggerd when the following rules apply:
 
-    - The status is REACTIE_GEVRAAGD
+    - The status is REACTION_REQUESTED
     """
-    state = workflow.REACTIE_GEVRAAGD
+    state = workflow.REACTION_REQUESTED
     action = SignalReactionRequestAction(EmailTemplateRenderer())
 
     def test_send_email(self):
@@ -808,10 +808,10 @@ class TestSignalReactionRequestReceivedAction(ActionTestMixin, TestCase):
     """
     Test the SignalReactionRequestReceivedAction. The action should only be triggerd when the following rules apply:
 
-    - The status is REACTIE_ONTVANGEN
+    - The status is REACTION_RECEIVED
     - The status text does not match NO_REACTION_RECEIVED_TEXT
     """
-    state = workflow.REACTIE_ONTVANGEN
+    state = workflow.REACTION_RECEIVED
     send_email = True
     action = SignalReactionRequestReceivedAction(EmailTemplateRenderer())
 
@@ -838,22 +838,22 @@ class TestSignalOptionalAction(TestCase):
     """
     Test the SignalOptionalAction. The action should only be triggerd when the following rules apply:
 
-    - The status is GEMELD, AFWACHTING, BEHANDELING, ON_HOLD, VERZOEK_TOT_AFHANDELING or GEANNULEERD
+    - The status is REPORTED, AWAITING, IN_PROGRESS, ON_HOLD, CLOSURE_REQUESTED or CANCELLED
     - send_email must be True
     """
     action = SignalOptionalAction(EmailTemplateRenderer())
 
     def test_statuses(self):
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         statuses = [
-            workflow.GEMELD,
-            workflow.AFWACHTING,
-            workflow.BEHANDELING,
+            workflow.REPORTED,
+            workflow.AWAITING,
+            workflow.IN_PROGRESS,
             workflow.ON_HOLD,
-            workflow.VERZOEK_TOT_AFHANDELING,
-            workflow.GEANNULEERD,
-            workflow.INGEPLAND,
+            workflow.CLOSURE_REQUESTED,
+            workflow.CANCELLED,
+            workflow.PLANNED,
         ]
 
         for state in statuses:
@@ -864,16 +864,16 @@ class TestSignalOptionalAction(TestCase):
             self.assertTrue(self.action(signal, dry_run=False))
 
     def test_statuses_do_not_apply(self):
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         statuses = [
-            workflow.GEMELD,
-            workflow.AFWACHTING,
-            workflow.BEHANDELING,
+            workflow.REPORTED,
+            workflow.AWAITING,
+            workflow.IN_PROGRESS,
             workflow.ON_HOLD,
-            workflow.VERZOEK_TOT_AFHANDELING,
-            workflow.GEANNULEERD,
-            workflow.INGEPLAND,
+            workflow.CLOSURE_REQUESTED,
+            workflow.CANCELLED,
+            workflow.PLANNED,
         ]
 
         for state in statuses:
@@ -884,18 +884,18 @@ class TestSignalOptionalAction(TestCase):
             self.assertFalse(self.action(signal, dry_run=False))
 
     def test_statuses_not_allowed(self):
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         statuses = [
             workflow.LEEG,
-            workflow.AFGEHANDELD,
-            workflow.GESPLITST,
-            workflow.HEROPEND,
-            workflow.VERZOEK_TOT_HEROPENEN,
-            workflow.TE_VERZENDEN,
-            workflow.VERZONDEN,
-            workflow.VERZENDEN_MISLUKT,
-            workflow.AFGEHANDELD_EXTERN,
+            workflow.COMPLETED,
+            workflow.SPLIT,
+            workflow.REOPENED,
+            workflow.REQUEST_TO_REOPEN,
+            workflow.TO_SEND,
+            workflow.SENT,
+            workflow.SEND_FAILED,
+            workflow.DONE_EXTERNAL,
         ]
 
         for state in statuses:
@@ -907,7 +907,7 @@ class TestSignalOptionalAction(TestCase):
 
 
 class TestSignalForwardToExternalAction(ActionTestMixin, TestCase):
-    state = workflow.DOORGEZET_NAAR_EXTERN
+    state = workflow.FORWARDED_TO_EXTERN
     action = SignalForwardToExternalAction(EmailTemplateRenderer())
     send_email = True
 
@@ -1025,7 +1025,7 @@ class TestSignalForwardToExternalAction(ActionTestMixin, TestCase):
         self.assertEqual(Session.objects.count(), 0)
         status_text = FuzzyText(length=400)
 
-        signal = SignalFactory.create(status__state=workflow.DOORGEZET_NAAR_EXTERN, status__send_email=True,
+        signal = SignalFactory.create(status__state=workflow.FORWARDED_TO_EXTERN, status__send_email=True,
                                       status__email_override='a@example.com', status__text=status_text)
         context = self.action.get_additional_context(signal)
 
@@ -1035,7 +1035,7 @@ class TestSignalForwardToExternalAction(ActionTestMixin, TestCase):
 
 
 class TestSignalForwardToExternalActionFallbackTemplate(TestCase):
-    state = workflow.DOORGEZET_NAAR_EXTERN
+    state = workflow.FORWARDED_TO_EXTERN
     action = SignalForwardToExternalAction(EmailTemplateRenderer())
     send_email = True
 
@@ -1070,10 +1070,10 @@ class TestSignalCreatedActionNoTemplate(TestCase):
     Test the SignalOptionalAction. No EmailTemplate(s) are present in the database, therefor the fallback template
     should be used. The action should only be triggerd when the following rules apply:
 
-    - The status is GEMELD
-    - The status GEMELD is set only once
+    - The status is REPORTED
+    - The status REPORTED is set only once
     """
-    state = workflow.GEMELD
+    state = workflow.REPORTED
     action = SignalCreatedAction(EmailTemplateRenderer())
 
     def test_send_email(self):
@@ -1123,7 +1123,7 @@ class TestSignalSystemActions(TestCase):
         Check if the email with context is sent to the user
         """
         action = MailService._system_actions.get('feedback_received')(EmailTemplateRenderer())
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         text = 'my text _1234567'
         text_extra = 'my extra text _extra_987654321'
@@ -1181,7 +1181,7 @@ class TestSignalSystemActions(TestCase):
         FeedbackReceivedAction is disabled in settings
         """
         action = MailService._system_actions.get('feedback_received')(EmailTemplateRenderer())
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
         text_extra = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
@@ -1195,11 +1195,11 @@ class TestSignalSystemActions(TestCase):
         action = MailService._system_actions.get('forward_to_external_reaction_received')(EmailTemplateRenderer())
 
         signal = SignalFactory.create(
-            status__state=workflow.DOORGEZET_NAAR_EXTERN,
+            status__state=workflow.FORWARDED_TO_EXTERN,
             reporter__email='reporter@example.com',
             status__send_email=True,
             status__email_override='external@example.com')
-        Signal.actions.update_status({'state': workflow.VERZOEK_TOT_AFHANDELING, 'text': 'please fix'}, signal)
+        Signal.actions.update_status({'state': workflow.CLOSURE_REQUESTED, 'text': 'please fix'}, signal)
 
         result = action(signal=signal, dry_run=False, reaction_text='fixed!', email_override='external@example.com')
         self.assertTrue(result)
@@ -1211,11 +1211,11 @@ class TestSignalSystemActions(TestCase):
         action = MailService._system_actions.get('forward_to_external_reaction_received')(EmailTemplateRenderer())
 
         signal = SignalFactory.create(
-            status__state=workflow.DOORGEZET_NAAR_EXTERN,
+            status__state=workflow.FORWARDED_TO_EXTERN,
             reporter__email='reporter@example.com',
             status__send_email=True,
             status__email_override='external@example.com')
-        Signal.actions.update_status({'state': workflow.VERZOEK_TOT_AFHANDELING, 'text': 'please fix'}, signal)
+        Signal.actions.update_status({'state': workflow.CLOSURE_REQUESTED, 'text': 'please fix'}, signal)
 
         result = action(signal=signal, reaction_text='reaction text', email_override='external@example.com')
         self.assertTrue(result)
@@ -1233,11 +1233,11 @@ class TestSignalForwardToExternalReactionReceivedActionFallbackTemplate(TestCase
         action = MailService._system_actions.get('forward_to_external_reaction_received')(EmailTemplateRenderer())
 
         signal = SignalFactory.create(
-            status__state=workflow.DOORGEZET_NAAR_EXTERN,
+            status__state=workflow.FORWARDED_TO_EXTERN,
             reporter__email='reporter@example.com',
             status__send_email=True,
             status__email_override='external@example.com')
-        Signal.actions.update_status({'state': workflow.VERZOEK_TOT_AFHANDELING, 'text': 'please fix'}, signal)
+        Signal.actions.update_status({'state': workflow.CLOSURE_REQUESTED, 'text': 'please fix'}, signal)
 
         result = action(signal=signal, dry_run=False, reaction_text='fixed!', email_override='external@example.com')
         self.assertTrue(result)

@@ -15,9 +15,9 @@ from signals.apps.api.fields import (
 from signals.apps.feedback.app_settings import FEEDBACK_EXPECTED_WITHIN_N_DAYS
 from signals.apps.feedback.models import Feedback
 from signals.apps.signals.models import Attachment, Signal
-from signals.apps.signals.workflow import AFGEHANDELD, GEMELD, REACTIE_GEVRAAGD
+from signals.apps.signals.workflow import COMPLETED, REPORTED, REACTION_REQUESTED
 
-PUBLIC_UPLOAD_ALLOWED_STATES = (AFGEHANDELD, GEMELD, REACTIE_GEVRAAGD)
+PUBLIC_UPLOAD_ALLOWED_STATES = (COMPLETED, REPORTED, REACTION_REQUESTED)
 
 
 class BaseSignalAttachmentSerializer(HALSerializer):
@@ -74,10 +74,10 @@ class PublicSignalAttachmentSerializer(BaseSignalAttachmentSerializer):
             msg = 'Public uploads not allowed in current signal state.'
             raise ValidationError(msg)
 
-        # Only allow uploads in state AFGEHANDELD if there is an open/active
+        # Only allow uploads in state COMPLETED if there is an open/active
         # request for feedback from the reporter. Note several feedback requests
         # can be open/active at once.
-        if signal.status.state == AFGEHANDELD:
+        if signal.status.state == COMPLETED:
             qs = (
                 Feedback.objects.filter(_signal=signal)
                 .filter(submitted_at__isnull=True)

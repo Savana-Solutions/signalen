@@ -13,7 +13,7 @@ from signals.apps.signals.models import Note
 
 
 class TestSignalCreatedActionExtraProperties(TestCase):
-    state = workflow.GEMELD
+    state = workflow.REPORTED
     action = SignalCreatedAction(EmailTemplateRenderer())
 
     def setUp(self):

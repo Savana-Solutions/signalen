@@ -46,13 +46,13 @@ class TestPDFSummaryService(TestCase):
             location__geometrie=Point(4.9000607, 52.3675707))  # location of city hall / Stopera
         SignalLogService.log_create_initial(self.signal)
 
-        status = StatusFactory.create(_signal=self.signal, state=workflow.AFWACHTING, text='waiting')
+        status = StatusFactory.create(_signal=self.signal, state=workflow.AWAITING, text='waiting')
         SignalLogService.log_update_status(status)
 
         status = StatusFactory.create(_signal=self.signal, state=workflow.ON_HOLD, text='please hold')
         SignalLogService.log_update_status(status)
 
-        status = StatusFactory.create(_signal=self.signal, state=workflow.AFGEHANDELD, text='Consider it done')
+        status = StatusFactory.create(_signal=self.signal, state=workflow.COMPLETED, text='Consider it done')
         SignalLogService.log_update_status(status)
 
         self.signal.status = status
@@ -295,7 +295,7 @@ class TestPDFSummaryService(TestCase):
         test_time = datetime.datetime(2022, 1, 1, 12, 0, 0, 0, tzinfo=pytz.UTC)
         with freeze_time(test_time):
             new_status = StatusFactory.create(
-                _signal=self.signal, state=workflow.AFWACHTING, text='SHOULD BE IN HISTORY')
+                _signal=self.signal, state=workflow.AWAITING, text='SHOULD BE IN HISTORY')
             self.signal.status = new_status
             self.signal.save()
             SignalLogService.log_update_status(new_status)

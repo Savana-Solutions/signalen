@@ -27,7 +27,7 @@ U liet ons het volgende weten:
 
 Gegevens van de melding
 - Nummer: {{ formatted_signal_id }}
-- Gemeld op: {{ created_at|date:"DATETIME_FORMAT" }}
+- Reported on: {{ created_at|date:"DATETIME_FORMAT" }}
 - Plaats: {% if location %}{{ location|format_address:"O hlT, P W" }}{% endif %}
 
 
@@ -44,7 +44,7 @@ U liet ons het volgende weten:
 
 Gegevens van de melding
 - Nummer: {{ formatted_signal_id }}
-- Gemeld op: {{ created_at|date:"DATETIME_FORMAT" }}
+- Reported on: {{ created_at|date:"DATETIME_FORMAT" }}
 - Plaats: {% if location %}{{ location|format_address:"O hlT, P W" }}{% endif %}
 
 Met vriendelijke groet,
@@ -109,7 +109,7 @@ Bedankt voor uw reactie. U hoort binnen 3 werkdagen weer bericht van ons.
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -140,7 +140,7 @@ Contact
 
 Gegevens van uw melding
 Nummer: {{ formatted_signal_id }}
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 Meer weten?
@@ -174,7 +174,7 @@ Bent u tevreden met de afhandeling van uw melding?
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -203,7 +203,7 @@ Waarom bent u niet tevreden?
 
 Gegevens van uw melding
 Nummer: {{ formatted_signal_id }}
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 Meer weten?
@@ -267,7 +267,7 @@ Bedankt voor uw reactie. U krijgt binnen 3 werkdagen weer bericht van ons.
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -298,7 +298,7 @@ Contact
 
 Gegevens van uw melding
 Nummer: {{ formatted_signal_id }}
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 Meer weten?
@@ -321,7 +321,7 @@ Op {{ created_at|date:"j F Y" }} hebt u een melding gedaan bij de gemeente. Wij 
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -341,7 +341,7 @@ U liet ons het volgende weten
 
 Gegevens van uw melding
 Nummer: {{ formatted_signal_id }}
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 Meer weten?
@@ -366,7 +366,7 @@ Op {{ created_at|date:"j F Y" }} om {{ created_at|date:"H.i" }} uur hebt u een m
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -388,7 +388,7 @@ Stand van zaken
 
 Gegevens van uw melding
 Nummer: {{ formatted_signal_id }}
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 Meer weten?
@@ -427,7 +427,7 @@ Bent u tevreden met de afhandeling van uw melding?
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -463,7 +463,7 @@ Wilt u ons verder nog iets laten weten?
 
 Gegevens van uw melding
 Nummer: {{ formatted_signal_id }}
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 Meer weten?
@@ -488,7 +488,7 @@ Op {{ created_at|date:"j F Y" }} om {{ created_at|date:"H.i" }} uur hebt u een m
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -510,7 +510,7 @@ Meer informatie
 
 Gegevens van uw melding
 Nummer: {{ formatted_signal_id }}
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 Meer weten?
@@ -531,7 +531,7 @@ Dank voor uw melding. Fijn dat u zich betrokken voelt bij de stad.
 {{ text }}
  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Wat doen we met uw melding?**  
@@ -583,7 +583,7 @@ Uw melding
 {{ text }}
 
 Nummer: {{ formatted_signal_id }}
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 Wat doen we met uw melding?
@@ -646,7 +646,7 @@ Op {{ created_at|date:"j F Y" }} om {{ created_at|date:"H.i" }} uur hebt u een m
 
 **Gegevens van uw melding**  
 Nummer: {{ formatted_signal_id }}  
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur  
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur  
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 **Meer weten?**  
@@ -673,7 +673,7 @@ Nee, ik ben niet tevreden Nee, ik ben niet tevreden {{ negative_feedback_url }}
 
 Gegevens van uw melding
 Nummer: {{ formatted_signal_id }}
-Gemeld op: {{ created_at|date:"j F Y, H.i" }} uur
+Reported on: {{ created_at|date:"j F Y, H.i" }} uur
 Plaats: {% if address %}{{ address|format_address:"O hlT, P W" }}{% else %}Locatie is gepind op de kaart{% endif %}
 
 Meer weten?

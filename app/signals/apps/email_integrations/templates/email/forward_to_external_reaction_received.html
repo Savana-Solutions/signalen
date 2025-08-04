@@ -21,7 +21,7 @@
     <p>
         <strong>Gegevens van de melding</strong><br>
         Nummer: {{ formatted_signal_id }}<br>
-        Gemeld op: {{ created_at|date:"DATETIME_FORMAT" }}<br>
+        Reported on: {{ created_at|date:"DATETIME_FORMAT" }}<br>
         Locatie: {% if address %}{{ address|format_address:"O hlT, P W" }}{% endif %}<br>
     </p>
 

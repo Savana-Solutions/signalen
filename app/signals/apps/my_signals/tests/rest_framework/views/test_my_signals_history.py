@@ -91,21 +91,21 @@ class TestMySignalsHistoryEndpoint(APITestCase):
 
         # Simulate workflow
         with freeze_time(now - timezone.timedelta(minutes=110)):
-            status = StatusFactory(state=workflow.BEHANDELING, text=None, _signal=signal)
+            status = StatusFactory(state=workflow.IN_PROGRESS, text=None, _signal=signal)
             signal.status = status
             signal.save()
 
             SignalLogService.log_update_status(status)
 
         with freeze_time(now - timezone.timedelta(minutes=105)):
-            status = StatusFactory(state=workflow.REACTIE_GEVRAAGD, text='Weet u meer?', _signal=signal)
+            status = StatusFactory(state=workflow.REACTION_REQUESTED, text='Weet u meer?', _signal=signal)
             signal.status = status
             signal.save()
 
             SignalLogService.log_update_status(status)
 
         with freeze_time(now - timezone.timedelta(minutes=60)):
-            status = StatusFactory(state=workflow.REACTIE_ONTVANGEN, text='Ik heb alles gemeld', _signal=signal)
+            status = StatusFactory(state=workflow.REACTION_RECEIVED, text='Ik heb alles gemeld', _signal=signal)
             signal.status = status
             signal.save()
 
@@ -115,7 +115,7 @@ class TestMySignalsHistoryEndpoint(APITestCase):
             category_assignment = CategoryAssignmentFactory(_signal=signal)
             priority = PriorityFactory(priority='high', _signal=signal)
             NoteFactory(text='Intern contact gehad en category aangepast + prio naar hoog', _signal=signal)
-            status = StatusFactory(state=workflow.INGEPLAND, text=None, _signal=signal)
+            status = StatusFactory(state=workflow.PLANNED, text=None, _signal=signal)
             signal.category_assignment = category_assignment
             signal.priority = priority
             signal.status = status
@@ -133,28 +133,28 @@ class TestMySignalsHistoryEndpoint(APITestCase):
             SignalLogService.log_update_priority(priority)
 
         with freeze_time(now - timezone.timedelta(minutes=30)):
-            status = StatusFactory(state=workflow.AFGEHANDELD, text=None, _signal=signal)
+            status = StatusFactory(state=workflow.COMPLETED, text=None, _signal=signal)
             signal.status = status
             signal.save()
 
             SignalLogService.log_update_status(status)
 
         with freeze_time(now - timezone.timedelta(minutes=20)):
-            status = StatusFactory(state=workflow.HEROPEND, text='Melding nog niet AFGEHANDELD', _signal=signal)
+            status = StatusFactory(state=workflow.REOPENED, text='Melding nog niet COMPLETED', _signal=signal)
             signal.status = status
             signal.save()
 
             SignalLogService.log_update_status(status)
 
         with freeze_time(now - timezone.timedelta(minutes=15)):
-            status = StatusFactory(state=workflow.REACTIE_GEVRAAGD, text='Toch nog 1 vraag, ok?', _signal=signal)
+            status = StatusFactory(state=workflow.REACTION_REQUESTED, text='Toch nog 1 vraag, ok?', _signal=signal)
             signal.status = status
             signal.save()
 
             SignalLogService.log_update_status(status)
 
         with freeze_time(now - timezone.timedelta(minutes=5)):
-            status = StatusFactory(state=workflow.AFGEHANDELD, text='Melder heeft gebeld, medling AFGEHANDELD',
+            status = StatusFactory(state=workflow.COMPLETED, text='Melder heeft gebeld, medling COMPLETED',
                                    _signal=signal)
             signal.status = status
             signal.save()
@@ -274,7 +274,7 @@ class TestMySignalsHistoryEndpoint(APITestCase):
         self.assert_action_in_data('Status gewijzigd naar: Afgesloten', response_json, 5)
 
         self.assert_what_in_data('UPDATE_STATUS', response_json, 6)
-        self.assert_action_in_data('Status gewijzigd naar: Heropend', response_json, 6)
+        self.assert_action_in_data('Status gewijzigd naar: Reopened', response_json, 6)
 
         self.assert_what_in_data('UPDATE_STATUS', response_json, 7)
         self.assert_action_in_data('Status gewijzigd naar: Vraag aan u verstuurd', response_json, 7)

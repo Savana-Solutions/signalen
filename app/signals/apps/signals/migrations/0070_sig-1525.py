@@ -5,7 +5,7 @@ Fix SIG-1525
 """
 from django.db import migrations
 
-from signals.apps.signals.workflow import VERZENDEN_MISLUKT
+from signals.apps.signals.workflow import SEND_FAILED
 
 PROBLEMATIC_SIA_IDS = [
     250201,
@@ -35,7 +35,7 @@ def _set_state_send_failed(apps, schema_editor):
     for signal in Signal.objects.filter(id__in=PROBLEMATIC_SIA_IDS):
         new_status = Status(
             _signal=signal,
-            state=VERZENDEN_MISLUKT,
+            state=SEND_FAILED,
             text='Melding vrijgegeven.'
         )
         new_status.save()  # no full_clean

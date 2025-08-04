@@ -8,53 +8,53 @@ Model the workflow of responding to a Signal (melding) as state machine.
 
 # Internal statusses
 LEEG = ''
-GEMELD = 'm'
-AFWACHTING = 'i'
-BEHANDELING = 'b'
+REPORTED = 'm'
+AWAITING = 'i'
+IN_PROGRESS = 'b'
 ON_HOLD = 'h'
-AFGEHANDELD = 'o'
-GEANNULEERD = 'a'
-GESPLITST = 's'  # Historical state - new `signal.Signal` instances will not get this state ever.
-HEROPEND = 'reopened'
-VERZOEK_TOT_AFHANDELING = 'closure requested'
-INGEPLAND = 'ingepland'
-VERZOEK_TOT_HEROPENEN = 'reopen requested'
-REACTIE_GEVRAAGD = 'reaction requested'
-REACTIE_ONTVANGEN = 'reaction received'
-DOORGEZET_NAAR_EXTERN = 'forward to external'
+COMPLETED = 'o'
+CANCELLED = 'a'
+SPLIT = 's'  # Historical state - new `signal.Signal` instances will not get this state ever.
+REOPENED = 'reopened'
+CLOSURE_REQUESTED = 'closure requested'
+PLANNED = 'planned'
+REQUEST_TO_REOPEN = 'reopen requested'
+REACTION_REQUESTED = 'reaction requested'
+REACTION_RECEIVED = 'reaction received'
+FORWARDED_TO_EXTERN = 'forward to external'
 
 # Statusses to track progress in external systems
-TE_VERZENDEN = 'ready to send'
-VERZONDEN = 'sent'
-VERZENDEN_MISLUKT = 'send failed'
-AFGEHANDELD_EXTERN = 'done external'
+TO_SEND = 'ready to send'
+SENT = 'sent'
+SEND_FAILED = 'send failed'
+DONE_EXTERNAL = 'done external'
 
 # Choices for the API/Serializer layer. Users that can change the state via the API are only allowed
 # to use one of the following choices.
 STATUS_CHOICES_API = (
-    (GEMELD, 'Gemeld'),
-    (AFWACHTING, 'In afwachting van behandeling'),
-    (BEHANDELING, 'In behandeling'),
+    (REPORTED, 'Reported'),
+    (AWAITING, 'Awaiting handling'),
+    (IN_PROGRESS, 'In progress'),
     (ON_HOLD, 'On hold'),
-    (INGEPLAND, 'Ingepland'),
-    (TE_VERZENDEN, 'Extern: te verzenden'),
-    (AFGEHANDELD, 'Afgehandeld'),
-    (GEANNULEERD, 'Geannuleerd'),
-    (HEROPEND, 'Heropend'),
-    (GESPLITST, 'Gesplitst'),
-    (VERZOEK_TOT_AFHANDELING, 'Extern: verzoek tot afhandeling'),
-    (REACTIE_GEVRAAGD, 'Reactie gevraagd'),
-    (REACTIE_ONTVANGEN, 'Reactie ontvangen'),
-    (DOORGEZET_NAAR_EXTERN, 'Doorgezet naar extern'),
+    (PLANNED, 'Planned'),
+    (TO_SEND, 'External: to send'),
+    (COMPLETED, 'Completed'),
+    (CANCELLED, 'Cancelled'),
+    (REOPENED, 'Reopened'),
+    (SPLIT, 'Split'),
+    (CLOSURE_REQUESTED, 'External: closure requested'),
+    (REACTION_REQUESTED, 'Reaction requested'),
+    (REACTION_RECEIVED, 'Reaction received'),
+    (FORWARDED_TO_EXTERN, 'Forwarded to extern'),
 )
 
 # Choices used by the application. These choices can be set from within the application, not via the
 # API/Serializer layer.
 STATUS_CHOICES_APP = (
-    (VERZONDEN, 'Extern: verzonden'),
-    (VERZENDEN_MISLUKT, 'Extern: mislukt'),
-    (AFGEHANDELD_EXTERN, 'Extern: afgehandeld'),
-    (VERZOEK_TOT_HEROPENEN, 'Verzoek tot heropenen'),
+    (SENT, 'External: sent'),
+    (SEND_FAILED, 'External: failed'),
+    (DONE_EXTERNAL, 'External: completed'),
+    (REQUEST_TO_REOPEN, 'Request to reopen'),
 )
 
 # All allowed choices, used for the model `Status`.
@@ -62,143 +62,143 @@ STATUS_CHOICES = STATUS_CHOICES_API + STATUS_CHOICES_APP
 
 ALLOWED_STATUS_CHANGES = {
     LEEG: [
-        GEMELD
+        REPORTED
     ],
-    GEMELD: [
-        GEMELD,  # SIG-1264
-        AFWACHTING,
-        BEHANDELING,
-        TE_VERZENDEN,
-        AFGEHANDELD,  # SIG-1294
-        GEANNULEERD,  # Op verzoek via mail van Arvid Smits
-        INGEPLAND,  # SIG-1327
-        REACTIE_GEVRAAGD,  # SIG-3651
-        DOORGEZET_NAAR_EXTERN,  # PS-261
+    REPORTED: [
+        REPORTED,  # SIG-1264
+        AWAITING,
+        IN_PROGRESS,
+        TO_SEND,
+        COMPLETED,  # SIG-1294
+        CANCELLED,  # Op verzoek via mail van Arvid Smits
+        PLANNED,  # SIG-1327
+        REACTION_REQUESTED,  # SIG-3651
+        FORWARDED_TO_EXTERN,  # PS-261
     ],
-    AFWACHTING: [
-        GEMELD,  # SIG-1264
-        AFWACHTING,
-        INGEPLAND,
-        VERZOEK_TOT_AFHANDELING,
-        AFGEHANDELD,
-        TE_VERZENDEN,  # SIG-1293
-        BEHANDELING,  # SIG-1295
-        GEANNULEERD,  # SIG-2987
-        REACTIE_GEVRAAGD,  # SIG-3651
-        DOORGEZET_NAAR_EXTERN,  # PS-261
+    AWAITING: [
+        REPORTED,  # SIG-1264
+        AWAITING,
+        PLANNED,
+        CLOSURE_REQUESTED,
+        COMPLETED,
+        TO_SEND,  # SIG-1293
+        IN_PROGRESS,  # SIG-1295
+        CANCELLED,  # SIG-2987
+        REACTION_REQUESTED,  # SIG-3651
+        FORWARDED_TO_EXTERN,  # PS-261
     ],
-    BEHANDELING: [
-        GEMELD,  # SIG-1264
-        INGEPLAND,
-        BEHANDELING,
-        AFGEHANDELD,
-        GEANNULEERD,
-        TE_VERZENDEN,
-        VERZOEK_TOT_AFHANDELING,  # SIG-1374
-        REACTIE_GEVRAAGD,  # SIG-3651
-        DOORGEZET_NAAR_EXTERN,  # PS-261
+    IN_PROGRESS: [
+        REPORTED,  # SIG-1264
+        PLANNED,
+        IN_PROGRESS,
+        COMPLETED,
+        CANCELLED,
+        TO_SEND,
+        CLOSURE_REQUESTED,  # SIG-1374
+        REACTION_REQUESTED,  # SIG-3651
+        FORWARDED_TO_EXTERN,  # PS-261
     ],
-    INGEPLAND: [
-        GEMELD,  # SIG-1264
-        INGEPLAND,
-        BEHANDELING,
-        AFGEHANDELD,
-        GEANNULEERD,
-        VERZOEK_TOT_AFHANDELING,  # SIG-1293
-        REACTIE_GEVRAAGD,  # SIG-3651
-        DOORGEZET_NAAR_EXTERN,  # PS-261
+    PLANNED: [
+        REPORTED,  # SIG-1264
+        PLANNED,
+        IN_PROGRESS,
+        COMPLETED,
+        CANCELLED,
+        CLOSURE_REQUESTED,  # SIG-1293
+        REACTION_REQUESTED,  # SIG-3651
+        FORWARDED_TO_EXTERN,  # PS-261
     ],
     ON_HOLD: [
-        INGEPLAND,
-        GEANNULEERD,  # SIG-2987
+        PLANNED,
+        CANCELLED,  # SIG-2987
     ],
-    TE_VERZENDEN: [
-        VERZONDEN,
-        VERZENDEN_MISLUKT,
-        GEANNULEERD,  # SIG-2987
+    TO_SEND: [
+        SENT,
+        SEND_FAILED,
+        CANCELLED,  # SIG-2987
     ],
-    VERZONDEN: [
-        AFGEHANDELD_EXTERN,
-        GEANNULEERD,  # SIG-2987
+    SENT: [
+        DONE_EXTERNAL,
+        CANCELLED,  # SIG-2987
     ],
-    VERZENDEN_MISLUKT: [
-        GEMELD,
-        TE_VERZENDEN,
-        GEANNULEERD,  # SIG-2987
+    SEND_FAILED: [
+        REPORTED,
+        TO_SEND,
+        CANCELLED,  # SIG-2987
     ],
-    AFGEHANDELD_EXTERN: [
-        AFGEHANDELD,
-        GEANNULEERD,
-        BEHANDELING,  # SIG-1293
+    DONE_EXTERNAL: [
+        COMPLETED,
+        CANCELLED,
+        IN_PROGRESS,  # SIG-1293
     ],
-    AFGEHANDELD: [
-        HEROPEND,
-        VERZOEK_TOT_HEROPENEN,
+    COMPLETED: [
+        REOPENED,
+        REQUEST_TO_REOPEN,
     ],
-    GEANNULEERD: [
-        GEANNULEERD,
-        HEROPEND,
-        BEHANDELING,  # SIG-2109
+    CANCELLED: [
+        CANCELLED,
+        REOPENED,
+        IN_PROGRESS,  # SIG-2109
     ],
-    HEROPEND: [
-        HEROPEND,
-        BEHANDELING,
-        AFGEHANDELD,
-        GEANNULEERD,
-        TE_VERZENDEN,
-        GEMELD,  # SIG-1374
-        REACTIE_GEVRAAGD,  # SIG-3948
-        DOORGEZET_NAAR_EXTERN,  # PS-261
+    REOPENED: [
+        REOPENED,
+        IN_PROGRESS,
+        COMPLETED,
+        CANCELLED,
+        TO_SEND,
+        REPORTED,  # SIG-1374
+        REACTION_REQUESTED,  # SIG-3948
+        FORWARDED_TO_EXTERN,  # PS-261
     ],
-    GESPLITST: [],
-    VERZOEK_TOT_AFHANDELING: [
-        GEMELD,  # SIG-1264
-        VERZOEK_TOT_AFHANDELING,
-        AFWACHTING,
-        AFGEHANDELD,
-        GEANNULEERD,
-        BEHANDELING,  # SIG-1374
-        DOORGEZET_NAAR_EXTERN,  # PS-261
+    SPLIT: [],
+    CLOSURE_REQUESTED: [
+        REPORTED,  # SIG-1264
+        CLOSURE_REQUESTED,
+        AWAITING,
+        COMPLETED,
+        CANCELLED,
+        IN_PROGRESS,  # SIG-1374
+        FORWARDED_TO_EXTERN,  # PS-261
     ],
-    VERZOEK_TOT_HEROPENEN: [
-        AFGEHANDELD,
-        HEROPEND,
-        GEANNULEERD,
+    REQUEST_TO_REOPEN: [
+        COMPLETED,
+        REOPENED,
+        CANCELLED,
     ],
-    REACTIE_GEVRAAGD: [  # SIG-3651
-        GEMELD,
-        AFWACHTING,
-        BEHANDELING,
-        INGEPLAND,
-        AFGEHANDELD,
-        GEANNULEERD,
-        REACTIE_GEVRAAGD,
-        REACTIE_ONTVANGEN,
-        TE_VERZENDEN,
-        DOORGEZET_NAAR_EXTERN,  # PS-261
+    REACTION_REQUESTED: [  # SIG-3651
+        REPORTED,
+        AWAITING,
+        IN_PROGRESS,
+        PLANNED,
+        COMPLETED,
+        CANCELLED,
+        REACTION_REQUESTED,
+        REACTION_RECEIVED,
+        TO_SEND,
+        FORWARDED_TO_EXTERN,  # PS-261
     ],
-    REACTIE_ONTVANGEN: [  # SIG-3651
-        GEMELD,
-        AFWACHTING,
-        BEHANDELING,
-        AFGEHANDELD,
-        GEANNULEERD,
-        INGEPLAND,
-        REACTIE_GEVRAAGD,
-        TE_VERZENDEN,
-        DOORGEZET_NAAR_EXTERN,  # PS-261
+    REACTION_RECEIVED: [  # SIG-3651
+        REPORTED,
+        AWAITING,
+        IN_PROGRESS,
+        COMPLETED,
+        CANCELLED,
+        PLANNED,
+        REACTION_REQUESTED,
+        TO_SEND,
+        FORWARDED_TO_EXTERN,  # PS-261
     ],
-    DOORGEZET_NAAR_EXTERN: [
-        VERZOEK_TOT_AFHANDELING,
-        GEMELD,
-        AFWACHTING,
-        BEHANDELING,
-        DOORGEZET_NAAR_EXTERN,
-        INGEPLAND,
-        AFGEHANDELD,
-        GEANNULEERD,
-        REACTIE_GEVRAAGD,
-        REACTIE_ONTVANGEN,
-        TE_VERZENDEN,
+    FORWARDED_TO_EXTERN: [
+        CLOSURE_REQUESTED,
+        REPORTED,
+        AWAITING,
+        IN_PROGRESS,
+        FORWARDED_TO_EXTERN,
+        PLANNED,
+        COMPLETED,
+        CANCELLED,
+        REACTION_REQUESTED,
+        REACTION_RECEIVED,
+        TO_SEND,
     ]
 }

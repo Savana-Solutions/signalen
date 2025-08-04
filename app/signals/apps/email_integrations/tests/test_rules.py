@@ -76,16 +76,16 @@ class TestSignalCreatedRule(RuleTestMixin, TestCase):
     """
     Test the SignalCreatedRule. The rule should only be triggerd when the following rules apply:
 
-    - The status is GEMELD
-    - The status GEMELD is set only once
+    - The status is REPORTED
+    - The status REPORTED is set only once
     """
     rule = SignalCreatedRule()
-    state = workflow.GEMELD
+    state = workflow.REPORTED
 
     def test_signal_set_state_second_time(self):
         signal = SignalFactory.create(status__state=self.state, reporter__email='test@example.com')
 
-        status = StatusFactory.create(_signal=signal, state=workflow.BEHANDELING)
+        status = StatusFactory.create(_signal=signal, state=workflow.IN_PROGRESS)
         signal.status = status
         signal.save()
 
@@ -111,14 +111,14 @@ class TestSignalHandledRule(RuleTestMixin, TestCase):
     """
     Test the SignalHandledRule. The rule should only be triggerd when the following rules apply:
 
-    - The status is AFGEHANDELD
-    - The previous state is not VERZOEK_TOT_HEROPENEN
+    - The status is COMPLETED
+    - The previous state is not REQUEST_TO_REOPEN
     """
     rule = SignalHandledRule()
-    state = workflow.AFGEHANDELD
+    state = workflow.COMPLETED
 
     def test_signal_set_state_second_time(self):
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         status = StatusFactory.create(_signal=signal, state=self.state)
         signal.status = status
@@ -126,7 +126,7 @@ class TestSignalHandledRule(RuleTestMixin, TestCase):
 
         self.assertTrue(self.rule(signal))
 
-        status = StatusFactory.create(_signal=signal, state=workflow.HEROPEND)
+        status = StatusFactory.create(_signal=signal, state=workflow.REOPENED)
         signal.status = status
         signal.save()
 
@@ -137,7 +137,7 @@ class TestSignalHandledRule(RuleTestMixin, TestCase):
         self.assertTrue(self.rule(signal))
 
     def test_signal_set_state_second_time_second_last_state_verzoek_tot_heropenen(self):
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         status = StatusFactory.create(_signal=signal, state=self.state)
         signal.status = status
@@ -145,7 +145,7 @@ class TestSignalHandledRule(RuleTestMixin, TestCase):
 
         self.assertTrue(self.rule(signal))
 
-        status = StatusFactory.create(_signal=signal, state=workflow.VERZOEK_TOT_HEROPENEN)
+        status = StatusFactory.create(_signal=signal, state=workflow.REQUEST_TO_REOPEN)
         signal.status = status
         signal.save()
 
@@ -160,46 +160,46 @@ class TestSignalScheduledRule(RuleTestMixin, TestCase):
     """
     Test the SignalScheduledRule. The rule should only be triggerd when the following rules apply:
 
-    - The status is INGEPLAND
+    - The status is PLANNED
     - send_mail must be True
     """
     rule = SignalScheduledRule()
     send_email = True
-    state = workflow.INGEPLAND
+    state = workflow.PLANNED
 
 
 class TestSignalReopenedRule(RuleTestMixin, TestCase):
     """
     Test the SignalReopenedRule. The rule should only be triggerd when the following rules apply:
 
-    - The status is HEROPEND
+    - The status is REOPENED
     """
     rule = SignalReopenedRule()
-    state = workflow.HEROPEND
+    state = workflow.REOPENED
 
 
 class TestSignalReactionRequestRule(RuleTestMixin, TestCase):
     """
     Test the SignalReactionRequestRule. The rule should only be triggerd when the following rules apply:
 
-    - The status is REACTIE_GEVRAAGD
+    - The status is REACTION_REQUESTED
     """
     rule = SignalReactionRequestRule()
-    state = workflow.REACTIE_GEVRAAGD
+    state = workflow.REACTION_REQUESTED
 
 
 class TestSignalReactionRequestReceivedRule(RuleTestMixin, TestCase):
     """
     Test the SignalReactionRequestReceivedRule. The rule should only be triggerd when the following rules apply:
 
-    - The status is REACTIE_ONTVANGEN
+    - The status is REACTION_RECEIVED
     - The status text does not match NO_REACTION_RECEIVED_TEXT
     """
     rule = SignalReactionRequestReceivedRule()
-    state = workflow.REACTIE_ONTVANGEN
+    state = workflow.REACTION_RECEIVED
 
     def test_no_reaction_received(self):
-        signal = SignalFactory.create(status__state=workflow.REACTIE_ONTVANGEN,
+        signal = SignalFactory.create(status__state=workflow.REACTION_RECEIVED,
                                       status__text=NO_REACTION_RECEIVED_TEXT,
                                       reporter__email='test@example.com')
 
@@ -209,8 +209,8 @@ class TestSignalReactionRequestReceivedRule(RuleTestMixin, TestCase):
 class TestSignalHandledNegative(RuleTestMixin, TestCase):
 
     rule = SignalHandledNegativeRule()
-    state = workflow.AFGEHANDELD
-    prev_state = workflow.VERZOEK_TOT_HEROPENEN
+    state = workflow.COMPLETED
+    prev_state = workflow.REQUEST_TO_REOPEN
 
     def test_allows_contact_on_feedback(self):
         status_text = FuzzyText(length=400)
@@ -290,22 +290,22 @@ class TestSignalOptionalRule(TestCase):
     """
     Test the SignalOptionalRule. The rule should only be triggerd when the following rules apply:
 
-    - The status is GEMELD, AFWACHTING, BEHANDELING, ON_HOLD, VERZOEK_TOT_AFHANDELING or GEANNULEERD
+    - The status is REPORTED, AWAITING, IN_PROGRESS, ON_HOLD, CLOSURE_REQUESTED or CANCELLED
     - send_mail must be True
     """
     rule = SignalOptionalRule()
 
     def test_statuses(self):
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         statuses = [
-            workflow.GEMELD,
-            workflow.AFWACHTING,
-            workflow.BEHANDELING,
+            workflow.REPORTED,
+            workflow.AWAITING,
+            workflow.IN_PROGRESS,
             workflow.ON_HOLD,
-            workflow.VERZOEK_TOT_AFHANDELING,
-            workflow.GEANNULEERD,
-            workflow.INGEPLAND,
+            workflow.CLOSURE_REQUESTED,
+            workflow.CANCELLED,
+            workflow.PLANNED,
         ]
 
         for state in statuses:
@@ -316,16 +316,16 @@ class TestSignalOptionalRule(TestCase):
             self.assertTrue(self.rule(signal))
 
     def test_statuses_do_not_apply(self):
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         statuses = [
-            workflow.GEMELD,
-            workflow.AFWACHTING,
-            workflow.BEHANDELING,
+            workflow.REPORTED,
+            workflow.AWAITING,
+            workflow.IN_PROGRESS,
             workflow.ON_HOLD,
-            workflow.VERZOEK_TOT_AFHANDELING,
-            workflow.GEANNULEERD,
-            workflow.INGEPLAND,
+            workflow.CLOSURE_REQUESTED,
+            workflow.CANCELLED,
+            workflow.PLANNED,
         ]
 
         for state in statuses:
@@ -336,19 +336,19 @@ class TestSignalOptionalRule(TestCase):
             self.assertFalse(self.rule(signal))
 
     def test_statuses_not_allowed(self):
-        signal = SignalFactory.create(status__state=workflow.GEMELD, reporter__email='test@example.com')
+        signal = SignalFactory.create(status__state=workflow.REPORTED, reporter__email='test@example.com')
 
         statuses = [
             workflow.LEEG,
-            workflow.AFGEHANDELD,
-            workflow.GESPLITST,
-            workflow.HEROPEND,
-            workflow.VERZOEK_TOT_HEROPENEN,
-            workflow.TE_VERZENDEN,
-            workflow.VERZONDEN,
-            workflow.VERZENDEN_MISLUKT,
-            workflow.AFGEHANDELD_EXTERN,
-            workflow.DOORGEZET_NAAR_EXTERN,
+            workflow.COMPLETED,
+            workflow.SPLIT,
+            workflow.REOPENED,
+            workflow.REQUEST_TO_REOPEN,
+            workflow.TO_SEND,
+            workflow.SENT,
+            workflow.SEND_FAILED,
+            workflow.DONE_EXTERNAL,
+            workflow.FORWARDED_TO_EXTERN,
         ]
 
         for state in statuses:
@@ -361,7 +361,7 @@ class TestSignalOptionalRule(TestCase):
 
 class TestForwardToExternalRule(TestCase):
     rule = ForwardToExternalRule()
-    state = workflow.DOORGEZET_NAAR_EXTERN
+    state = workflow.FORWARDED_TO_EXTERN
     email_override = 'a@example.com'
     send_email = True
 
@@ -396,7 +396,7 @@ class TestForwardToExternalRule(TestCase):
         self.assertTrue(self.rule(signal))
 
     def test_apply_for_parent_signals(self):
-        # we do not restrict the DOORGEZET_NAAR_EXTERN flow to parent or child signals, we check parent signals here
+        # we do not restrict the FORWARDED_TO_EXTERN flow to parent or child signals, we check parent signals here
         parent_signal = SignalFactory.create(status__state=self.state,
                                              status__text='STATUS_TEXT',
                                              status__send_email=self.send_email,
@@ -410,7 +410,7 @@ class TestForwardToExternalRule(TestCase):
         self.assertTrue(self.rule(parent_signal))
 
     def test_apply_for_child_signals(self):
-        # we do not restrict the DOORGEZET_NAAR_EXTERN flow to parent or child signals, we check child signals here
+        # we do not restrict the FORWARDED_TO_EXTERN flow to parent or child signals, we check child signals here
         parent_signal = SignalFactory.create(status__state=self.state,
                                              status__text='STATUS_TEXT',
                                              status__send_email=self.send_email,

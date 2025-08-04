@@ -28,9 +28,9 @@ class TestCalculateDeadlines(APITestCase, SuperUserMixin):
 
         with freeze_time(self.NOW - datetime.timedelta(days=4*7)):
             self.signal_late_open = SignalFactory.create(
-                status__state=workflow.GEMELD, category_assignment__category=test_cat)
+                status__state=workflow.REPORTED, category_assignment__category=test_cat)
             self.signal_late_closed = SignalFactory.create(
-                status__state=workflow.AFGEHANDELD, category_assignment__category=test_cat)
+                status__state=workflow.COMPLETED, category_assignment__category=test_cat)
 
         # We now set a Service Level Objective for the category, so that we can
         # create some signals/complaints with a deadline set to some value other
@@ -43,9 +43,9 @@ class TestCalculateDeadlines(APITestCase, SuperUserMixin):
 
         with freeze_time(self.NOW - datetime.timedelta(hours=1)):
             self.signal_punctual_open = SignalFactory.create(
-                status__state=workflow.GEMELD, category_assignment__category=test_cat)
+                status__state=workflow.REPORTED, category_assignment__category=test_cat)
             self.signal_punctual_closed = SignalFactory.create(
-                status__state=workflow.AFGEHANDELD, category_assignment__category=test_cat)
+                status__state=workflow.COMPLETED, category_assignment__category=test_cat)
 
     def test_handle(self):
         """
@@ -62,7 +62,7 @@ class TestCalculateDeadlines(APITestCase, SuperUserMixin):
         no_deadlines = Signal.objects.filter(category_assignment__deadline__isnull=True)
         self.assertEqual(no_deadlines.count(), 1)
         self.assertEqual(no_deadlines[0].id, self.signal_late_closed.id)
-        self.assertEqual(no_deadlines[0].status.state, workflow.AFGEHANDELD)
+        self.assertEqual(no_deadlines[0].status.state, workflow.COMPLETED)
 
         output = buffer.getvalue()
         self.assertIn('Number of signals without deadlines 0', output)
@@ -81,4 +81,4 @@ class TestCalculateDeadlines(APITestCase, SuperUserMixin):
         no_deadlines = Signal.objects.filter(category_assignment__deadline__isnull=True)
         self.assertEqual(no_deadlines.count(), 1)
         self.assertEqual(no_deadlines[0].id, self.signal_late_closed.id)
-        self.assertEqual(no_deadlines[0].status.state, workflow.AFGEHANDELD)
+        self.assertEqual(no_deadlines[0].status.state, workflow.COMPLETED)

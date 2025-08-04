@@ -279,7 +279,7 @@ class TestPrivateSignalViewSet(SIAReadUserMixin, SIAReadWriteUserMixin, SignalsB
     def test_create_with_status(self):
         """ Tests that an error is returned when we try to set the status """
         self.create_initial_data["status"] = {
-            "state": workflow.BEHANDELING,
+            "state": workflow.IN_PROGRESS,
             "text": "Invalid stuff happening here"
         }
 
@@ -749,7 +749,7 @@ class TestPrivateSignalViewSet(SIAReadUserMixin, SIAReadWriteUserMixin, SignalsB
         # Partial update to update the status, all interaction via API.
         detail_endpoint = self.detail_endpoint.format(pk=signal_no_status.id)
 
-        # The only status that is allowed is "GEMELD" so let's set it
+        # The only status that is allowed is "REPORTED" so let's set it
         data = {'status': {'text': 'Test status update', 'state': 'm'}}
         response = self.client.patch(detail_endpoint, data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -765,7 +765,7 @@ class TestPrivateSignalViewSet(SIAReadUserMixin, SIAReadWriteUserMixin, SignalsB
         # Partial update to update the status, all interaction via API.
         detail_endpoint = self.detail_endpoint.format(pk=signal_no_status.id)
 
-        # The only status that is allowed is "GEMELD" so check with a diferrent state
+        # The only status that is allowed is "REPORTED" so check with a diferrent state
         data = {'status': {'text': 'Test status update', 'state': 'b'}}
         response = self.client.patch(detail_endpoint, data, format='json')
         self.assertEqual(400, response.status_code)
@@ -777,7 +777,7 @@ class TestPrivateSignalViewSet(SIAReadUserMixin, SIAReadWriteUserMixin, SignalsB
         data = {
             'status': {
                 'state': 'ready to send',
-                'text': 'Te verzenden naar THOR',
+                'text': 'To send naar THOR',
                 'target_api': 'sigmax',
             }
         }
@@ -793,7 +793,7 @@ class TestPrivateSignalViewSet(SIAReadUserMixin, SIAReadWriteUserMixin, SignalsB
         data = {
             'status': {
                 'state': 'ready to send',
-                'text': 'Te verzenden naar THOR',
+                'text': 'To send naar THOR',
                 'target_api': 'sigmax',
             }
         }
@@ -1189,7 +1189,7 @@ class TestPrivateSignalViewSet(SIAReadUserMixin, SIAReadWriteUserMixin, SignalsB
         SOME_MESSAGE_B = 'SOME MESSAGE B'
         payload = {
             'status': {
-                'state': workflow.BEHANDELING,  # StatusFactory always uses workflow.GEMELD
+                'state': workflow.IN_PROGRESS,  # StatusFactory always uses workflow.REPORTED
                 'text': SOME_MESSAGE_A,
             },
             'category': {
@@ -1495,7 +1495,7 @@ class TestPrivateSignalViewSet(SIAReadUserMixin, SIAReadWriteUserMixin, SignalsB
         # stil be `signal.Signal` instances that were split, and still have to
         # be handled or be shown in historical data.
 
-        parent_signal = SignalFactoryValidLocation.create(status__state=workflow.GESPLITST)
+        parent_signal = SignalFactoryValidLocation.create(status__state=workflow.SPLIT)
 
         child_signal = SignalFactoryValidLocation.create()
         child_signal.parent = parent_signal

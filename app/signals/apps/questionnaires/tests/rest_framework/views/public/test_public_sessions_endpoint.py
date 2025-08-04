@@ -24,7 +24,7 @@ from signals.apps.questionnaires.models import Question, Questionnaire
 from signals.apps.questionnaires.tests.mixin import ValidateJsonSchemaMixin
 from signals.apps.signals.factories import SignalFactory, StatusFactory
 from signals.apps.signals.tests.attachment_helpers import small_gif
-from signals.apps.signals.workflow import GEMELD, REACTIE_GEVRAAGD
+from signals.apps.signals.workflow import REPORTED, REACTION_REQUESTED
 
 THIS_DIR = os.path.dirname(__file__)
 
@@ -99,16 +99,16 @@ class TestPublicSessionEndpoint(ValidateJsonSchemaMixin, APITestCase):
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json()['detail'], f'Session {session.uuid} is not associated with a Signal.')
 
-        signal = SignalFactory.create(status__state=GEMELD)
+        signal = SignalFactory.create(status__state=REPORTED)
         session._signal = signal
         session.save()
 
         response = self.client.get(f'{self.base_endpoint}{session.uuid}')
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json()['detail'],
-                         f'Session {session.uuid} is invalidated, associated signal not in state REACTIE_GEVRAAGD.')
+                         f'Session {session.uuid} is invalidated, associated signal not in state REACTION_REQUESTED.')
 
-        status = StatusFactory(state=REACTIE_GEVRAAGD, _signal=signal)
+        status = StatusFactory(state=REACTION_REQUESTED, _signal=signal)
         signal.status = status
         signal.save()
 

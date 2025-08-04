@@ -5,7 +5,7 @@ Fix SIG-1771
 """
 from django.db import migrations
 
-from signals.apps.signals.workflow import GESPLITST
+from signals.apps.signals.workflow import SPLIT
 
 PROBLEMATIC_SIA_IDS = [
     225231,
@@ -23,7 +23,7 @@ def _set_state_geannuleerd(apps, schema_editor):
     for signal in Signal.objects.filter(id__in=PROBLEMATIC_SIA_IDS):
         new_status = Status(
             _signal=signal,
-            state=GESPLITST,
+            state=SPLIT,
             text='Vastgelopen melding alsnog naar status gesplitst.'
         )
         new_status.save()  # no full_clean, bypass workflow checks

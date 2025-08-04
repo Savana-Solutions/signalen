@@ -14,8 +14,8 @@ The problem
 Legally a signal should be deleted after a certain amount of time.
 The rules for this are:
 
-- A Signal is in the state "AFGEHANDELD" for more than 5 years
-- A Signal is in the state "GEANNULEERD" for more than 1 year
+- A Signal is in the state "COMPLETED" for more than 5 years
+- A Signal is in the state "CANCELLED" for more than 1 year
 
 ## Decision
 
@@ -40,7 +40,7 @@ The meta data stored is:
 
 --------------------------------------------------------------------------------
 
-Delete all signals that are in the state "AFGEHANDELD" for more than 5 years
+Delete all signals that are in the state "COMPLETED" for more than 5 years
 
 ```
 python manage.py delete_signals o 1461
@@ -72,7 +72,7 @@ Deleted: 0 Signal(s)
 Done: 2022-05-27 08:39:20
 ```
 
-Delete all signals that are in the state "GEANNULEERD" for more than 1 years
+Delete all signals that are in the state "CANCELLED" for more than 1 years
 
 ```
 python manage.py delete_signals a 365

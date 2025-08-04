@@ -139,12 +139,12 @@ class Migration(migrations.Migration):
                 ('user', models.EmailField(max_length=254, null=True)),
                 ('target_api', models.CharField(default='', max_length=250)),
                 ('state', models.CharField(blank=True, choices=[
-                    ('m', 'Gemeld'),
-                    ('i', 'In afwachting van behandeling'),
-                    ('b', 'In behandeling'),
-                    ('o', 'Afgehandeld'),
+                    ('m', 'Reported'),
+                    ('i', 'Awaiting handling'),
+                    ('b', 'In progress'),
+                    ('o', 'Completed'),
                     ('h', 'On hold'),
-                    ('a', 'Geannuleerd')
+                    ('a', 'Cancelled')
                 ], default='m', help_text='Melding status', max_length=1)),
                 ('extern', models.BooleanField(default=False,
                                                help_text='Wel of niet status extern weergeven')),

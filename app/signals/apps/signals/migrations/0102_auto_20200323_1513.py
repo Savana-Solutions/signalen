@@ -21,7 +21,7 @@ We houden u op de hoogte via e-mail.""",  # noqa E501
 Wij handelen uw melding binnen drie weken af. U ontvangt dan geen apart bericht meer.
 En anders hoort u - via e-mail - wanneer wij uw melding kunnen oppakken.""",
     Category.HANDLING_I5DMC: """\
-Uw melding wordt ingepland: wij laten u binnen 5 werkdagen weten hoe en wanneer uw melding wordt afgehandeld. Dat doen we via e-mail.""",  # noqa E501
+Uw melding wordt planned: wij laten u binnen 5 werkdagen weten hoe en wanneer uw melding wordt afgehandeld. Dat doen we via e-mail.""",  # noqa E501
     Category.HANDLING_STOPEC: """\
 Gevaarlijke situaties zullen wij zo snel mogelijk verhelpen, andere situaties handelen wij meestal binnen 5 werkdagen af. U ontvangt dan geen apart bericht meer.
 Als we uw melding niet binnen 5 werkdagen kunnen afhandelen, hoort u - via e-mail – hoe wij uw melding oppakken.""",  # noqa E501

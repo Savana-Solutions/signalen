@@ -19,11 +19,11 @@ from signals.apps.signals.factories import (
 )
 from signals.apps.signals.models import Signal
 from signals.apps.signals.workflow import (
-    AFGEHANDELD,
-    AFWACHTING,
-    BEHANDELING,
-    GEMELD,
-    VERZOEK_TOT_HEROPENEN
+    COMPLETED,
+    AWAITING,
+    IN_PROGRESS,
+    REPORTED,
+    REQUEST_TO_REOPEN
 )
 
 THIS_DIR = os.path.dirname(__file__)
@@ -81,12 +81,12 @@ class TestPrivateReportEndpoint(APITestCase):
         self.client.force_authenticate(user=self.superuser)
 
         with freeze_time(timezone.now() - timezone.timedelta(weeks=3)):
-            SignalFactory.create_batch(5, status__state=GEMELD, category_assignment__category=self.category_1)
-            SignalFactory.create_batch(3, status__state=BEHANDELING, category_assignment__category=self.category_2)
-            SignalFactory.create_batch(2, status__state=AFWACHTING, category_assignment__category=self.category_3)
+            SignalFactory.create_batch(5, status__state=REPORTED, category_assignment__category=self.category_1)
+            SignalFactory.create_batch(3, status__state=IN_PROGRESS, category_assignment__category=self.category_2)
+            SignalFactory.create_batch(2, status__state=AWAITING, category_assignment__category=self.category_3)
 
             # Should not show up
-            SignalFactory.create_batch(5, status__state=AFGEHANDELD, category_assignment__category=self.category_1)
+            SignalFactory.create_batch(5, status__state=COMPLETED, category_assignment__category=self.category_1)
 
         self.assertEqual(Signal.objects.count(), 15)
 
@@ -130,10 +130,10 @@ class TestPrivateReportEndpoint(APITestCase):
         self.assertEqual(len(response_data['results']), 0)
 
         with freeze_time(timezone.now() - timezone.timedelta(weeks=4)):
-            SignalFactory.create_batch(5, status__state=GEMELD, category_assignment__category=self.category_1)
+            SignalFactory.create_batch(5, status__state=REPORTED, category_assignment__category=self.category_1)
 
             # Should not show up
-            SignalFactory.create_batch(5, status__state=AFGEHANDELD, category_assignment__category=self.category_1)
+            SignalFactory.create_batch(5, status__state=COMPLETED, category_assignment__category=self.category_1)
 
         self.assertEqual(Signal.objects.count(), 10)
 
@@ -170,17 +170,17 @@ class TestPrivateReportEndpoint(APITestCase):
         self.client.force_authenticate(user=self.superuser)
 
         with freeze_time(timezone.now() - timezone.timedelta(weeks=3)):
-            SignalFactory.create_batch(5, status__state=GEMELD, category_assignment__category=self.category_1)
-            SignalFactory.create_batch(3, status__state=BEHANDELING, category_assignment__category=self.category_2)
+            SignalFactory.create_batch(5, status__state=REPORTED, category_assignment__category=self.category_1)
+            SignalFactory.create_batch(3, status__state=IN_PROGRESS, category_assignment__category=self.category_2)
 
         with freeze_time(timezone.now() - timezone.timedelta(weeks=1)):
             for signal in Signal.objects.all():
-                status = StatusFactory.create(_signal=signal, state=VERZOEK_TOT_HEROPENEN)
+                status = StatusFactory.create(_signal=signal, state=REQUEST_TO_REOPEN)
                 signal.status = status
                 signal.save()
 
         # Should not show up
-        SignalFactory.create_batch(2, status__state=AFGEHANDELD, category_assignment__category=self.category_3)
+        SignalFactory.create_batch(2, status__state=COMPLETED, category_assignment__category=self.category_3)
 
         self.assertEqual(Signal.objects.count(), 10)
 
@@ -206,20 +206,20 @@ class TestPrivateReportEndpoint(APITestCase):
         self.client.force_authenticate(user=self.superuser)
 
         with freeze_time(timezone.now() - timezone.timedelta(weeks=3)):
-            SignalFactory.create_batch(5, status__state=GEMELD, category_assignment__category=self.category_1)
-            SignalFactory.create_batch(3, status__state=BEHANDELING, category_assignment__category=self.category_2)
+            SignalFactory.create_batch(5, status__state=REPORTED, category_assignment__category=self.category_1)
+            SignalFactory.create_batch(3, status__state=IN_PROGRESS, category_assignment__category=self.category_2)
 
         with freeze_time(timezone.now() - timezone.timedelta(weeks=1)):
             for signal in Signal.objects.all():
-                status = StatusFactory.create(_signal=signal, state=VERZOEK_TOT_HEROPENEN)
+                status = StatusFactory.create(_signal=signal, state=REQUEST_TO_REOPEN)
                 signal.status = status
                 signal.save()
 
         with freeze_time(timezone.now() - timezone.timedelta(weeks=12)):
             # Should not show up
-            signals = SignalFactory.create_batch(2, status__state=GEMELD, category_assignment__category=self.category_3)
+            signals = SignalFactory.create_batch(2, status__state=REPORTED, category_assignment__category=self.category_3)
             for signal in signals:
-                status = StatusFactory.create(_signal=signal, state=VERZOEK_TOT_HEROPENEN)
+                status = StatusFactory.create(_signal=signal, state=REQUEST_TO_REOPEN)
                 signal.status = status
                 signal.save()
 

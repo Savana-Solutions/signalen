@@ -8,7 +8,7 @@ from signals.apps.signals import factories
 from signals.apps.signals.models import Status
 from signals.apps.signals.models.signal import Signal
 from signals.apps.signals.tasks import clearsessions, update_status_children_based_on_parent
-from signals.apps.signals.workflow import AFGEHANDELD, AFWACHTING, GEANNULEERD
+from signals.apps.signals.workflow import COMPLETED, AWAITING, CANCELLED
 
 
 class TestTaskUpdateStatusChildrenBasedOnParent(TransactionTestCase):
@@ -27,13 +27,13 @@ class TestTaskUpdateStatusChildrenBasedOnParent(TransactionTestCase):
 
     def test_task_parent_status_not_afgehandeld(self):
         """
-        Parent Signal status to any status but AFGEHANDELD should not trigger the children to status GEANNULEERD
+        Parent Signal status to any status but COMPLETED should not trigger the children to status CANCELLED
         """
         parent_signal_state = self.parent_signal.status.state
         child_signal_1_state = self.child_signal_1.status.state
         child_signal_2_state = self.child_signal_2.status.state
 
-        status = Status.objects.create(state=AFWACHTING, text='Test', _signal=self.parent_signal)
+        status = Status.objects.create(state=AWAITING, text='Test', _signal=self.parent_signal)
         self.parent_signal.status = status
         self.parent_signal.save()
 
@@ -45,19 +45,19 @@ class TestTaskUpdateStatusChildrenBasedOnParent(TransactionTestCase):
         self.child_signal_2.refresh_from_db()
 
         self.assertNotEqual(self.parent_signal.status.state, parent_signal_state)
-        self.assertEqual(self.parent_signal.status.state, AFWACHTING)
+        self.assertEqual(self.parent_signal.status.state, AWAITING)
         self.assertEqual(self.child_signal_1.status.state, child_signal_1_state)
         self.assertEqual(self.child_signal_2.status.state, child_signal_2_state)
 
     def test_task_parent_status_afgehandeld(self):
         """
-        Parent Signal status to AFGEHANDELD should trigger the children to status GEANNULEERD
+        Parent Signal status to COMPLETED should trigger the children to status CANCELLED
         """
         parent_signal_state = self.parent_signal.status.state
         child_signal_1_state = self.child_signal_1.status.state
         child_signal_2_state = self.child_signal_2.status.state
 
-        status = Status.objects.create(state=AFGEHANDELD, text='Test', _signal=self.parent_signal)
+        status = Status.objects.create(state=COMPLETED, text='Test', _signal=self.parent_signal)
         self.parent_signal.status = status
         self.parent_signal.save()
 
@@ -69,21 +69,21 @@ class TestTaskUpdateStatusChildrenBasedOnParent(TransactionTestCase):
         self.child_signal_2.refresh_from_db()
 
         self.assertNotEqual(self.parent_signal.status.state, parent_signal_state)
-        self.assertEqual(self.parent_signal.status.state, AFGEHANDELD)
+        self.assertEqual(self.parent_signal.status.state, COMPLETED)
         self.assertNotEqual(self.child_signal_1.status.state, child_signal_1_state)
-        self.assertEqual(self.child_signal_1.status.state, GEANNULEERD)
+        self.assertEqual(self.child_signal_1.status.state, CANCELLED)
         self.assertNotEqual(self.child_signal_2.status.state, child_signal_2_state)
-        self.assertEqual(self.child_signal_2.status.state, GEANNULEERD)
+        self.assertEqual(self.child_signal_2.status.state, CANCELLED)
 
     def test_task_child_status_afgehandeld(self):
         """
-        Child Signal status to AFGEHANDELD should not trigger the other children to status GEANNULEERD
+        Child Signal status to COMPLETED should not trigger the other children to status CANCELLED
         """
         parent_signal_state = self.parent_signal.status.state
         child_signal_1_state = self.child_signal_1.status.state
         child_signal_2_state = self.child_signal_2.status.state
 
-        status = Status.objects.create(state=AFGEHANDELD, text='Test', _signal=self.child_signal_1)
+        status = Status.objects.create(state=COMPLETED, text='Test', _signal=self.child_signal_1)
         self.child_signal_1.status = status
         self.child_signal_1.save()
 
@@ -96,20 +96,20 @@ class TestTaskUpdateStatusChildrenBasedOnParent(TransactionTestCase):
 
         self.assertEqual(self.parent_signal.status.state, parent_signal_state)
         self.assertNotEqual(self.child_signal_1.status.state, child_signal_1_state)
-        self.assertEqual(self.child_signal_1.status.state, AFGEHANDELD)
+        self.assertEqual(self.child_signal_1.status.state, COMPLETED)
         self.assertEqual(self.child_signal_2.status.state, child_signal_2_state)
-        self.assertNotEqual(self.child_signal_2.status.state, GEANNULEERD)
+        self.assertNotEqual(self.child_signal_2.status.state, CANCELLED)
 
     def test_signal_receiver_parent_status_not_afgehandeld(self):
         """
-        Parent Signal status to any status but AFGEHANDELD should not trigger the children to status GEANNULEERD
+        Parent Signal status to any status but COMPLETED should not trigger the children to status CANCELLED
         """
         parent_signal_state = self.parent_signal.status.state
         child_signal_1_state = self.child_signal_1.status.state
         child_signal_2_state = self.child_signal_2.status.state
 
         with self.settings(FEATURE_FLAGS=self.test_feature_flags_enabled):
-            data = dict(state=AFWACHTING, text='Test')
+            data = dict(state=AWAITING, text='Test')
             Signal.actions.update_status(data, signal=self.parent_signal)
 
         self.parent_signal.refresh_from_db()
@@ -117,20 +117,20 @@ class TestTaskUpdateStatusChildrenBasedOnParent(TransactionTestCase):
         self.child_signal_2.refresh_from_db()
 
         self.assertNotEqual(self.parent_signal.status.state, parent_signal_state)
-        self.assertEqual(self.parent_signal.status.state, AFWACHTING)
+        self.assertEqual(self.parent_signal.status.state, AWAITING)
         self.assertEqual(self.child_signal_1.status.state, child_signal_1_state)
         self.assertEqual(self.child_signal_2.status.state, child_signal_2_state)
 
     def test_signal_receiver_parent_status_afgehandeld(self):
         """
-        Parent Signal status to AFGEHANDELD should trigger the children to status GEANNULEERD
+        Parent Signal status to COMPLETED should trigger the children to status CANCELLED
         """
         parent_signal_state = self.parent_signal.status.state
         child_signal_1_state = self.child_signal_1.status.state
         child_signal_2_state = self.child_signal_2.status.state
 
         with self.settings(FEATURE_FLAGS=self.test_feature_flags_enabled):
-            data = dict(state=AFGEHANDELD, text='Test')
+            data = dict(state=COMPLETED, text='Test')
             Signal.actions.update_status(data, signal=self.parent_signal)
 
         self.parent_signal.refresh_from_db()
@@ -138,22 +138,22 @@ class TestTaskUpdateStatusChildrenBasedOnParent(TransactionTestCase):
         self.child_signal_2.refresh_from_db()
 
         self.assertNotEqual(self.parent_signal.status.state, parent_signal_state)
-        self.assertEqual(self.parent_signal.status.state, AFGEHANDELD)
+        self.assertEqual(self.parent_signal.status.state, COMPLETED)
         self.assertNotEqual(self.child_signal_1.status.state, child_signal_1_state)
-        self.assertEqual(self.child_signal_1.status.state, GEANNULEERD)
+        self.assertEqual(self.child_signal_1.status.state, CANCELLED)
         self.assertNotEqual(self.child_signal_2.status.state, child_signal_2_state)
-        self.assertEqual(self.child_signal_2.status.state, GEANNULEERD)
+        self.assertEqual(self.child_signal_2.status.state, CANCELLED)
 
     def test_signal_receiver_child_status_afgehandeld(self):
         """
-        Child Signal status to AFGEHANDELD should not trigger the other children to status GEANNULEERD
+        Child Signal status to COMPLETED should not trigger the other children to status CANCELLED
         """
         parent_signal_state = self.parent_signal.status.state
         child_signal_1_state = self.child_signal_1.status.state
         child_signal_2_state = self.child_signal_2.status.state
 
         with self.settings(FEATURE_FLAGS=self.test_feature_flags_enabled):
-            data = dict(state=AFGEHANDELD, text='Test')
+            data = dict(state=COMPLETED, text='Test')
             Signal.actions.update_status(data, signal=self.child_signal_1)
 
         self.parent_signal.refresh_from_db()
@@ -162,19 +162,19 @@ class TestTaskUpdateStatusChildrenBasedOnParent(TransactionTestCase):
 
         self.assertEqual(self.parent_signal.status.state, parent_signal_state)
         self.assertNotEqual(self.child_signal_1.status.state, child_signal_1_state)
-        self.assertEqual(self.child_signal_1.status.state, AFGEHANDELD)
+        self.assertEqual(self.child_signal_1.status.state, COMPLETED)
         self.assertEqual(self.child_signal_2.status.state, child_signal_2_state)
-        self.assertNotEqual(self.child_signal_2.status.state, GEANNULEERD)
+        self.assertNotEqual(self.child_signal_2.status.state, CANCELLED)
 
     def test_task_parent_status_geannuleerd(self):
         """
-        Parent Signal status to GEANNULEERD should trigger the children to status GEANNULEERD
+        Parent Signal status to CANCELLED should trigger the children to status CANCELLED
         """
         parent_signal_state = self.parent_signal.status.state
         child_signal_1_state = self.child_signal_1.status.state
         child_signal_2_state = self.child_signal_2.status.state
 
-        status = Status.objects.create(state=GEANNULEERD, text='Test', _signal=self.parent_signal)
+        status = Status.objects.create(state=CANCELLED, text='Test', _signal=self.parent_signal)
         self.parent_signal.status = status
         self.parent_signal.save()
 
@@ -186,11 +186,11 @@ class TestTaskUpdateStatusChildrenBasedOnParent(TransactionTestCase):
         self.child_signal_2.refresh_from_db()
 
         self.assertNotEqual(self.parent_signal.status.state, parent_signal_state)
-        self.assertEqual(self.parent_signal.status.state, GEANNULEERD)
+        self.assertEqual(self.parent_signal.status.state, CANCELLED)
         self.assertNotEqual(self.child_signal_1.status.state, child_signal_1_state)
-        self.assertEqual(self.child_signal_1.status.state, GEANNULEERD)
+        self.assertEqual(self.child_signal_1.status.state, CANCELLED)
         self.assertNotEqual(self.child_signal_2.status.state, child_signal_2_state)
-        self.assertEqual(self.child_signal_2.status.state, GEANNULEERD)
+        self.assertEqual(self.child_signal_2.status.state, CANCELLED)
 
 
 class TestClearSessionsTask(TestCase):

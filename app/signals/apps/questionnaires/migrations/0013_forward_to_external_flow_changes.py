@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 choices=[
                     ('EXTRA_PROPERTIES', 'Uitvraag'),
-                    ('REACTION_REQUEST', 'Reactie gevraagd'),
+                    ('REACTION_REQUEST', 'Reaction requested'),
                     ('FEEDBACK_REQUEST', 'Klanttevredenheidsonderzoek'),
                     ('FORWARD_TO_EXTERNAL', 'Doorzetten naar externe')
                 ],

@@ -30,9 +30,9 @@ from signals.apps.signals.models import Signal
 
 class TestReactionRequestSessionService(TestCase):
     def setUp(self):
-        self.signal = SignalFactory.create(status__state=workflow.GEMELD)
+        self.signal = SignalFactory.create(status__state=workflow.REPORTED)
         self.signal_reaction_requested = SignalFactory.create(
-            status__state=workflow.REACTIE_GEVRAAGD,
+            status__state=workflow.REACTION_REQUESTED,
             status__text='Omschrijf uw probleem.',
         )
 
@@ -74,7 +74,7 @@ class TestReactionRequestSessionService(TestCase):
             short_label='Goed weer?',
             analysis_key='reaction',
         )
-        graph = QuestionGraphFactory.create(name='Reactie gevraagd.', first_question=question)
+        graph = QuestionGraphFactory.create(name='Reaction requested.', first_question=question)
         session = SessionFactory.create(
             questionnaire__flow=Questionnaire.REACTION_REQUEST,
             questionnaire__graph=graph,
@@ -88,7 +88,7 @@ class TestReactionRequestSessionService(TestCase):
         service.freeze()
 
         self.signal_reaction_requested.refresh_from_db()
-        self.assertEqual(self.signal_reaction_requested.status.state, workflow.REACTIE_ONTVANGEN)
+        self.assertEqual(self.signal_reaction_requested.status.state, workflow.REACTION_RECEIVED)
         self.assertEqual(self.signal_reaction_requested.status.text, answer.payload)
 
     def test_handle_frozen_session_on_commit_triggered(self):
@@ -98,7 +98,7 @@ class TestReactionRequestSessionService(TestCase):
             short_label='Goed weer?',
             analysis_key='reaction',
         )
-        graph = QuestionGraphFactory.create(name='Reactie gevraagd.', first_question=question)
+        graph = QuestionGraphFactory.create(name='Reaction requested.', first_question=question)
         session = SessionFactory.create(
             questionnaire__flow=Questionnaire.REACTION_REQUEST,
             questionnaire__graph=graph,
@@ -112,32 +112,32 @@ class TestReactionRequestSessionService(TestCase):
         service.freeze()
 
         self.signal_reaction_requested.refresh_from_db()
-        self.assertEqual(self.signal_reaction_requested.status.state, workflow.REACTIE_ONTVANGEN)
+        self.assertEqual(self.signal_reaction_requested.status.state, workflow.REACTION_RECEIVED)
         self.assertEqual(self.signal_reaction_requested.status.text, answer.payload)
 
     def test_clean_up_reaction_request(self):
         # Make sure that the Signals created in setUp() method do not affect
         # this test:
-        status = StatusFactory.create(text='xyz', state=workflow.BEHANDELING, _signal=self.signal_reaction_requested)
+        status = StatusFactory.create(text='xyz', state=workflow.IN_PROGRESS, _signal=self.signal_reaction_requested)
         self.signal_reaction_requested.status = status
         self.signal_reaction_requested.save()
 
         with freeze_time(now() - timedelta(days=2 * REACTION_REQUEST_DAYS_OPEN)):
-            # Five signals that were in state REACTIE_GEVRAAGD and too old to
+            # Five signals that were in state REACTION_REQUESTED and too old to
             # still receive an update.
-            SignalFactory.create_batch(5, status__state=workflow.REACTIE_GEVRAAGD)
+            SignalFactory.create_batch(5, status__state=workflow.REACTION_REQUESTED)
 
         with freeze_time(now() - timedelta(days=REACTION_REQUEST_DAYS_OPEN // 2)):
-            # Five signals that were in state REACTIE_GEVRAAGD and may still
+            # Five signals that were in state REACTION_REQUESTED and may still
             # get an update.
-            SignalFactory.create_batch(5, status__state=workflow.REACTIE_GEVRAAGD)
+            SignalFactory.create_batch(5, status__state=workflow.REACTION_REQUESTED)
 
         self.assertEqual(Signal.objects.count(), 12)
         n_updated = clean_up_reaction_request()
 
         self.assertEqual(n_updated, 5)
-        reactie_gevraagd = Signal.objects.filter(status__state=workflow.REACTIE_GEVRAAGD)
-        reactie_ontvangen = Signal.objects.filter(status__state=workflow.REACTIE_ONTVANGEN)
+        reactie_gevraagd = Signal.objects.filter(status__state=workflow.REACTION_REQUESTED)
+        reactie_ontvangen = Signal.objects.filter(status__state=workflow.REACTION_RECEIVED)
 
         self.assertEqual(reactie_gevraagd.count(), 5)
         self.assertEqual(reactie_ontvangen.count(), 5)

@@ -29,7 +29,7 @@ class Status(CreatedUpdatedModel):
     state = models.CharField(max_length=20,
                              blank=True,
                              choices=workflow.STATUS_CHOICES,
-                             default=workflow.GEMELD,
+                             default=workflow.REPORTED,
                              help_text='Melding status')
 
     # TODO, do we need this field or can we remove it?
@@ -98,19 +98,19 @@ class Status(CreatedUpdatedModel):
                 to_state=new_state_display)
             errors['state'] = ValidationError(error_msg, code='invalid')
 
-        # Validating state "TE_VERZENDEN".
-        if new_state == workflow.TE_VERZENDEN and not self.target_api:
+        # Validating state "TO_SEND".
+        if new_state == workflow.TO_SEND and not self.target_api:
             error_msg = 'This field is required when changing `state` to `{new_state}`.'.format(
                 new_state=new_state_display)
             errors['target_api'] = ValidationError(error_msg, code='required')
 
-        if new_state != workflow.TE_VERZENDEN and self.target_api:
+        if new_state != workflow.TO_SEND and self.target_api:
             error_msg = 'This field can only be set when changing `state` to `{state}`.'.format(
-                state=workflow.TE_VERZENDEN)
+                state=workflow.TO_SEND)
             errors['target_api'] = ValidationError(error_msg, code='invalid')
 
         # Validating text field required.
-        if new_state in [workflow.AFGEHANDELD, workflow.HEROPEND] and not self.text:
+        if new_state in [workflow.COMPLETED, workflow.REOPENED] and not self.text:
             error_msg = 'This field is required when changing `state` to `{new_state}`.'.format(
                 new_state=new_state_display)
             errors['text'] = ValidationError(error_msg, code='required')

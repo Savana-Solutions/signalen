@@ -190,7 +190,7 @@ class TestSoapEndpoint(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
 
     def test_with_signal_for_message_correct_state(self):
         signal = SignalFactoryValidLocation.create()
-        signal.status.state = workflow.VERZONDEN
+        signal.status.state = workflow.SENT
         signal.status.save()
         signal.refresh_from_db()
 
@@ -221,7 +221,7 @@ class TestSoapEndpoint(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
         self.assertIn('Bv03', response.content.decode('utf-8', 'strict'))
 
         signal.refresh_from_db()
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD_EXTERN)
+        self.assertEqual(signal.status.state, workflow.DONE_EXTERNAL)
         self.assertEqual(
             signal.status.text,
             'Op locatie geweest, niets aangetroffen: Het probleem is opgelost'
@@ -231,12 +231,12 @@ class TestSoapEndpoint(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
             'sigmax_resultaat': incoming_context['resultaat_omschrijving'],
             'sigmax_reden': incoming_context['resultaat_toelichting'],
         })
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD_EXTERN)
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD_EXTERN)
+        self.assertEqual(signal.status.state, workflow.DONE_EXTERNAL)
+        self.assertEqual(signal.status.state, workflow.DONE_EXTERNAL)
 
     def test_with_signal_for_message_correct_state_new_style_zaak_identificatie(self):
         signal = SignalFactoryValidLocation.create()
-        signal.status.state = workflow.VERZONDEN
+        signal.status.state = workflow.SENT
         signal.status.save()
         signal.refresh_from_db()
 
@@ -268,7 +268,7 @@ class TestSoapEndpoint(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
         self.assertIn('Bv03', response.content.decode('utf-8', 'strict'))
 
         signal.refresh_from_db()
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD_EXTERN)
+        self.assertEqual(signal.status.state, workflow.DONE_EXTERNAL)
         self.assertEqual(
             signal.status.text,
             'Op locatie geweest, niets aangetroffen: Het probleem is opgelost'
@@ -278,12 +278,12 @@ class TestSoapEndpoint(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
             'sigmax_resultaat': incoming_context['resultaat_omschrijving'],
             'sigmax_reden': incoming_context['resultaat_toelichting'],
         })
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD_EXTERN)
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD_EXTERN)
+        self.assertEqual(signal.status.state, workflow.DONE_EXTERNAL)
+        self.assertEqual(signal.status.state, workflow.DONE_EXTERNAL)
 
     def test_with_signal_for_message_correct_state_no_resultaat_toelichting(self):
         signal = SignalFactoryValidLocation.create()
-        signal.status.state = workflow.VERZONDEN
+        signal.status.state = workflow.SENT
         signal.status.save()
         signal.refresh_from_db()
 
@@ -314,7 +314,7 @@ class TestSoapEndpoint(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
         self.assertIn('Bv03', response.content.decode('utf-8', 'strict'))
 
         signal.refresh_from_db()
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD_EXTERN)
+        self.assertEqual(signal.status.state, workflow.DONE_EXTERNAL)
         self.assertEqual(
             signal.status.text,
             'Op locatie geweest, niets aangetroffen: Geen reden aangeleverd vanuit THOR'
@@ -324,5 +324,5 @@ class TestSoapEndpoint(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
             'sigmax_resultaat': incoming_context['resultaat_omschrijving'],
             'sigmax_reden': incoming_context['resultaat_toelichting'],
         })
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD_EXTERN)
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD_EXTERN)
+        self.assertEqual(signal.status.state, workflow.DONE_EXTERNAL)
+        self.assertEqual(signal.status.state, workflow.DONE_EXTERNAL)

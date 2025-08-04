@@ -46,7 +46,7 @@ class TestFeedbackFlow(SignalsBaseApiTestCase):
         # Setup our test signal and feedback instances
         with freeze_time(self.t_creation):
             self.signal = SignalFactoryValidLocation(
-                status__state=workflow.AFGEHANDELD,
+                status__state=workflow.COMPLETED,
             )
 
         with freeze_time(self.t_now):
@@ -185,7 +185,7 @@ class TestFeedbackFlow(SignalsBaseApiTestCase):
             self.assertEqual(response.status_code, 200)
 
         self.signal.refresh_from_db()
-        self.assertEqual(self.signal.status.state, workflow.VERZOEK_TOT_HEROPENEN)
+        self.assertEqual(self.signal.status.state, workflow.REQUEST_TO_REOPEN)
 
     def test_reopen_requested_on_unsatisfied_custom_answer(self):
         """All custom unsatisfied answers (in feedback) lead to "reopen requested" state."""
@@ -205,7 +205,7 @@ class TestFeedbackFlow(SignalsBaseApiTestCase):
             self.assertEqual(response.status_code, 200)
 
         self.signal.refresh_from_db()
-        self.assertEqual(self.signal.status.state, workflow.VERZOEK_TOT_HEROPENEN)
+        self.assertEqual(self.signal.status.state, workflow.REQUEST_TO_REOPEN)
 
     def test_no_reopen_requested_on_unsatisfied_and_known_feedback(self):
         """Some negative feedback is explicitly marked not to trigger reopen requested."""
@@ -225,15 +225,15 @@ class TestFeedbackFlow(SignalsBaseApiTestCase):
             self.assertEqual(response.status_code, 200)
 
         self.signal.refresh_from_db()
-        self.assertEqual(self.signal.status.state, workflow.AFGEHANDELD)
+        self.assertEqual(self.signal.status.state, workflow.COMPLETED)
 
     def test_no_reopen_requested_when_not_in_state_afgehandeld(self):
-        """Only request reopen from AFGEHANDELD state."""
+        """Only request reopen from COMPLETED state."""
         with freeze_time(self.t_now):
-            # Reopen the test signal (so it is no longer in AFGEHANDELD).
+            # Reopen the test signal (so it is no longer in COMPLETED).
             payload = {
                 'text': 'De melder is niet tevreden blijkt uit feedback. Zo nodig heropenen.',
-                'state': workflow.HEROPEND,
+                'state': workflow.REOPENED,
             }
             Signal.actions.update_status(payload, self.signal)
 
@@ -254,7 +254,7 @@ class TestFeedbackFlow(SignalsBaseApiTestCase):
 
         # Assert that nothing happened.
         self.signal.refresh_from_db()
-        self.assertEqual(self.signal.status.state, workflow.HEROPEND)
+        self.assertEqual(self.signal.status.state, workflow.REOPENED)
 
     def test_no_reopen_requested_on_positive_feedback(self):
         """Positive feedback should never request a reopen"""
@@ -285,7 +285,7 @@ class TestFeedbackFlow(SignalsBaseApiTestCase):
 
         # Assert that nothing happened.
         self.signal.refresh_from_db()
-        self.assertEqual(self.signal.status.state, workflow.AFGEHANDELD)
+        self.assertEqual(self.signal.status.state, workflow.COMPLETED)
         self.assertEqual(status_id_before, self.signal.status.id)
 
     def test_send_mail_is_satisfied_false_feedback_email(self):

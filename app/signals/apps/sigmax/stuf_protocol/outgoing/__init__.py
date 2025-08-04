@@ -73,7 +73,7 @@ def handle(signal):
         seq_no = _generate_sequence_number(signal)
     except SentTooManyTimesError:
         Signal.actions.update_status({
-            'state': workflow.VERZENDEN_MISLUKT,
+            'state': workflow.SEND_FAILED,
             'text': 'Verzending van melding naar THOR is mislukt.'
                     'Melding is te vaak verzonden.',
         }, signal=signal)
@@ -88,18 +88,18 @@ def handle(signal):
         send_signal_and_pdf(signal, seq_no)
     except CreeerZaakLk01Error:
         Signal.actions.update_status({
-            'state': workflow.VERZENDEN_MISLUKT,
+            'state': workflow.SEND_FAILED,
             'text': 'Verzending van melding naar THOR is mislukt.',
         }, signal=signal)
         raise  # Fail task in Celery.
     except VoegZaakDocumentToeLk01Error:
         pdf_warning = 'Let op: waarschijnlijk is de PDF niet verzonden naar CityControl.'
         Signal.actions.update_status({
-            'state': workflow.VERZONDEN,
+            'state': workflow.SENT,
             'text': f'{succ_msg} {pdf_warning}'
         }, signal=signal)
     else:
         Signal.actions.update_status({
-            'state': workflow.VERZONDEN,
+            'state': workflow.SENT,
             'text': succ_msg,
         }, signal=signal)

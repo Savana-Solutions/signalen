@@ -10,7 +10,7 @@ from signals.apps.api.views import NamespaceView
 from signals.apps.my_signals.models import Token
 from signals.apps.signals.factories import SignalFactoryWithImage
 from signals.apps.signals.models import Signal
-from signals.apps.signals.workflow import AFGEHANDELD, GEANNULEERD, GESPLITST
+from signals.apps.signals.workflow import COMPLETED, CANCELLED, SPLIT
 
 urlpatterns = [
     path('v1/relations/', NamespaceView.as_view(), name='signal-namespace'),
@@ -35,7 +35,7 @@ class TestMySignalsListEndpoint(APITestCase):
             5, reporter__email='my-signals-test-reporter@example.com'
         )
         signals_with_image_closed_state = SignalFactoryWithImage.create_batch(
-            5, status__state=AFGEHANDELD, reporter__email='my-signals-test-reporter@example.com'
+            5, status__state=COMPLETED, reporter__email='my-signals-test-reporter@example.com'
         )
 
         # Create a couple of children that should not be retrieved in the list
@@ -71,7 +71,7 @@ class TestMySignalsListEndpoint(APITestCase):
             self.assertEqual(str(signal.uuid), signal_response_data['uuid'])
             self.assertEqual(signal.get_id_display(), signal_response_data['id_display'])
             self.assertEqual(signal.text, signal_response_data['text'])
-            if signal.status.state in [AFGEHANDELD, GEANNULEERD, GESPLITST, ]:
+            if signal.status.state in [COMPLETED, CANCELLED, SPLIT, ]:
                 self.assertEqual('CLOSED', signal_response_data['status']['state'])
                 self.assertEqual('Afgesloten', signal_response_data['status']['state_display'])
             else:

@@ -15,23 +15,23 @@ from signals.apps.signals import factories, workflow
 from signals.apps.signals.models import Signal, Status
 
 HAPPY_REOPEN_SCENARIO = [
-    workflow.GEMELD,
-    workflow.BEHANDELING,
-    workflow.AFGEHANDELD,
-    workflow.HEROPEND,
-    workflow.BEHANDELING,
-    workflow.INGEPLAND,
-    workflow.GEANNULEERD,
-    workflow.HEROPEND,
-    workflow.AFGEHANDELD,
+    workflow.REPORTED,
+    workflow.IN_PROGRESS,
+    workflow.COMPLETED,
+    workflow.REOPENED,
+    workflow.IN_PROGRESS,
+    workflow.PLANNED,
+    workflow.CANCELLED,
+    workflow.REOPENED,
+    workflow.COMPLETED,
 ]
 
 UNHAPPY_REOPEN_SCENARIO = [
-    workflow.GEMELD,
-    workflow.BEHANDELING,
-    workflow.INGEPLAND,
-    workflow.BEHANDELING,
-    workflow.HEROPEND,
+    workflow.REPORTED,
+    workflow.IN_PROGRESS,
+    workflow.PLANNED,
+    workflow.IN_PROGRESS,
+    workflow.REOPENED,
 ]
 
 
@@ -53,7 +53,7 @@ class TestReopen(TransactionTestCase):
 
         self.assertEqual(self.signal.status.state, HAPPY_REOPEN_SCENARIO[-1])
         self.assertEqual(patched_udate_status_signal.send_robust.call_count, 9)
-        self.assertEqual(Status.objects.filter(state=workflow.HEROPEND).count(), 2)
+        self.assertEqual(Status.objects.filter(state=workflow.REOPENED).count(), 2)
 
     @mock.patch('signals.apps.signals.managers.update_status', autospec=True)
     def test_reopen_example_fails(self, patched_udate_status_signal):
@@ -66,9 +66,9 @@ class TestReopen(TransactionTestCase):
 
         self.signal.refresh_from_db()
 
-        self.assertEqual(self.signal.status.state, workflow.BEHANDELING)
+        self.assertEqual(self.signal.status.state, workflow.IN_PROGRESS)
         self.assertEqual(patched_udate_status_signal.send_robust.call_count, 4)
-        self.assertEqual(Status.objects.filter(state=workflow.HEROPEND).count(), 0)
+        self.assertEqual(Status.objects.filter(state=workflow.REOPENED).count(), 0)
 
 
 class TestTransistion(TransactionTestCase):
@@ -91,7 +91,7 @@ class TestTransistion(TransactionTestCase):
                 new_status_data = {'state': allowed_state,
                                    'text': 'Dit is een test.'}
 
-                if allowed_state == workflow.TE_VERZENDEN:
+                if allowed_state == workflow.TO_SEND:
                     new_status_data.update({'target_api': Status.TARGET_API_SIGMAX})
 
                 Signal.actions.update_status(new_status_data, signal)
@@ -125,7 +125,7 @@ class TestTransistion(TransactionTestCase):
                     new_status_data = {'state': not_allowed_state,
                                        'text': 'Dit is een test.'}
 
-                    if not_allowed_state == workflow.TE_VERZENDEN:
+                    if not_allowed_state == workflow.TO_SEND:
                         new_status_data.update({'target_api': Status.TARGET_API_SIGMAX})
 
                     Signal.actions.update_status(new_status_data, signal)

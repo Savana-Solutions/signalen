@@ -71,7 +71,7 @@ This service will handle the automated deletion of signals that have met the ret
 A Django management command, named `delete_signals`, will be created to allow administrators to trigger the data
 deletion process manually. The command will take the following arguments:
 
-- `state`: The state a signal must be in to be deleted, with available choices being "AFGEHANDELD," "GEANNULEERD," or "GESPLITST."
+- `state`: The state a signal must be in to be deleted, with available choices being "COMPLETED," "CANCELLED," or "SPLIT."
 - `days`: The minimum number of days a signal must be in the given state to be eligible for deletion.
 - `--signal-id`: (Optional) The ID of a specific signal to delete.
 - `--dry-run`: (Optional) Flag to enable dry-run mode, where no actual deletions are performed.

@@ -3,7 +3,7 @@
 """
 Test REST API trigger for reaction request flow.
 
-Reaction request flow is triggered through a status update to REACTIE_GEVRAAGD.
+Reaction request flow is triggered through a status update to REACTION_REQUESTED.
 This transition is tested here. Checks fix for SIG-3887.
 """
 from signals.apps.signals import workflow
@@ -15,10 +15,10 @@ class TestReactionRequestFlowTrigger(SignalsBaseApiTestCase):
     detail_endpoint = '/signals/v1/private/signals/{pk}'
 
     def setUp(self):
-        self.signal = SignalFactory.create(status__state=workflow.GEMELD)
+        self.signal = SignalFactory.create(status__state=workflow.REPORTED)
         self.client.force_authenticate(user=self.superuser)
 
-        payload = {'status': {'state': workflow.REACTIE_GEVRAAGD, 'text': 'Our question.'}}
+        payload = {'status': {'state': workflow.REACTION_REQUESTED, 'text': 'Our question.'}}
         response = self.client.patch(f'/signals/v1/private/signals/{self.signal.pk}', data=payload, format='json')
 
         self.assertEqual(response.status_code, 200)
@@ -28,7 +28,7 @@ class TestReactionRequestFlowTrigger(SignalsBaseApiTestCase):
         self.signal.reporter.save()
         self.signal.refresh_from_db()
 
-        payload = {'status': {'state': workflow.REACTIE_GEVRAAGD, 'text': 'Our question.'}}
+        payload = {'status': {'state': workflow.REACTION_REQUESTED, 'text': 'Our question.'}}
         response = self.client.patch(f'/signals/v1/private/signals/{self.signal.pk}', data=payload, format='json')
 
         self.assertEqual(response.status_code, 400)

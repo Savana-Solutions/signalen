@@ -10,7 +10,7 @@ def _SIG_1900(apps, schema_editor):
     · Nieuwe subcategorie “Parkeerautomaten” in de hoofdcategorie “Wegen, verkeer, straatmeubilair”
     · Eigenaar: “V&OR”
     · Afhandeltermijn: 5 dagen
-    · Servicebelofte: “Uw melding wordt ingepland: wij laten u binnen 5 werkdagen weten hoe en
+    · Servicebelofte: “Uw melding wordt planned: wij laten u binnen 5 werkdagen weten hoe en
       wanneer uw melding wordt afgehandeld. Dat doen we via e-mail.”
 
     :param apps:

@@ -43,7 +43,7 @@ class TestAtomicityOfPatch(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
         self.history_endpoint = '/signals/v1/private/signals/{id}/history'
 
         self.signal = factories.SignalFactoryWithImage.create(
-            status__state=workflow.GEMELD,
+            status__state=workflow.REPORTED,
             status__text='INITIAL',
         )
 
@@ -65,7 +65,7 @@ class TestAtomicityOfPatch(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
         # Payload for signal PATCH requests
         self.payload = {
             'status': {
-                'state': workflow.BEHANDELING,
+                'state': workflow.IN_PROGRESS,
                 'text': 'TEST STATUS UPDATE',
             },
             'category': {
@@ -147,7 +147,7 @@ class TestAtomicityOfPatch(SIAReadWriteUserMixin, SignalsBaseApiTestCase):
 
         # Update signal instance (use invalid status data)
         mocked.side_effect = ValidationError('Something, something, error!')
-        self.payload['status']['state'] = workflow.BEHANDELING
+        self.payload['status']['state'] = workflow.IN_PROGRESS
         response = self.client.patch(detail_endpoint, data=self.payload, format='json')
         self.assertEqual(response.status_code, 400)
 

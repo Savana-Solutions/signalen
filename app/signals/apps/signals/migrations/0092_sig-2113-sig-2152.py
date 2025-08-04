@@ -5,7 +5,7 @@ Fix SIG-2113 and SIG-2152
 """
 from django.db import migrations
 
-from signals.apps.signals.workflow import AFGEHANDELD_EXTERN
+from signals.apps.signals.workflow import DONE_EXTERNAL
 
 PROBLEMATIC_SIA_IDS = [
     361100,
@@ -14,7 +14,7 @@ PROBLEMATIC_SIA_IDS = [
 
 def _set_state_afgehandeld_extern(apps, schema_editor):
     """
-    Move a Signal to state AFGEHANDELD_EXTERN regardless of workflow checks.
+    Move a Signal to state DONE_EXTERNAL regardless of workflow checks.
     """
     Signal = apps.get_model('signals', 'Signal')
     Status = apps.get_model('signals', 'Status')
@@ -22,7 +22,7 @@ def _set_state_afgehandeld_extern(apps, schema_editor):
     for signal in Signal.objects.filter(id__in=PROBLEMATIC_SIA_IDS):
         new_status = Status(
             _signal=signal,
-            state=AFGEHANDELD_EXTERN,
+            state=DONE_EXTERNAL,
             text='Vastgelopen melding vrijgegeven zonder tussenkomst CityControl.'
         )
         new_status.save()  # no full_clean, bypass workflow checks

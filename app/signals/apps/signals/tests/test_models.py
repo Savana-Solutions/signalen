@@ -53,7 +53,7 @@ class TestSignalManager(TransactionTestCase):
             'category': sub_category,
         }
         self.status_data = {
-            'state': workflow.GEMELD,
+            'state': workflow.REPORTED,
             'text': 'text message',
             'user': 'test@example.com',
         }
@@ -128,7 +128,7 @@ class TestSignalManager(TransactionTestCase):
 
         # Update status
         data = {
-            'state': workflow.AFGEHANDELD,
+            'state': workflow.COMPLETED,
             'text': 'Opgelost',
         }
         status = Signal.actions.update_status(data, signal)
@@ -139,7 +139,7 @@ class TestSignalManager(TransactionTestCase):
 
         # Check that the signal status is updated
         self.assertEqual(signal.status, status)
-        self.assertEqual(signal.status.state, workflow.AFGEHANDELD)
+        self.assertEqual(signal.status.state, workflow.COMPLETED)
         self.assertEqual(signal.statuses.count(), 2)
 
         # Check that we sent the correct Django signal
@@ -443,17 +443,17 @@ class TestStatusModel(TestCase):
     def setUp(self):
         self.signal = factories.SignalFactory.create()
         self.status = self.signal.status
-        self.assertEqual(self.status.state, workflow.GEMELD)
+        self.assertEqual(self.status.state, workflow.REPORTED)
 
     def test_state_transition_valid(self):
-        new_status = Status(_signal=self.signal, state=workflow.AFWACHTING)
+        new_status = Status(_signal=self.signal, state=workflow.AWAITING)
         new_status.full_clean()
         new_status.save()
 
         self.assertTrue(new_status.id)
 
     def test_state_transition_invalid(self):
-        new_status = Status(_signal=self.signal, state=workflow.VERZONDEN)
+        new_status = Status(_signal=self.signal, state=workflow.SENT)
 
         with self.assertRaises(ValidationError) as error:
             new_status.full_clean()
@@ -461,7 +461,7 @@ class TestStatusModel(TestCase):
 
     def test_state_te_verzenden_required_target_api_valid(self):
         new_status = Status(_signal=self.signal,
-                            state=workflow.TE_VERZENDEN,
+                            state=workflow.TO_SEND,
                             target_api=Status.TARGET_API_SIGMAX)
         new_status.full_clean()
         new_status.save()
@@ -469,7 +469,7 @@ class TestStatusModel(TestCase):
         self.assertTrue(new_status.id)
 
     def test_state_te_verzenden_required_target_api_invalid_empty_choice(self):
-        new_status = Status(_signal=self.signal, state=workflow.TE_VERZENDEN, target_api=None)
+        new_status = Status(_signal=self.signal, state=workflow.TO_SEND, target_api=None)
 
         with self.assertRaises(ValidationError) as error:
             new_status.full_clean()
@@ -485,21 +485,21 @@ class TestStatusModel(TestCase):
         self.assertIn('target_api', error.exception.error_dict)
 
     def test_state_afgehandeld_text_required_valid(self):
-        new_status = Status(_signal=self.signal, state=workflow.BEHANDELING, text='Working on it.')
+        new_status = Status(_signal=self.signal, state=workflow.IN_PROGRESS, text='Working on it.')
         new_status.full_clean()
         new_status.save()
 
         self.signal.status = new_status
         self.signal.save()
 
-        new_status = Status(_signal=self.signal, state=workflow.AFGEHANDELD, text='Done with it.')
+        new_status = Status(_signal=self.signal, state=workflow.COMPLETED, text='Done with it.')
         new_status.full_clean()
         new_status.save()
 
         self.assertTrue(new_status.id)
 
     def test_state_afgehandeld_text_required_invalid(self):
-        new_status = Status(_signal=self.signal, state=workflow.AFGEHANDELD, text=None)
+        new_status = Status(_signal=self.signal, state=workflow.COMPLETED, text=None)
 
         with self.assertRaises(ValidationError) as error:
             new_status.full_clean()

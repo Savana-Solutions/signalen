@@ -5,7 +5,7 @@ Fix SIG-1728
 """
 from django.db import migrations
 
-from signals.apps.signals.workflow import GEANNULEERD
+from signals.apps.signals.workflow import CANCELLED
 
 PROBLEMATIC_SIA_IDS = [
     112099,
@@ -30,7 +30,7 @@ def _set_state_geannuleerd(apps, schema_editor):
     for signal in Signal.objects.filter(id__in=PROBLEMATIC_SIA_IDS):
         new_status = Status(
             _signal=signal,
-            state=GEANNULEERD,
+            state=CANCELLED,
             text='Vastgelopen melding geannuleerd zonder terugkoppeling aan melder.'
         )
         new_status.save()  # no full_clean, bypass workflow checks
