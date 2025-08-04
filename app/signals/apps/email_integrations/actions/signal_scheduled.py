@@ -10,6 +10,6 @@ class SignalScheduledAction(AbstractSignalStatusAction):
     rule: AbstractRule = SignalScheduledRule()
 
     key: str = EmailTemplate.SIGNAL_STATUS_CHANGED_INGEPLAND
-    subject: str = 'Meer over uw melding {formatted_signal_id}'
+    subject: str = 'More about your report {formatted_signal_id}'
 
-    note: str = 'Automatische e-mail bij inplannen is verzonden aan de melder.'
+    note: str = 'Automatic email upon scheduling has been sent to the reporter.'

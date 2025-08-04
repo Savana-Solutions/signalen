@@ -12,9 +12,9 @@ class SignalHandledAction(AbstractSignalStatusAction):
     rule: AbstractRule = SignalHandledRule()
 
     key: str = EmailTemplate.SIGNAL_STATUS_CHANGED_AFGEHANDELD
-    subject: str = 'Meer over uw melding {formatted_signal_id}'
+    subject: str = 'More about your report {formatted_signal_id}'
 
-    note: str = 'Automatische e-mail bij afhandelen is verzonden aan de melder.'
+    note: str = 'Automatic email upon completion has been sent to the reporter.'
 
     def get_additional_context(self, signal: Signal, dry_run: bool = False) -> dict:
         return create_feedback_and_mail_context(signal, dry_run)

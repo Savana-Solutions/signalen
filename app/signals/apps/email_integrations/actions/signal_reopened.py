@@ -11,9 +11,9 @@ class SignalReopenedAction(AbstractSignalStatusAction):
     rule: AbstractRule = SignalReopenedRule()
 
     key: str = EmailTemplate.SIGNAL_STATUS_CHANGED_HEROPEND
-    subject: str = 'Meer over uw melding {formatted_signal_id}'
+    subject: str = 'More about your report {formatted_signal_id}'
 
-    note: str = 'Automatische e-mail bij heropenen is verzonden aan de melder.'
+    note: str = 'Automatic email upon reopening has been sent to the reporter.'
 
     def get_additional_context(self, signal: Signal, dry_run: bool = False) -> dict:
         feedback_qs = signal.feedback.filter(submitted_at__isnull=False)

@@ -11,9 +11,9 @@ class SignalHandledNegativeAction(AbstractSignalStatusAction):
     rule: AbstractRule = SignalHandledNegativeRule()
 
     key: str = EmailTemplate.SIGNAL_STATUS_CHANGED_AFGEHANDELD_KTO_NEGATIVE_CONTACT
-    subject: str = 'Meer over uw melding {formatted_signal_id}'
+    subject: str = 'More about your report {formatted_signal_id}'
 
-    note: str = 'Automatische e-mail bij afhandelen heropenen negatieve feedback'
+    note: str = 'Automatic email when handling reopening negative feedback'
 
     def get_additional_context(self, signal: Signal, dry_run: bool = False) -> dict:
         """

@@ -11,12 +11,12 @@ from signals.apps.signals.models import Signal
 class SignalForwardToExternalAction(AbstractSignalStatusAction):
     rule: AbstractRule = ForwardToExternalRule()
     key: str = EmailTemplate.SIGNAL_STATUS_CHANGED_FORWARD_TO_EXTERNAL
-    subject: str = 'Verzoek tot behandeling van Signalen melding {formatted_signal_id}'
+    subject: str = 'Request for handling of Signals report {formatted_signal_id}'
 
     fallback_txt_template: str = 'email/signal_forward_to_external.txt'
     fallback_html_template: str = 'email/signal_forward_to_external.html'
 
-    note: str = 'Automatische e-mail bij doorzetten is verzonden aan externe partij.'
+    note: str = 'Automatic email upon forwarding has been sent to external party.'
 
     def get_additional_context(self, signal: Signal, dry_run: bool = False) -> dict:
         return create_forward_to_external_and_mail_context(signal, dry_run)

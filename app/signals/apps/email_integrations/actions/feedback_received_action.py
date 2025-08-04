@@ -11,8 +11,8 @@ class FeedbackReceivedAction(AbstractSystemAction):
     _required_call_kwargs: list[str] = ['feedback']
 
     key: str = EmailTemplate.SIGNAL_FEEDBACK_RECEIVED
-    subject: str = 'Bedankt voor uw feedback'
-    note: str = 'Automatische e-mail bij ontvangen van feedback is verzonden aan de melder.'
+    subject: str = 'Thank you for your feedback'
+    note: str = 'Automatic email upon receipt of feedback has been sent to the reporter.'
 
     def _validate(self) -> bool:
         return settings.FEATURE_FLAGS.get('SYSTEM_MAIL_FEEDBACK_RECEIVED_ENABLED', True)

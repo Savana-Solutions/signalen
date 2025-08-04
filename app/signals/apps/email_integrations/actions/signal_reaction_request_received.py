@@ -11,9 +11,9 @@ class SignalReactionRequestReceivedAction(AbstractSignalStatusAction):
     rule: AbstractRule = SignalReactionRequestReceivedRule()
 
     key: str = EmailTemplate.SIGNAL_STATUS_CHANGED_REACTIE_ONTVANGEN
-    subject: str = 'Meer over uw melding {formatted_signal_id}'
+    subject: str = 'More about your report {formatted_signal_id}'
 
-    note: str = 'Automatische e-mail bij Reactie ontvangen is verzonden aan de melder.'
+    note: str = 'Automatic email for Response received has been sent to the reporter.'
 
     def get_additional_context(self, signal: Signal, dry_run: bool = False) -> dict:
         assert signal.status is not None

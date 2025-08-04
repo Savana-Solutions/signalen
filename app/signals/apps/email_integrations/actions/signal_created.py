@@ -14,9 +14,9 @@ class SignalCreatedAction(AbstractSignalStatusAction):
     rule: AbstractRule = SignalCreatedRule()
 
     key: str = EmailTemplate.SIGNAL_CREATED
-    subject: str = 'Bedankt voor uw melding {formatted_signal_id}'
 
-    note: str = 'Automatische e-mail bij registratie van de melding is verzonden aan de melder.'
+    subject: str = 'Thank you for your report {formatted_signal_id}'
+    note: str = 'Automatic email upon registration of the report has been sent to the reporter.'
 
     def get_additional_context(self, signal: Signal, dry_run: bool = False) -> dict:
         assert signal.category_assignment is not None
